@@ -1,0 +1,51 @@
+rank,account_id,account_name,industry,country,plan_tier,active_paid_mrr,young_subs,young_mrr,expected_loss_90d,pct_mrr_at_risk,motivo,acao_sugerida
+1,A-18793f,Company_488,EdTech,US,Basic,75776,8,75776,8038.000000,10.600000,8 assinatura(s) com <90 dias somando $75776 de MRR,CSM sênior: call de ativação em até 7 dias + plano de sucesso
+2,A-d4e0d4,Company_403,FinTech,US,Basic,114777,9,114777,7781.000000,6.800000,9 assinatura(s) com <90 dias somando $114777 de MRR,CSM sênior: call de ativação em até 7 dias + plano de sucesso
+3,A-5c046d,Company_130,EdTech,FR,Basic,83886,5,59055,6346.000000,7.600000,5 assinatura(s) com <90 dias somando $59055 de MRR,CSM sênior: call de ativação em até 7 dias + plano de sucesso
+4,A-4814a3,Company_337,Cybersecurity,IN,Basic,70644,7,66381,5028.000000,7.100000,7 assinatura(s) com <90 dias somando $66381 de MRR,CSM sênior: call de ativação em até 7 dias + plano de sucesso
+5,A-9174e0,Company_73,Cybersecurity,US,Basic,46613,12,46613,4945.000000,10.600000,12 assinatura(s) com <90 dias somando $46613 de MRR,CSM sênior: call de ativação em até 7 dias + plano de sucesso
+6,A-09316c,Company_341,FinTech,AU,Enterprise,70000,7,40810,4899.000000,7.000000,7 assinatura(s) com <90 dias somando $40810 de MRR,CSM sênior: call de ativação em até 7 dias + plano de sucesso
+7,A-5b1bcd,Company_166,DevTools,US,Pro,131911,3,21681,4427.000000,3.400000,3 assinatura(s) com <90 dias somando $21681 de MRR,CSM sênior: call de ativação em até 7 dias + plano de sucesso
+8,A-56962b,Company_177,EdTech,UK,Enterprise,54605,1,32437,4242.000000,7.800000,1 assinatura(s) com <90 dias somando $32437 de MRR,CSM sênior: call de ativação em até 7 dias + plano de sucesso
+9,A-c70870,Company_253,Cybersecurity,US,Basic,39614,4,39614,4177.000000,10.500000,4 assinatura(s) com <90 dias somando $39614 de MRR,CSM sênior: call de ativação em até 7 dias + plano de sucesso
+10,A-e08cd3,Company_475,FinTech,US,Pro,67737,8,64454,3819.000000,5.600000,8 assinatura(s) com <90 dias somando $64454 de MRR,CSM sênior: call de ativação em até 7 dias + plano de sucesso
+11,A-76fa4d,Company_226,HealthTech,US,Pro,47955,5,47955,3766.000000,7.900000,5 assinatura(s) com <90 dias somando $47955 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+12,A-c58f49,Company_480,EdTech,US,Enterprise,70980,4,55720,3710.000000,5.200000,4 assinatura(s) com <90 dias somando $55720 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+13,A-bd4513,Company_205,DevTools,AU,Enterprise,48804,10,48804,3700.000000,7.600000,10 assinatura(s) com <90 dias somando $48804 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+14,A-39ddf4,Company_435,EdTech,US,Enterprise,33876,8,33876,3594.000000,10.600000,8 assinatura(s) com <90 dias somando $33876 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+15,A-0651a4,Company_255,HealthTech,FR,Pro,44564,12,44564,3572.000000,8.000000,12 assinatura(s) com <90 dias somando $44564 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+16,A-d40bf7,Company_11,FinTech,IN,Basic,43247,7,43247,3534.000000,8.200000,7 assinatura(s) com <90 dias somando $43247 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+17,A-e60f9d,Company_178,FinTech,US,Basic,50095,10,48674,3404.000000,6.800000,10 assinatura(s) com <90 dias somando $48674 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+18,A-1f0636,Company_368,EdTech,AU,Pro,94710,2,22890,3398.000000,3.600000,2 assinatura(s) com <90 dias somando $22890 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+19,A-8bde0c,Company_287,DevTools,US,Basic,32385,15,32385,3385.000000,10.500000,15 assinatura(s) com <90 dias somando $32385 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+20,A-66224b,Company_87,HealthTech,US,Pro,50876,7,50876,3319.000000,6.500000,7 assinatura(s) com <90 dias somando $50876 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+21,A-0b0d6d,Company_267,DevTools,US,Pro,30429,11,30429,3228.000000,10.600000,11 assinatura(s) com <90 dias somando $30429 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+22,A-902ef7,Company_270,HealthTech,US,Enterprise,44322,4,23738,3203.000000,7.200000,4 assinatura(s) com <90 dias somando $23738 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+23,A-0cc442,Company_198,EdTech,US,Basic,60092,5,28575,3147.000000,5.200000,5 assinatura(s) com <90 dias somando $28575 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+24,A-956988,Company_14,EdTech,UK,Enterprise,29407,11,29407,3120.000000,10.600000,11 assinatura(s) com <90 dias somando $29407 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+25,A-e4144b,Company_316,EdTech,UK,Pro,35424,6,35424,3059.000000,8.600000,6 assinatura(s) com <90 dias somando $35424 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+26,A-671f31,Company_137,DevTools,US,Basic,30385,5,30385,3051.000000,10.000000,5 assinatura(s) com <90 dias somando $30385 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+27,A-ac85cd,Company_485,EdTech,US,Enterprise,37663,7,34059,3022.000000,8.000000,7 assinatura(s) com <90 dias somando $34059 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+28,A-40906c,Company_235,EdTech,US,Basic,64400,5,33580,3000.000000,4.700000,5 assinatura(s) com <90 dias somando $33580 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+29,A-6965e1,Company_379,DevTools,US,Basic,27765,11,27765,2945.000000,10.600000,11 assinatura(s) com <90 dias somando $27765 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+30,A-82d8a6,Company_444,Cybersecurity,UK,Basic,27626,11,27626,2931.000000,10.600000,11 assinatura(s) com <90 dias somando $27626 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+31,A-309e54,Company_371,DevTools,US,Pro,26932,7,26932,2857.000000,10.600000,7 assinatura(s) com <90 dias somando $26932 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+32,A-b07346,Company_269,HealthTech,US,Pro,31416,4,31416,2857.000000,9.100000,4 assinatura(s) com <90 dias somando $31416 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+33,A-3a7284,Company_93,FinTech,US,Enterprise,32515,9,32515,2853.000000,8.800000,9 assinatura(s) com <90 dias somando $32515 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+34,A-054577,Company_455,EdTech,UK,Basic,44145,4,20568,2844.000000,6.400000,4 assinatura(s) com <90 dias somando $20568 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+35,A-039727,Company_107,EdTech,AU,Pro,31445,12,31445,2764.000000,8.800000,12 assinatura(s) com <90 dias somando $31445 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+36,A-b48f73,Company_225,EdTech,AU,Pro,28320,6,28320,2706.000000,9.600000,6 assinatura(s) com <90 dias somando $28320 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+37,A-cd458b,Company_430,DevTools,US,Basic,42740,7,26640,2688.000000,6.300000,7 assinatura(s) com <90 dias somando $26640 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+38,A-5a215a,Company_358,EdTech,FR,Enterprise,69687,3,7569,2668.000000,3.800000,3 assinatura(s) com <90 dias somando $7569 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+39,A-7920cc,Company_412,Cybersecurity,FR,Pro,52089,3,17553,2648.000000,5.100000,3 assinatura(s) com <90 dias somando $17553 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+40,A-50f3f7,Company_140,HealthTech,US,Basic,44077,5,26899,2623.000000,6.000000,5 assinatura(s) com <90 dias somando $26899 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+41,A-bd4708,Company_257,FinTech,US,Pro,38975,4,18352,2531.000000,6.500000,4 assinatura(s) com <90 dias somando $18352 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+42,A-0f6450,Company_400,FinTech,US,Pro,23800,10,23800,2525.000000,10.600000,10 assinatura(s) com <90 dias somando $23800 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+43,A-fa3095,Company_174,FinTech,US,Basic,69230,4,7420,2516.000000,3.600000,4 assinatura(s) com <90 dias somando $7420 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+44,A-d3c88e,Company_490,DevTools,US,Pro,26183,11,26183,2385.000000,9.100000,11 assinatura(s) com <90 dias somando $26183 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+45,A-5fe118,Company_374,Cybersecurity,US,Enterprise,22290,4,22290,2365.000000,10.600000,4 assinatura(s) com <90 dias somando $22290 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+46,A-0aaf6e,Company_114,FinTech,US,Enterprise,23496,4,21227,2309.000000,9.800000,4 assinatura(s) com <90 dias somando $21227 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+47,A-9779ad,Company_171,Cybersecurity,AU,Pro,51680,2,15920,2272.000000,4.400000,2 assinatura(s) com <90 dias somando $15920 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+48,A-afa505,Company_157,DevTools,US,Basic,62580,1,13930,2272.000000,3.600000,1 assinatura(s) com <90 dias somando $13930 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+49,A-aa9511,Company_203,DevTools,US,Pro,55995,3,17153,2258.000000,4.000000,3 assinatura(s) com <90 dias somando $17153 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas
+50,A-8b0451,Company_245,FinTech,UK,Enterprise,23550,7,22771,2249.000000,9.500000,7 assinatura(s) com <90 dias somando $22771 de MRR,Check-in de onboarding D+7/D+30: confirmar uso das assinaturas novas

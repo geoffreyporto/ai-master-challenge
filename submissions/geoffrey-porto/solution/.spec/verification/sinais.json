@@ -1,0 +1,356 @@
+{
+  "schema": 1,
+  "sinais": {
+    "Q_ABERTA::diagnostico-churn::Q-001": {
+      "codigo": "Q_ABERTA",
+      "feature": "diagnostico-churn",
+      "ref": "Q-001",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.374Z",
+      "ultimaVez": "2026-09-15T00:53:09.380Z",
+      "gitRev": "4aed364"
+    },
+    "Q_ABERTA::diagnostico-churn::Q-002": {
+      "codigo": "Q_ABERTA",
+      "feature": "diagnostico-churn",
+      "ref": "Q-002",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.380Z",
+      "ultimaVez": "2026-09-15T00:53:09.380Z",
+      "gitRev": "4aed364"
+    },
+    "ARQUIVO_INEXISTENTE::diagnostico-churn::T-001": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "diagnostico-churn",
+      "ref": "T-001",
+      "ocorrencias": 5,
+      "primeiraVez": "2026-09-15T00:53:09.380Z",
+      "ultimaVez": "2026-09-15T00:53:09.380Z",
+      "gitRev": "4aed364"
+    },
+    "ARQUIVO_INEXISTENTE::diagnostico-churn::T-002": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "diagnostico-churn",
+      "ref": "T-002",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-15T00:53:09.380Z",
+      "ultimaVez": "2026-09-15T00:53:09.380Z",
+      "gitRev": "4aed364"
+    },
+    "ARQUIVO_INEXISTENTE::diagnostico-churn::T-003": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "diagnostico-churn",
+      "ref": "T-003",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-15T00:53:09.380Z",
+      "ultimaVez": "2026-09-15T00:53:09.380Z",
+      "gitRev": "4aed364"
+    },
+    "ARQUIVO_INEXISTENTE::diagnostico-churn::T-004": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "diagnostico-churn",
+      "ref": "T-004",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-15T00:53:09.380Z",
+      "ultimaVez": "2026-09-15T00:53:09.380Z",
+      "gitRev": "4aed364"
+    },
+    "ARQUIVO_INEXISTENTE::diagnostico-churn::T-005": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "diagnostico-churn",
+      "ref": "T-005",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-15T00:53:09.380Z",
+      "ultimaVez": "2026-09-15T00:53:09.380Z",
+      "gitRev": "4aed364"
+    },
+    "ARQUIVO_INEXISTENTE::diagnostico-churn::T-006": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "diagnostico-churn",
+      "ref": "T-006",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-15T00:53:09.380Z",
+      "ultimaVez": "2026-09-15T00:53:09.380Z",
+      "gitRev": "4aed364"
+    },
+    "ARQUIVO_INEXISTENTE::diagnostico-churn::T-007": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "diagnostico-churn",
+      "ref": "T-007",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-15T00:53:09.380Z",
+      "ultimaVez": "2026-09-15T00:53:09.380Z",
+      "gitRev": "4aed364"
+    },
+    "ARQUIVO_INEXISTENTE::diagnostico-churn::T-008": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "diagnostico-churn",
+      "ref": "T-008",
+      "ocorrencias": 4,
+      "primeiraVez": "2026-09-15T00:53:09.380Z",
+      "ultimaVez": "2026-09-15T00:53:09.380Z",
+      "gitRev": "4aed364"
+    },
+    "ARQUIVO_INEXISTENTE::diagnostico-churn::T-009": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "diagnostico-churn",
+      "ref": "T-009",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-15T00:53:09.380Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "ARQUIVO_INEXISTENTE::diagnostico-churn::T-010": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "diagnostico-churn",
+      "ref": "T-010",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "AC_SEM_TESTE::diagnostico-churn::AC-001": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "diagnostico-churn",
+      "ref": "AC-001",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "AC_SEM_TESTE::diagnostico-churn::AC-002": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "diagnostico-churn",
+      "ref": "AC-002",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "AC_SEM_TESTE::diagnostico-churn::AC-003": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "diagnostico-churn",
+      "ref": "AC-003",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "AC_SEM_TESTE::diagnostico-churn::AC-004": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "diagnostico-churn",
+      "ref": "AC-004",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "AC_SEM_TESTE::diagnostico-churn::AC-005": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "diagnostico-churn",
+      "ref": "AC-005",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "AC_SEM_TESTE::diagnostico-churn::AC-006": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "diagnostico-churn",
+      "ref": "AC-006",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "AC_SEM_TESTE::diagnostico-churn::AC-007": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "diagnostico-churn",
+      "ref": "AC-007",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "AC_SEM_TESTE::diagnostico-churn::AC-008": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "diagnostico-churn",
+      "ref": "AC-008",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "AC_SEM_TESTE::diagnostico-churn::AC-009": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "diagnostico-churn",
+      "ref": "AC-009",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "AC_SEM_TESTE::diagnostico-churn::AC-010": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "diagnostico-churn",
+      "ref": "AC-010",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "AC_SEM_TESTE::diagnostico-churn::AC-011": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "diagnostico-churn",
+      "ref": "AC-011",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "AC_SEM_TESTE::diagnostico-churn::AC-012": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "diagnostico-churn",
+      "ref": "AC-012",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "AC_SEM_TESTE::diagnostico-churn::AC-013": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "diagnostico-churn",
+      "ref": "AC-013",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "AC_SEM_TESTE::diagnostico-churn::AC-014": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "diagnostico-churn",
+      "ref": "AC-014",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "AC_SEM_TESTE::diagnostico-churn::AC-015": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "diagnostico-churn",
+      "ref": "AC-015",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "AC_SEM_TESTE::diagnostico-churn::AC-016": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "diagnostico-churn",
+      "ref": "AC-016",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "AC_SEM_TESTE::diagnostico-churn::AC-017": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "diagnostico-churn",
+      "ref": "AC-017",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "AC_SEM_TESTE::diagnostico-churn::AC-018": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "diagnostico-churn",
+      "ref": "AC-018",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "GLOB_SEM_ARQUIVOS::—::P-002": {
+      "codigo": "GLOB_SEM_ARQUIVOS",
+      "feature": "—",
+      "ref": "P-002",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "PRINCIPIO_VIOLADO::—::P-002": {
+      "codigo": "PRINCIPIO_VIOLADO",
+      "feature": "—",
+      "ref": "P-002",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "PRINCIPIO_VIOLADO::—::P-003": {
+      "codigo": "PRINCIPIO_VIOLADO",
+      "feature": "—",
+      "ref": "P-003",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "PRINCIPIO_VIOLADO::—::P-004": {
+      "codigo": "PRINCIPIO_VIOLADO",
+      "feature": "—",
+      "ref": "P-004",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "GLOB_SEM_ARQUIVOS::—::P-005": {
+      "codigo": "GLOB_SEM_ARQUIVOS",
+      "feature": "—",
+      "ref": "P-005",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "GLOB_SEM_ARQUIVOS::—::P-006": {
+      "codigo": "GLOB_SEM_ARQUIVOS",
+      "feature": "—",
+      "ref": "P-006",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "PRINCIPIO_VIOLADO::—::P-006": {
+      "codigo": "PRINCIPIO_VIOLADO",
+      "feature": "—",
+      "ref": "P-006",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "GLOB_SEM_ARQUIVOS::—::P-007": {
+      "codigo": "GLOB_SEM_ARQUIVOS",
+      "feature": "—",
+      "ref": "P-007",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    },
+    "GLOB_SEM_ARQUIVOS::—::P-008": {
+      "codigo": "GLOB_SEM_ARQUIVOS",
+      "feature": "—",
+      "ref": "P-008",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T00:53:09.381Z",
+      "ultimaVez": "2026-09-15T00:53:09.381Z",
+      "gitRev": "4aed364"
+    }
+  }
+}

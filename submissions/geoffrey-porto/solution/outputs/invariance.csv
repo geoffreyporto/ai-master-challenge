@@ -1,0 +1,14 @@
+env_type,env,exposures,hazard_young,hazard_mature,hr,ci_low,ci_high,direction,ci_excludes_1,stable_in_type
+industry,Cybersecurity,5030,0.028020,0.011130,2.517000,1.624000,3.900000,+,true,true
+industry,DevTools,6234,0.025520,0.013200,1.934000,1.336000,2.799000,+,true,true
+industry,EdTech,3937,0.023540,0.008270,2.845000,1.603000,5.049000,+,true,true
+industry,FinTech,5923,0.025010,0.007230,3.460000,2.152000,5.563000,+,true,true
+industry,HealthTech,5318,0.027340,0.008120,3.365000,2.104000,5.383000,+,true,true
+plan_tier,Basic,8648,0.023640,0.011100,2.129000,1.519000,2.986000,+,true,true
+plan_tier,Enterprise,8989,0.026170,0.010580,2.472000,1.768000,3.457000,+,true,true
+plan_tier,Pro,8805,0.027890,0.007550,3.694000,2.530000,5.394000,+,true,true
+referral_source,ads,5599,0.027130,0.007570,3.586000,2.233000,5.759000,+,true,true
+referral_source,event,4783,0.024070,0.012010,2.005000,1.287000,3.123000,+,true,true
+referral_source,organic,5702,0.031040,0.012050,2.575000,1.736000,3.820000,+,true,true
+referral_source,other,5368,0.024200,0.008450,2.865000,1.784000,4.599000,+,true,true
+referral_source,partner,4990,0.021920,0.009010,2.432000,1.502000,3.938000,+,true,true

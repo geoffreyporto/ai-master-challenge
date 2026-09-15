@@ -1,0 +1,110 @@
+{
+  "feature": "diagnostico-churn",
+  "timestamp": "2026-09-15T01:10:29.882Z",
+  "gitRev": "4aed364",
+  "command": "uv run --frozen pytest -q -p no:cacheprovider --tap",
+  "reporter": "tap",
+  "exitCode": 0,
+  "testsParsed": 22,
+  "results": {
+    "AC-001": {
+      "status": "pass",
+      "testName": "tests/test_loader.py::test_real_tables_match_contract_and_counts @spec:AC-001",
+      "method": "tap"
+    },
+    "AC-002": {
+      "status": "pass",
+      "testName": "tests/test_quality.py::test_timeline_violations_are_counted_exactly @spec:AC-002",
+      "method": "tap"
+    },
+    "AC-003": {
+      "status": "pass",
+      "testName": "tests/test_quality.py::test_same_id_different_content_is_kept @spec:AC-003",
+      "method": "tap"
+    },
+    "AC-004": {
+      "status": "pass",
+      "testName": "tests/test_quality.py::test_churn_definitions_disagreement_is_visible @spec:AC-004",
+      "method": "tap"
+    },
+    "AC-005": {
+      "status": "pass",
+      "testName": "tests/test_metrics.py::test_monthly_rate_uses_active_base_on_first_day @spec:AC-005",
+      "method": "tap"
+    },
+    "AC-006": {
+      "status": "pass",
+      "testName": "tests/test_metrics.py::test_mix_change_alone_gives_ratio_one @spec:AC-006",
+      "method": "tap"
+    },
+    "AC-007": {
+      "status": "pass",
+      "testName": "tests/test_metrics.py::test_months_above_control_limit_are_flagged @spec:AC-007",
+      "method": "tap"
+    },
+    "AC-008": {
+      "status": "pass",
+      "testName": "tests/test_hypotheses.py::test_each_hypothesis_has_test_effect_and_tables @spec:AC-008",
+      "method": "tap"
+    },
+    "AC-009": {
+      "status": "pass",
+      "testName": "tests/test_hypotheses.py::test_holm_matches_reference_values @spec:AC-009",
+      "method": "tap"
+    },
+    "AC-010": {
+      "status": "pass",
+      "testName": "tests/test_hypotheses.py::test_every_finding_has_one_claim_label @spec:AC-010 @principle:P-004",
+      "method": "tap"
+    },
+    "AC-011": {
+      "status": "pass",
+      "testName": "tests/test_hypotheses.py::test_age_effect_is_reported_per_environment @spec:AC-011",
+      "method": "tap"
+    },
+    "AC-012": {
+      "status": "pass",
+      "testName": "tests/test_risk.py::test_expected_loss_is_hazard_times_paid_mrr @spec:AC-012",
+      "method": "tap"
+    },
+    "AC-013": {
+      "status": "pass",
+      "testName": "tests/test_risk.py::test_cs_list_is_sorted_and_actionable @spec:AC-013",
+      "method": "tap"
+    },
+    "AC-014": {
+      "status": "pass",
+      "testName": "tests/test_risk.py::test_oot_panel_never_sees_the_future @spec:AC-014 @principle:P-002",
+      "method": "tap"
+    },
+    "AC-015": {
+      "status": "pass",
+      "testName": "tests/test_impact.py::test_excess_mrr_and_scenarios_in_dollars_per_month @spec:AC-015",
+      "method": "tap"
+    },
+    "AC-016": {
+      "status": "pass",
+      "testName": "tests/test_impact.py::test_ab_sample_size_matches_textbook @spec:AC-016",
+      "method": "tap"
+    },
+    "AC-017": {
+      "status": "pass",
+      "testName": "tests/test_pipeline.py::test_two_runs_are_byte_identical @spec:AC-017 @principle:P-006",
+      "method": "tap"
+    }
+  },
+  "principles": {
+    "P-004": {
+      "status": "pass",
+      "testName": "tests/test_hypotheses.py::test_every_finding_has_one_claim_label @spec:AC-010 @principle:P-004"
+    },
+    "P-006": {
+      "status": "pass",
+      "testName": "tests/test_pipeline.py::test_two_runs_are_byte_identical @spec:AC-017 @principle:P-006"
+    },
+    "P-002": {
+      "status": "pass",
+      "testName": "tests/test_risk.py::test_oot_panel_never_sees_the_future @spec:AC-014 @principle:P-002"
+    }
+  }
+}
