@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import re
+from pathlib import Path
 
 import polars as pl
 import pytest
@@ -18,6 +19,7 @@ from churn_diag.loader import Tables
 from churn_diag.pipeline import Result, analyse
 
 REPORT = SOLUTION_ROOT / "RELATORIO.md"
+SUBMISSION_README = SOLUTION_ROOT.parent / "README.md"
 METRICS = SOLUTION_ROOT / "outputs" / "metrics.json"
 MARK = re.compile(r"<!--m:([a-z0-9_]+)-->\s*(?:US\$\s*)?([−-]?\d[\d.]*(?:,\d+)?)")
 TOP10 = re.compile(r"<!--top10:start-->(.*?)<!--top10:end-->", re.S)
@@ -42,11 +44,14 @@ def test_parse_br_handles_thousands_and_decimals() -> None:
     assert parse_br("−83,2") == (-83.2, 1)
 
 
-def test_every_marked_number_matches_the_pipeline(fresh: Result) -> None:
+@pytest.mark.parametrize(("doc", "min_marks"), [(REPORT, 60), (SUBMISSION_README, 15)])
+def test_every_marked_number_matches_the_pipeline(
+    fresh: Result, doc: Path, min_marks: int
+) -> None:
     """@spec:AC-018 @principle:P-003 — cada número marcado = valor do pipeline."""
-    text = REPORT.read_text(encoding="utf-8")
+    text = doc.read_text(encoding="utf-8")
     marks = MARK.findall(text)
-    assert len(marks) >= 60, "o relatório deveria marcar os números-chave"
+    assert len(marks) >= min_marks, f"{doc.name} deveria marcar os números-chave"
     committed = json.loads(METRICS.read_text(encoding="utf-8"))["report"]
     assert committed == fresh.report, (
         "outputs/metrics.json desatualizado: rode o pipeline"

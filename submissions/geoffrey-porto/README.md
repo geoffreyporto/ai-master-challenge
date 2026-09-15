@@ -1,0 +1,155 @@
+# Submissão — Geoffrey Porto — Challenge 001
+
+## Sobre mim
+
+- **Nome:** Geoffrey Porto
+- **LinkedIn:** _(adicionar)_
+- **Challenge escolhido:** 001 — Diagnóstico de Churn (RavenStack)
+
+---
+
+## Executive Summary
+
+O churn da RavenStack **subiu de verdade, mas só no 4º tri/2024 e só nas
+assinaturas novas**: o churn de MRR ficou em <!--m:mrr_churn_ref_avg_pct-->0,83%/mês
+até setembro e chegou a <!--m:mrr_churn_dec24_pct-->3,52% em dezembro; ajustando
+pelo crescimento da base, o 4º tri teve <!--m:q4_ratio_x-->2,82× as saídas esperadas,
+<!--m:young_share_q4_events_pct-->79,6% delas em assinaturas com menos de 90 dias.
+É por isso que CS e Produto "não viram": a satisfação não distingue quem sai
+(AUC <!--m:csat_auc-->0,52) e o uso total ficou parado enquanto a base cresceu
+<!--m:active_subs_growth_x-->5,8×. Nenhum sinal de uso, suporte ou satisfação prevê
+o churn (um GBM com as 5 tabelas faz <!--m:oot_gbm_insample_roc-->1,00 no treino e
+<!--m:oot_gbm_roc-->0,52 fora do tempo). **Recomendação principal:** antes de
+investir, auditar em 1 dia 20 cancelamentos de dezembro no billing — o padrão
+também é compatível com datas de cancelamento atribuídas em lote — e, em
+seguida, rodar um onboarding D+7/D+30 como teste A/B nas assinaturas novas;
+em jogo, US$ <!--m:excess_mrr_per_month_k-->221 mil de MRR por mês acima do normal.
+
+---
+
+## Solução
+
+| Entregável | Onde |
+|---|---|
+| **Relatório para o CEO** (≤ 5 páginas) | [`solution/RELATORIO.md`](solution/RELATORIO.md) |
+| Lista de contas para o CS (50, com motivo e ação) | [`solution/outputs/cs_priority_accounts.csv`](solution/outputs/cs_priority_accounts.csv) |
+| Pipeline reprodutível (Python 3.14 + Polars) | [`solution/src/churn_diag/`](solution/src/churn_diag/) |
+| Notebook técnico (CRISP-DM, executado) | [`solution/notebooks/diagnostico_churn.ipynb`](solution/notebooks/diagnostico_churn.ipynb) |
+| Especificação SDD (constituição, spec, design, tarefas, prova) | [`solution/.spec/`](solution/.spec/) |
+| Plano de trabalho · Guia de implementação · Arquitetura e SDD | [`docs/`](docs/) |
+
+### Abordagem
+
+1. **Regras antes de ferramentas:** separei as perguntas do CEO em descrição
+   ("o que aconteceu"), predição ("quem está em risco") e causa ("o que fazer"),
+   porque cada uma pede um método diferente.
+2. **Auditoria dos dados antes de qualquer gráfico:** a linha do tempo de uso e
+   de tickets não conversa com o ciclo de vida do cliente
+   (<!--m:usage_before_sub_start_pct-->76,6% do uso antes da assinatura existir), e as
+   três definições de churn discordam em <!--m:churn_def_disagree_pct-->80% das contas.
+   A unidade de análise virou **assinatura × mês**, a única linha do tempo
+   consistente.
+3. **Especificação com gate (SDD):** constituição com princípios verificáveis,
+   18 critérios de aceite, cada um provado por teste (`onp-spec verify`: 18/18).
+4. **Hipóteses testadas, não opiniões:** <!--m:n_hypotheses-->12 hipóteses cruzando
+   as 5 tabelas, correção de Holm, invariância em 13 ambientes, validação fora do tempo.
+
+### Resultados / Findings
+
+- **[Fato]** A alta do 4º tri não é efeito do crescimento da base: saíram
+  <!--m:q4_observed_ended-->324 assinaturas contra <!--m:q4_expected_ended-->115 esperadas.
+- **[Fato]** O risco de sair no 1º mês foi de <!--m:hz_0_30_ref_pct-->0,95% para
+  <!--m:hz_0_30_target_pct-->5,74%; assinaturas maduras ficaram estáveis
+  (<!--m:hz_mature_ref_pct-->0,88% → <!--m:hz_mature_target_pct-->1,09%).
+- **[Fato]** CSAT, uso, tickets, motivo declarado, indústria, país, canal e
+  plano **não** explicam o churn depois da correção estatística.
+- **[Previsão]** Só a idade da assinatura prevê fora do tempo
+  (ROC <!--m:oot_age_roc-->0,59); US$ <!--m:expected_loss_90d_k-->518 mil de MRR devem
+  sair em 90 dias se o padrão continuar.
+- **[Hipótese]** O salto de novas assinaturas no 4º tri trouxe assinaturas que não
+  se sustentam — a validar com o teste A/B (<!--m:ab_n_per_arm-->783 por braço).
+
+### Recomendações
+
+0. Auditar 20 cancelamentos de dezembro no billing (1 dia) — separa "clientes
+   saindo" de "defeito de registro".
+1. Onboarding D+7/D+30 para assinaturas novas, como teste A/B.
+2. CS liga esta semana para as <!--m:cs_top_n-->50 contas da lista
+   (US$ <!--m:cs_top_expected_loss_k-->171 mil de MRR em risco).
+3. Uma definição única de churn e instrumentação ligada ao ciclo de vida.
+4. No board: churn de MRR por idade da assinatura no lugar de CSAT e "uso total".
+5. Perguntar a Vendas o que mudou em set–out/2024 (candidato a experimento natural).
+
+### Limitações
+
+Dados sintéticos com linhas do tempo quebradas; três definições de churn em
+conflito; nenhum efeito causal provado (não há variação exógena); amostra
+pequena na validação (<!--m:oot_positives-->96 saídas). Detalhes na seção 4 do relatório.
+
+---
+
+## Process Log — Como usei IA
+
+> Log completo: [`process-log/PROCESS_LOG.md`](process-log/PROCESS_LOG.md)
+
+### Ferramentas usadas
+
+| Ferramenta | Para que usou |
+|---|---|
+| Claude Code (Claude Opus 5) | Agente: leitura de regras e método, exploração dos dados, spec, código, testes, relatório |
+| onp-spec (Spec-Driven Development) | Gate mecânico: cada critério de aceite provado por teste; audit por exit code |
+| uv + Python 3.14 + Polars | Ambiente travado e processamento dos dados |
+| pytest + ruff + nbclient | Testes, lint e execução do notebook |
+
+### Workflow
+
+1. Li as regras do desafio e meus documentos de método (CRISP-DM, descrição ×
+   predição × causa, invariância, séries temporais, SDD, padrões).
+2. Perfil e auditoria dos dados em Polars (~12 sondagens).
+3. Especificação: constituição, proposta, 18 critérios, design e tarefas.
+4. Implementação com testes, uma tarefa por commit, `verify` a cada etapa.
+5. Relatório com números marcados e testados; notebook executado; documentação.
+
+### Onde a IA errou e como corrigi
+
+- A exposição mensal descartava assinaturas que nascem e morrem no mesmo mês —
+  justamente o churn precoce (341 de 486 saídas contadas); corrigido, a razão
+  do 4º tri foi de 1,95× para 2,82×.
+- O rascunho do relatório e o notebook tinham números "de memória" (ex.: 356 em
+  vez de 341); o princípio "nenhum número digitado à mão" virou teste e pegou isso.
+- A IA marcou como "confirmada" uma suposição que só o dono do produto pode
+  confirmar; voltou para "aberta".
+- A leitura "churn precoce é a causa raiz" estava confiante demais; o teste de
+  coorte mostrou que um defeito de registro produz o mesmo padrão.
+
+### O que eu adicionei que a IA sozinha não faria
+
+O enquadramento (separar descrição, predição e causa; buscar invariância e
+quase-experimento), o processo com gate que obrigou a IA a provar cada número
+e as decisões que continuam humanas: a definição oficial de churn, as perguntas
+ao CEO e o que publicar.
+
+---
+
+## Evidências
+
+- [ ] Screenshots das conversas com IA — `process-log/screenshots/`
+- [ ] Chat export — `process-log/chat-exports/`
+- [x] Git history — spec primeiro, depois uma tarefa por commit (`T-00X diagnostico-churn: …`)
+- [x] Notebook comentado e executado — `solution/notebooks/diagnostico_churn.ipynb`
+- [x] Outro: prova mecânica do onp-spec — `solution/.spec/verification/diagnostico-churn.json`
+
+### Como rodar
+
+```bash
+cd submissions/geoffrey-porto/solution
+uv sync
+uv run python -m churn_diag   # regenera outputs/ byte a byte
+uv run pytest                 # inclui o teste que confere os números deste README e do relatório
+```
+
+Dados: os 5 CSVs do Kaggle ([rivalytics/saas-subscription-and-churn-analytics-dataset](https://www.kaggle.com/datasets/rivalytics/saas-subscription-and-churn-analytics-dataset), MIT, crédito a River @ Rivalytics) em `RAVENSTACK_DATA_DIR` ou em `challenges/data-001-churn/dataset/`.
+
+---
+
+_Submissão enviada em: 14/09/2026_

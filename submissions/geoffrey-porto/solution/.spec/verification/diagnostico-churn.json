@@ -1,11 +1,11 @@
 {
   "feature": "diagnostico-churn",
-  "timestamp": "2026-09-15T01:18:39.496Z",
-  "gitRev": "1fe2d23",
+  "timestamp": "2026-09-15T01:26:19.612Z",
+  "gitRev": "d2b350f",
   "command": "uv run --frozen pytest -q -p no:cacheprovider --tap",
   "reporter": "tap",
   "exitCode": 0,
-  "testsParsed": 25,
+  "testsParsed": 26,
   "results": {
     "AC-001": {
       "status": "pass",
@@ -109,7 +109,7 @@
     },
     "P-003": {
       "status": "pass",
-      "testName": "tests/test_report.py::test_every_marked_number_matches_the_pipeline @spec:AC-018 @principle:P-003"
+      "testName": "tests/test_report.py::test_every_marked_number_matches_the_pipeline[doc0-60] @spec:AC-018 @principle:P-003"
     },
     "P-002": {
       "status": "pass",
