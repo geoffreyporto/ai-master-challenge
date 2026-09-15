@@ -72,6 +72,12 @@ def _hz(hz: pl.DataFrame, period: str, bucket: str) -> float:
     )
 
 
+def _starts(t: Tables, start: str, end: str) -> int:
+    d = pl.col("start_date")
+    lo, hi = pl.lit(start).str.to_date(), pl.lit(end).str.to_date()
+    return t.subscriptions.filter(d.is_between(lo, hi)).height
+
+
 def analyse(t: Tables, cs_top_n: int) -> Result:
     """Roda todo o diagnóstico em memória (sem I/O) — fácil de testar."""
     quality = quality_report(t)
@@ -156,6 +162,8 @@ def analyse(t: Tables, cs_top_n: int) -> Result:
             1,
         ),
         "ended_subs_dec24": int(_month(monthly, "ended_all", "2024-12-01")),
+        "starts_q3_24": _starts(t, "2024-07-01", "2024-09-30"),
+        "starts_q4_24": _starts(t, "2024-10-01", "2024-12-31"),
         "ended_subs_ref_avg": round(_period_mean(monthly, "ended_all", "reference"), 1),
         "mrr_churn_ref_avg_pct": _pct(
             _period_mean(monthly, "mrr_churn_rate", "reference"), 2
@@ -212,6 +220,9 @@ def analyse(t: Tables, cs_top_n: int) -> Result:
         # previsão
         "oot_base_rate_pct": _pct(o["gbm_todas_tabelas"]["base_rate"]),
         "oot_n_test": int(o["gbm_todas_tabelas"]["n_test"]),
+        "oot_positives": round(
+            o["gbm_todas_tabelas"]["n_test"] * o["gbm_todas_tabelas"]["base_rate"]
+        ),
         "oot_age_roc": round(o["idade_da_assinatura"]["roc_auc"], 2),
         "oot_age_p": round(o["idade_da_assinatura"]["p_value"], 3),
         "oot_gbm_roc": round(o["gbm_todas_tabelas"]["roc_auc"], 2),
