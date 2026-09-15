@@ -1,11 +1,11 @@
 {
   "feature": "diagnostico-churn",
-  "timestamp": "2026-09-15T01:10:29.882Z",
-  "gitRev": "4aed364",
+  "timestamp": "2026-09-15T01:18:39.496Z",
+  "gitRev": "1fe2d23",
   "command": "uv run --frozen pytest -q -p no:cacheprovider --tap",
   "reporter": "tap",
   "exitCode": 0,
-  "testsParsed": 22,
+  "testsParsed": 25,
   "results": {
     "AC-001": {
       "status": "pass",
@@ -91,6 +91,11 @@
       "status": "pass",
       "testName": "tests/test_pipeline.py::test_two_runs_are_byte_identical @spec:AC-017 @principle:P-006",
       "method": "tap"
+    },
+    "AC-018": {
+      "status": "pass",
+      "testName": "tests/test_report.py::test_parse_br_handles_thousands_and_decimals @spec:AC-018",
+      "method": "tap"
     }
   },
   "principles": {
@@ -101,6 +106,10 @@
     "P-006": {
       "status": "pass",
       "testName": "tests/test_pipeline.py::test_two_runs_are_byte_identical @spec:AC-017 @principle:P-006"
+    },
+    "P-003": {
+      "status": "pass",
+      "testName": "tests/test_report.py::test_every_marked_number_matches_the_pipeline @spec:AC-018 @principle:P-003"
     },
     "P-002": {
       "status": "pass",

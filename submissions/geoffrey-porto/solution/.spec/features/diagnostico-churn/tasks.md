@@ -49,14 +49,12 @@
 - Arquivos: src/churn_diag/pipeline.py, src/churn_diag/figures.py, src/churn_diag/__main__.py, tests/test_pipeline.py
 - Notas: depende de T-002..T-007. Saída determinística (ordenação estável, floats arredondados, PNG sem metadados de data).
 
-## T-009 — Relatório do CEO com números rastreáveis [pendente]
-
+## T-009 — Relatório do CEO com números rastreáveis [concluida]
 - Refs: AC-018
 - Arquivos: RELATORIO.md, tests/test_report.py
 - Notas: depende de T-008. Cada número marcado `<!--m:chave-->` é conferido contra `outputs/metrics.json`.
 
-## T-010 — Notebook narrativo (apêndice técnico) [pendente]
-
+## T-010 — Notebook narrativo (apêndice técnico) [concluida]
 - Refs: US-003
 - Arquivos: notebooks/diagnostico_churn.ipynb
 - Notas: importa o pacote (DRY) — o notebook explica, não reimplementa.

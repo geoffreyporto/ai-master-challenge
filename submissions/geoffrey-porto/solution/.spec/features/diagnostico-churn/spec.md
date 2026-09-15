@@ -177,7 +177,7 @@ relatório, para que eu não precise confiar na palavra de ninguém (nem da IA).
 
 | ID | Suposição | Status | Resolução |
 |---|---|---|---|
-| ASM-001 | "Churn" para o CEO = perda de receita recorrente; a métrica principal é churn de MRR por assinatura (não o `churn_flag` da conta) | confirmada | As três definições do dataset discordam (AC-004); a de assinatura é a única com datas internamente consistentes (`end_date ≥ start_date` em 100%). Decisão registrada no relatório. |
+| ASM-001 | "Churn" para o CEO = perda de receita recorrente; a métrica principal é churn de MRR por assinatura (não o `churn_flag` da conta) | aberta | Evidência a favor: as três definições do dataset discordam (AC-004) e a de assinatura é a única com datas consistentes (`end_date ≥ start_date` em 100%). Falta o dono do produto confirmar (ligada a Q-002). |
 | ASM-002 | A data de extração dos dados é 2024-12-31 (último dia observado em todas as tabelas) | confirmada | Máximo de todas as colunas de data = 2024-12-31. |
 | ASM-003 | O `end_date` das assinaturas representa a data real de saída | invalidada | O tempo até o churn é uniforme na janela observada e a fração que "já churnou" é ~10% em toda coorte, observada 38 ou 670 dias. Tratado como limitação central (US-001) e usado com ressalva. |
 | ASM-004 | Uso e tickets estão ligados ao ciclo de vida do cliente | invalidada | 77% do uso é anterior ao início da assinatura e 54% dos tickets são anteriores ao cadastro. Janelas "pré-churn" com esses dados seriam ruído; o diagnóstico usa agregados e registra o problema. |
@@ -187,5 +187,5 @@ relatório, para que eu não precise confiar na palavra de ninguém (nem da IA).
 
 | ID | Pergunta | Status | Resposta |
 |---|---|---|---|
-| Q-001 | O que mudou em set–out/2024 (campanha de vendas, preço, onboarding)? As assinaturas iniciadas quase dobraram no 4º tri e o churn dos primeiros 60 dias quadruplicou. | aberta | — Pergunta para o CEO/Vendas; é o candidato a quase-experimento. |
+| Q-001 | O que mudou em set–out/2024 (campanha de vendas, preço, onboarding)? As assinaturas iniciadas foram de 1.107 (3º tri) para 2.069 (4º tri) e o risco de saída no 1º mês ficou 6× maior. | aberta | — Pergunta para o CEO/Vendas; é o candidato a quase-experimento. |
 | Q-002 | Quem é dono da definição oficial de churn e da instrumentação de eventos? | aberta | — Pré-requisito da recomendação nº 1 do relatório. |
