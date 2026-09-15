@@ -17,6 +17,7 @@
    No 4º tri, saíram <!--m:q4_observed_ended-->324 assinaturas quando o esperado era
    <!--m:q4_expected_ended-->115 (<!--m:q4_ratio_x-->2,82×). <!--m:young_share_q4_events_pct-->79,6%
    dessas saídas são de assinaturas com menos de 90 dias. A base madura está estável.
+   E isso é **novo**: até setembro, assinatura nova não saía mais que a madura.
 2. **Por isso o CS e o Produto "não viram".** A satisfação (CSAT
    <!--m:csat_mean_2024-->3,97) é igual entre quem sai e quem fica, e o uso total
    ficou **parado** o ano inteiro enquanto a base cresceu <!--m:active_subs_growth_x-->5,8×.
@@ -35,6 +36,9 @@
    para as <!--m:cs_top_n-->50 contas da lista; (3) uma definição única de churn;
    (4) trocar CSAT e "uso total" por **churn de MRR por idade da assinatura** no board.
    Em jogo: <!--m:excess_mrr_per_month_k-->221 mil dólares de MRR por mês acima do normal.
+6. **Duas perguntas só a diretoria responde** (seção 3): *o que mudou em
+   set–out/2024?* e *qual é a definição oficial de churn?* Sem a primeira, a
+   causa fica sem nome e as ações ficam no nível de hipótese.
 
 ---
 
@@ -67,12 +71,18 @@ assinaturas com mais de 90 dias quase nada mudou (<!--m:hz_mature_ref_pct-->0,88
 US$ <!--m:q4_mrr_lost_k-->872 mil contra US$ <!--m:q4_mrr_expected_k-->209 mil
 esperados (<!--m:q4_mrr_ratio_x-->4,16×).
 
-**É estável?** A relação "assinatura nova sai mais" aparece em **todos** os
-<!--m:invariance_envs-->13 ambientes testados (5 indústrias, 3 planos, 5 canais),
-com razão de risco entre <!--m:invariance_hr_min_x-->1,9× e <!--m:invariance_hr_max_x-->3,7× e
-intervalo de confiança acima de 1 em <!--m:invariance_ci_excludes_1-->13 de 13.
-Estabilidade entre contextos é o requisito mínimo para chamar algo de candidato a
-causa — mas atenção ao item 1.4: um defeito de registro também seria estável.
+**É estável?** Entre perfis de cliente, sim: a relação "assinatura nova sai
+mais" aparece nos <!--m:invariance_envs-->13 ambientes testados (5 indústrias,
+3 planos, 5 canais), com razão de risco entre <!--m:invariance_hr_min_x-->1,9× e
+<!--m:invariance_hr_max_x-->3,7× e intervalo de confiança acima de 1 em
+<!--m:invariance_ci_excludes_1-->13 de 13. **No tempo, não:** tratando a quebra de
+set–out/2024 como ambiente, a razão era <!--m:hr_before_break_x-->1,2× antes
+(intervalo <!--m:hr_before_ci_low-->0,90–<!--m:hr_before_ci_high-->1,72, ou seja,
+sem diferença) e passou a <!--m:hr_after_break_x-->4,1× depois
+(<!--m:hr_after_ci_low-->3,14–<!--m:hr_after_ci_high-->5,36). Conclusão: "assinatura
+nova sai mais" não é uma característica permanente do negócio — é um **regime
+novo, que começou em outubro**. A causa está no que mudou ali (pergunta 1 da
+seção 3) — e um defeito de registro também produziria esse padrão (item 1.4).
 
 ### 1.3 O que NÃO explica o churn (e por que isso importa) [Fato]
 
@@ -164,24 +174,64 @@ priorizar a fila do CS (risco × dinheiro), não para prometer quem vai sair.
 
 ---
 
-## 3. O que fazer — priorizado
+## 3. O que os dados não conseguem responder (e por que importa)
+
+Estas duas perguntas não são detalhe técnico: são achados de primeira ordem.
+Os dados confirmam **que** algo mudou; não conseguem dizer **o quê**.
+
+**Pergunta 1 — O que mudou entre setembro e outubro de 2024?**
+
+- **O que os dados mostram:** uma quebra estrutural na taxa de churn a partir de
+  outubro (<!--m:control_breaks-->3 meses acima do limite de controle) e o surgimento do risco extra
+  das assinaturas novas (razão <!--m:hr_before_break_x-->1,2× antes →
+  <!--m:hr_after_break_x-->4,1× depois).
+- **O que os dados não permitem:** saber se a causa é interna (preço, plano,
+  release, processo de onboarding ou renovação) ou externa (concorrente,
+  mercado), nem medir o tamanho do efeito dela. Nenhuma das 5 tabelas registra
+  esse tipo de evento.
+- **Por que importa:** sem o evento, não dá para desenhar a intervenção certa
+  nem estimar seu efeito (diferenças-em-diferenças precisa de uma data e de um
+  grupo afetado). As recomendações ficam no nível de hipótese.
+- **O que fiz enquanto isso:** tratei a quebra como um *ambiente* (antes/depois),
+  não como causa identificada — registrado como suposição de risco alto.
+- **Quem responde:** CEO, com Vendas, Produto e CS — houve mudança de preço, de
+  plano ou de política? Release com regressão conhecida? Mudança no onboarding
+  ou na renovação? Campanha de upsell? · **Prazo proposto:** esta semana
+  (ação 5).
+
+**Pergunta 2 — Qual é a definição oficial de churn da RavenStack?**
+
+- **O que os dados mostram:** as três definições do dataset discordam em
+  <!--m:churn_def_disagree_pct-->80% das contas.
+- **O que fiz:** construí uma definição técnica — MRR perdido por cancelamento
+  completo de assinatura, com data — confirmada pelo dono do produto.
+- **Por que importa:** se Financeiro/RevOps mede o churn de outro jeito, os
+  números deste relatório não serão comparáveis com os do board.
+- **Quem responde:** CEO com Financeiro/RevOps · **Prazo proposto:** 30 dias
+  (junto com a ação 3).
+
+---
+
+## 4. O que fazer — priorizado
 
 | # | Ação | Dono · prazo | Custo | Impacto estimado | Como saber se funcionou |
 |---|---|---|---|---|---|
 | 0 | **Auditar 20 cancelamentos de dezembro no billing** (data real vs `end_date`) | Financeiro + Eng · 1 dia | ~0 | Decide se os US$ <!--m:excess_mrr_per_month_k-->221 mil/mês de excesso são clientes saindo ou defeito de dado | ≥ 80% das datas batem → segue o plano; senão, corrigir o registro antes de tudo |
 | 1 | **Onboarding D+7/D+30 para assinaturas novas, como teste A/B** (metade recebe, metade não) | CS · começa em 2 semanas | 1 CSM dedicado | Se reduzir o excesso em 25% / 50% / 75%: US$ <!--m:recovery_25_mrr_month_k-->55 / <!--m:recovery_50_mrr_month_k-->110 / <!--m:recovery_75_mrr_month_k-->166 mil de MRR preservados por mês (cenário de 50% ≈ US$ <!--m:recovery_50_arr_equiv_k-->1.325 mil de ARR) | Saída no 1º mês: <!--m:ab_p0_pct-->5,75% no controle vs meta <!--m:ab_p1_pct-->2,87%; <!--m:ab_n_per_arm-->783 assinaturas por braço ≈ <!--m:ab_weeks_to_enroll-->11,6 semanas com <!--m:ab_new_paid_subs_month-->586 novas pagas/mês |
 | 2 | **CS liga para as 50 contas da lista** (top 10 com CSM sênior em 7 dias) | CS · esta semana | tempo do time | Cobre US$ <!--m:cs_top_expected_loss_k-->171 mil de MRR em risco em 90 dias | Churn de MRR dessas contas vs. as 50 seguintes da lista no próximo trimestre |
-| 3 | **Uma definição única de churn + instrumentação ligada ao ciclo de vida** (uso e tickets só dentro da assinatura) | Dados/Eng · 30 dias | 1 sprint | Pré-requisito: sem isso, qualquer "health score" é ruído (hoje <!--m:churn_def_disagree-->400 contas mudam de status conforme a tabela) | As 3 definições concordam; 0% de eventos fora da janela da assinatura |
+| 3 | **Uma definição única de churn + instrumentação ligada ao ciclo de vida** (uso e tickets só dentro da assinatura) — responde a pergunta 2 | Dados/Eng · 30 dias | 1 sprint | Pré-requisito: sem isso, qualquer "health score" é ruído (hoje <!--m:churn_def_disagree-->400 contas mudam de status conforme a tabela) | As 3 definições concordam; 0% de eventos fora da janela da assinatura |
 | 4 | **Board mensal: churn de MRR por idade da assinatura** no lugar de CSAT e "uso total" | CEO/RevOps · próxima reunião | ~0 | Foi a métrica que revelou o problema; as outras duas o esconderam | Métrica publicada e com limite de controle todo mês |
-| 5 | **Perguntar a Vendas o que mudou em set–out/2024** (campanha, preço, meta de upsell?) | CEO · esta semana | ~0 | É o candidato a experimento natural: se houve mudança com data, dá para medir o efeito dela | Resposta registrada (pergunta Q-001 da especificação) |
+| 5 | **Perguntar a Vendas/Produto/CS o que mudou em set–out/2024** (campanha, preço, release, onboarding?) — pergunta 1 | CEO · esta semana | ~0 | É o candidato a experimento natural: se houve mudança com data, dá para medir o efeito dela | Resposta registrada (pergunta Q-001 da especificação) |
 
 **Por que nessa ordem:** a ação 0 custa um dia e pode mudar todo o resto; as
-ações 1 e 2 atacam o único sinal robusto; a 3 e a 4 impedem que o próximo
-diagnóstico repita este. Nenhuma ação é "melhorar a experiência do cliente".
+ações 1 e 2 atacam o único sinal robusto sem esperar a causa (1 é experimento,
+2 é priorização); a 3 e a 4 impedem que o próximo diagnóstico repita este. A
+análise causal da quebra (diferenças-em-diferenças) espera a resposta da
+pergunta 1. Nenhuma ação é "melhorar a experiência do cliente".
 
 ---
 
-## 4. Limitações — o que eu não consegui verificar
+## 5. Limitações — o que eu não consegui verificar
 
 - **Dados sintéticos com linhas do tempo quebradas.** <!--m:usage_before_signup_pct-->52,8%
   do uso e <!--m:tickets_before_signup_pct-->53,9% dos tickets são anteriores ao
@@ -190,8 +240,11 @@ diagnóstico repita este. Nenhuma ação é "melhorar a experiência do cliente"
   antes do churn" com uso ou tickets: elas seriam ruído com cara de insight.
 - **Três definições de churn discordam** (flag da conta: <!--m:churn_def_flag_account-->110
   contas; eventos de churn: <!--m:churn_def_events-->352; assinatura encerrada:
-  <!--m:churn_def_sub_ended-->312). Usei a de assinatura porque é a única com datas
-  consistentes — decisão registrada na especificação (ASM-001).
+  <!--m:churn_def_sub_ended-->312). A definição usada — **cancelamento completo da
+  assinatura, com o MRR integral dela** (churn bruto) — é a única com data
+  consistente e foi confirmada pelo dono do produto (ASM-001). Downgrade não
+  conta como churn (é uma flag sem data nem valor); o `churn_flag` da conta serve
+  só como checagem de consistência.
 - **Nenhuma ação tem efeito causal provado.** Não existe variação exógena nos
   dados; os números de impacto dizem quanto está em jogo, não quanto cada ação
   devolve. Por isso a ação 1 é um teste A/B, não um rollout.

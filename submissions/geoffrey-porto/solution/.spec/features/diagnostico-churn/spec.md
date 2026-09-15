@@ -103,7 +103,7 @@ eu saiba o que é fato, o que é previsão e o que ainda é hipótese.
 #### AC-011 — O efeito principal é testado em vários ambientes (invariância)
 
 - **Dado** o efeito da idade da assinatura sobre o churn
-- **Quando** ele é estimado separadamente por indústria, plano e canal de aquisição
+- **Quando** ele é estimado separadamente por indústria, plano, canal de aquisição e período (antes/depois da quebra de set–out/2024)
 - **Então** a tabela mostra a razão de risco em cada ambiente e se a direção se mantém em todos
 
 ### US-004 — CS recebe a lista de contas específicas para agir
@@ -177,15 +177,66 @@ relatório, para que eu não precise confiar na palavra de ninguém (nem da IA).
 
 | ID | Suposição | Status | Resolução |
 |---|---|---|---|
-| ASM-001 | "Churn" para o CEO = perda de receita recorrente; a métrica principal é churn de MRR por assinatura (não o `churn_flag` da conta) | aberta | Evidência a favor: as três definições do dataset discordam (AC-004) e a de assinatura é a única com datas consistentes (`end_date ≥ start_date` em 100%). Falta o dono do produto confirmar (ligada a Q-002). |
+| ASM-001 | "Churn" para o CEO = perda de receita recorrente; a métrica principal é churn de MRR por assinatura (não o `churn_flag` da conta) | confirmada | Confirmada pelo dono do produto (candidato) em 15/09/2026: MRR perdido por assinatura, com data, é a única definição que deixa o problema bem posto (granularidade, âncora temporal, peso por receita). Churn = cancelamento completo da assinatura com o MRR integral (churn bruto); downgrade fica fora (flag sem data nem valor). `churn_flag` da conta só como checagem de consistência (AC-004: discorda em 80% das contas → problema de dados registrado). A definição **oficial** da empresa segue em Q-002. |
 | ASM-002 | A data de extração dos dados é 2024-12-31 (último dia observado em todas as tabelas) | confirmada | Máximo de todas as colunas de data = 2024-12-31. |
-| ASM-003 | O `end_date` das assinaturas representa a data real de saída | invalidada | O tempo até o churn é uniforme na janela observada e a fração que "já churnou" é ~10% em toda coorte, observada 38 ou 670 dias. Tratado como limitação central (US-001) e usado com ressalva. |
+| ASM-003 | O `end_date` das assinaturas representa a data real de saída | aberta | Indício contra: a coorte do 4º tri/2024 (38 dias observados) já perdeu 10,1%, o mesmo que a do 4º tri/2023 em 407 dias (11%); o tempo até sair tem mediana na metade da janela. Compatível com data atribuída **ou** com colapso real do início de vida. Validação: auditoria de 20 cancelamentos no billing (ação 0 do relatório). |
 | ASM-004 | Uso e tickets estão ligados ao ciclo de vida do cliente | invalidada | 77% do uso é anterior ao início da assinatura e 54% dos tickets são anteriores ao cadastro. Janelas "pré-churn" com esses dados seriam ruído; o diagnóstico usa agregados e registra o problema. |
 | ASM-005 | O CEO (não técnico) prefere relatório curto com números marcados a um notebook | confirmada | Guia de submissão: "documento de 40 páginas onde 5 resolveriam" é fraco. Notebook fica como apêndice técnico. |
+| ASM-006 | A quebra de set–out/2024 é tratada como **ambiente** (antes/depois) na análise de invariância, não como causa identificada — **risco ALTO** | aberta | Decisão do dono do produto enquanto Q-001 não é respondida. Resultado: a razão de risco nova/madura era 1,2× antes (IC 0,90–1,72) e 4,1× depois (IC 3,14–5,36) — regime novo, não traço permanente. Vira confirmada ou invalidada quando Q-001 identificar o evento. |
 
 ## Perguntas em aberto
 
 | ID | Pergunta | Status | Resposta |
 |---|---|---|---|
-| Q-001 | O que mudou em set–out/2024 (campanha de vendas, preço, onboarding)? As assinaturas iniciadas foram de 1.107 (3º tri) para 2.069 (4º tri) e o risco de saída no 1º mês ficou 6× maior. | aberta | — Pergunta para o CEO/Vendas; é o candidato a quase-experimento. |
-| Q-002 | Quem é dono da definição oficial de churn e da instrumentação de eventos? | aberta | — Pré-requisito da recomendação nº 1 do relatório. |
+| Q-001 | O que mudou entre setembro e outubro de 2024? | aberta | — Dados insuficientes. Detalhamento abaixo. Dono: CEO (com Vendas, Produto e CS). |
+| Q-002 | Qual é a definição oficial de churn da RavenStack (e quem é dono dela e da instrumentação de eventos)? | aberta | — Dados insuficientes. Detalhamento abaixo. Dono: CEO com Financeiro/RevOps. |
+
+## Detalhamento das perguntas em aberto
+
+Formato definido pelo dono do produto: cada pergunta sem resposta registra o
+que os dados mostram, o que não permitem, quem responde, o impacto de não
+responder e a decisão de projeto tomada enquanto isso. No relatório do CEO elas
+aparecem como achados de primeira ordem (seção 3), não escondidas.
+
+### Q-001 — O que mudou entre setembro e outubro de 2024?
+
+- **Estado:** aberta — dados insuficientes.
+- **Tipo:** pergunta causal sobre ponto de quebra estrutural.
+- **Por que importa:** sem identificar o evento gerador, qualquer recomendação
+  de ação é hipótese não ancorada. O modelo prevê o padrão; não explica sua origem.
+- **O que os dados mostram:** quebra na taxa de churn de MRR a partir de outubro
+  (3 meses acima do limite de controle); novas assinaturas de 1.107 (3º tri)
+  para 2.069 (4º tri); razão de risco nova/madura de 1,2× (antes) para 4,1× (depois).
+- **O que os dados não permitem:** saber se a mudança é interna (produto, preço,
+  processo) ou externa (mercado, concorrente, macro); quantificar o efeito causal
+  do evento. Nenhuma das 5 tabelas registra releases, preços ou políticas.
+- **Fonte da resposta:** CEO, Produto, CS e Vendas — houve mudança de preço,
+  plano ou política? Release com regressão conhecida? Mudança no onboarding ou
+  na renovação? Campanha de upsell?
+- **Impacto no modelo se não for respondida:** a quebra fica como sinal sem
+  nome; diferenças-em-diferenças não tem evento-âncora e não pode ser desenhado;
+  as recomendações de ação ficam no nível de hipótese.
+- **Decisão de projeto tomada na ausência de resposta:** a quebra entra como
+  variável de ambiente na análise de invariância (ASM-006, risco alto), não como
+  causa identificada.
+- **Bloqueia:** fase causal (DiD) e recomendações de ação com efeito estimado.
+- **Dono da resposta:** CEO · **Prazo proposto:** esta semana (ação 5 do relatório).
+
+### Q-002 — Qual é a definição oficial de churn da RavenStack?
+
+- **Estado:** aberta — dados insuficientes.
+- **Tipo:** definição de negócio / governança de métrica.
+- **Por que importa:** se Financeiro mede o churn de outro jeito, os números do
+  diagnóstico não serão comparáveis com os do board.
+- **O que os dados mostram:** as três definições do dataset (flag da conta,
+  eventos de churn, assinatura encerrada) discordam em 80% das contas.
+- **O que os dados não permitem:** saber qual delas o board usa hoje, nem quem
+  é dono da instrumentação dos eventos de uso e de suporte.
+- **Fonte da resposta:** CEO com Financeiro/RevOps.
+- **Impacto se não for respondida:** health score e metas de retenção seguem
+  medidos com réguas diferentes; o próximo diagnóstico repete este.
+- **Decisão de projeto tomada na ausência de resposta:** definição técnica
+  confirmada pelo dono do produto (ASM-001) — MRR perdido por cancelamento
+  completo de assinatura, com data.
+- **Bloqueia:** comparabilidade com os números de Financeiro; ação 3 do relatório.
+- **Dono da resposta:** CEO · **Prazo proposto:** 30 dias (junto com a ação 3).

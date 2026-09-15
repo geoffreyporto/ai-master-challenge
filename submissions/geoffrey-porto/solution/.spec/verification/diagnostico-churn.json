@@ -1,7 +1,7 @@
 {
   "feature": "diagnostico-churn",
-  "timestamp": "2026-09-15T01:26:19.612Z",
-  "gitRev": "d2b350f",
+  "timestamp": "2026-09-15T17:33:39.490Z",
+  "gitRev": "a253d97",
   "command": "uv run --frozen pytest -q -p no:cacheprovider --tap",
   "reporter": "tap",
   "exitCode": 0,

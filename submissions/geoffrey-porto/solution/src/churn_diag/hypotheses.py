@@ -383,19 +383,31 @@ def findings_frame(findings: Sequence[Finding]) -> pl.DataFrame:
 
 
 # ----------------------------------------------------------------- invariância
+ENV_TYPES: tuple[str, ...] = ("industry", "plan_tier", "referral_source", "periodo")
+
+
 def invariance_table(tables: Tables, panel: pl.DataFrame) -> pl.DataFrame:
     """Razão de risco jovem (<90d) ÷ madura por ambiente, em 2024.
 
     Se a direção se mantém em todos os ambientes, a relação é *estável* —
     requisito para chamá-la de candidata causal (não prova de causa).
+
+    A quebra de set–out/2024 entra como ambiente (`periodo`: antes/depois), não
+    como causa identificada — decisão do dono do produto enquanto Q-001 não é
+    respondida (ASM-006).
     """
     p = panel.filter(pl.col("month") >= pl.date(2024, 1, 1)).join(
         tables.accounts.select("account_id", "industry", "referral_source"),
         on="account_id",
     )
-    p = p.with_columns(young=pl.col("age_days") < YOUNG_AGE_DAYS)
+    p = p.with_columns(
+        young=pl.col("age_days") < YOUNG_AGE_DAYS,
+        periodo=pl.when(pl.col("period") == "target")
+        .then(pl.lit("depois (out-dez/24)"))
+        .otherwise(pl.lit("antes (jan-set/24)")),
+    )
     rows = []
-    for env_type in ("industry", "plan_tier", "referral_source"):
+    for env_type in ENV_TYPES:
         g = p.group_by(env_type, "young").agg(n=pl.len(), e=pl.col("ended").sum())
         for env in sorted(g[env_type].unique().to_list()):
             sub = {

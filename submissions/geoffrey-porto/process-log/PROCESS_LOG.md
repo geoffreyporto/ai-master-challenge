@@ -66,9 +66,33 @@ horário não reflete a duração de cada tarefa.
 | 4 | Tratei a mediana 0,5 de "tempo até sair ÷ tempo observado" como prova de data atribuída | Revisão do argumento: com risco baixo e constante, esse tempo também sai quase uniforme | Rebaixado a indício de apoio; a evidência central é a coorte |
 | 5 | O rascunho do relatório tinha números que não vinham do pipeline ("~96 saídas", "23 testes", "quase dobraram") | Aplicando o próprio princípio P-003 ao texto | Viraram métricas marcadas (`oot_positives`, `starts_q3_24`, `starts_q4_24`) ou saíram do texto |
 | 6 | O notebook citava "356 saídas", "1,96×" e "~10% como a coorte de 670 dias" de memória | Conferência contra o código antes de publicar | 341, 1,95× e a comparação correta (407 dias, 11%); a coorte de 670 dias tem 19,4% com n = 31 |
-| 7 | A IA marcou a suposição ASM-001 ("churn = MRR de assinatura") como **confirmada** | Regra do onp-spec: só o dono do produto confirma | Voltou para `aberta`, com a evidência registrada — decisão do candidato |
+| 7 | A IA marcou a suposição ASM-001 ("churn = MRR de assinatura") como **confirmada**, e a ASM-003 ("`end_date` é real") como **invalidada** com o mesmo exagero do erro 6 | Regra do onp-spec: só o dono do produto confirma; revisão do argumento | ASM-001 voltou para `aberta` até o candidato confirmar; ASM-003 virou `aberta` (duas explicações, validação no billing) |
 | 8 | Primeira versão do emissor TAP usava hooks do pytest de forma frágil | Revisão do próprio código | Reescrita como plugin registrado (`TapEmitter`) |
 | 9 | Gráficos saíram com meses em inglês, decimal com ponto e rótulo sobreposto | Inspeção visual das imagens geradas | Rótulos pt-BR, vírgula decimal, rótulo reposicionado |
+
+## Decisões do dono do produto no gate (15/09/2026)
+
+Com 18/18 critérios provados, o `audit --ci` parou em três itens que só o dono
+do produto pode resolver. As respostas do candidato:
+
+1. **ASM-001 confirmada**, com argumento próprio: `churn_flag` é um estado sem
+   âncora temporal e sem peso de receita; MRR perdido por assinatura, com data,
+   é a única definição que deixa o problema bem posto. `churn_flag` fica só como
+   checagem de consistência. O candidato também levantou a ressalva que a IA não
+   tinha explicitado: **downgrade ≠ cancelamento** — registrado que o rótulo é
+   cancelamento completo (churn bruto) e downgrade fica fora.
+2. **Q-001/Q-002 continuam abertas**, com estrutura formal (tipo, por que
+   importa, o que os dados mostram e não permitem, fonte da resposta, impacto,
+   decisão tomada na ausência, o que bloqueia, dono, prazo) e aparecem no
+   relatório como achados de primeira ordem (seção 3). A IA tinha oferecido
+   marcá-las como "encaminhadas" para o gate passar; o candidato preferiu o gate
+   honesto.
+3. **Decisão de projeto para Q-001:** tratar a quebra de set–out/2024 como
+   *ambiente* na análise de invariância (ASM-006, risco alto). **Essa decisão
+   mudou a conclusão:** antes da quebra, assinatura nova não saía mais que a
+   madura (1,2×, IC 0,90–1,72); depois, 4,1×. O que parecia um traço do negócio
+   é um regime novo — e a causa está no evento que a Q-001 pergunta.
+4. **Push e PR:** retidos para revisão do candidato.
 
 ## O que foi descartado de propósito (julgamento, não omissão)
 
@@ -91,8 +115,11 @@ horário não reflete a duração de cada tarefa.
   provar cada critério com teste — e que pegou a própria IA em números
   inventados (erros 5 e 6).
 - **As restrições de stack e de entrega** (Python 3.14, Polars, notebook, PR).
-- **As decisões que continuam humanas:** confirmar a definição de churn
-  (ASM-001), responder Q-001/Q-002 e aprovar o push e o Pull Request.
+- **As decisões no gate** (seção acima): a definição de churn com a ressalva de
+  downgrade, o formato das perguntas abertas e a decisão de tratar a quebra
+  como ambiente — que revelou o regime novo.
+- **O que continua humano:** responder Q-001/Q-002 com a diretoria e aprovar o
+  push e o Pull Request.
 
 ## Evidências
 

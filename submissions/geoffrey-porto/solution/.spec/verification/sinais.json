@@ -5,19 +5,19 @@
       "codigo": "Q_ABERTA",
       "feature": "diagnostico-churn",
       "ref": "Q-001",
-      "ocorrencias": 4,
+      "ocorrencias": 6,
       "primeiraVez": "2026-09-15T00:53:09.374Z",
-      "ultimaVez": "2026-09-15T01:26:19.890Z",
-      "gitRev": "d2b350f"
+      "ultimaVez": "2026-09-15T17:33:39.704Z",
+      "gitRev": "a253d97"
     },
     "Q_ABERTA::diagnostico-churn::Q-002": {
       "codigo": "Q_ABERTA",
       "feature": "diagnostico-churn",
       "ref": "Q-002",
-      "ocorrencias": 4,
+      "ocorrencias": 6,
       "primeiraVez": "2026-09-15T00:53:09.380Z",
-      "ultimaVez": "2026-09-15T01:26:19.891Z",
-      "gitRev": "d2b350f"
+      "ultimaVez": "2026-09-15T17:33:39.705Z",
+      "gitRev": "a253d97"
     },
     "ARQUIVO_INEXISTENTE::diagnostico-churn::T-001": {
       "codigo": "ARQUIVO_INEXISTENTE",
@@ -351,6 +351,15 @@
       "primeiraVez": "2026-09-15T00:53:09.381Z",
       "ultimaVez": "2026-09-15T00:53:09.381Z",
       "gitRev": "4aed364"
+    },
+    "VERIFY_OBSOLETO::diagnostico-churn::—": {
+      "codigo": "VERIFY_OBSOLETO",
+      "feature": "diagnostico-churn",
+      "ref": "—",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-15T17:32:26.355Z",
+      "ultimaVez": "2026-09-15T17:32:26.355Z",
+      "gitRev": "a253d97"
     }
   }
 }

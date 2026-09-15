@@ -33,8 +33,11 @@ Texto alternativo: proposta → especificação → design → tarefas → execu
 | Prova | `.spec/verification/diagnostico-churn.json` | Resultado por critério gravado pelo `verify` |
 
 **Estado do gate:** 18/18 critérios com teste e prova PASS. O `audit --ci`
-aponta apenas as perguntas Q-001/Q-002 e a suposição ASM-001, que dependem do
-dono do produto — por desenho, a IA não pode "respondê-las" para passar.
+aponta apenas as perguntas Q-001/Q-002 — mantidas abertas **por decisão do dono
+do produto**, com estrutura formal na spec e como seção 3 do relatório. A IA
+ofereceu marcá-las como "encaminhadas" para o gate passar; o dono preferiu o
+gate honesto. ASM-001 foi confirmada por ele; ASM-003 e ASM-006 seguem abertas
+com risco declarado.
 
 A ponte pytest → onp-spec é um emissor TAP curto (`tests/conftest.py`):
 o título TAP de cada teste leva as tags `@spec:AC-xxx`/`@principle:P-xxx` da
@@ -46,7 +49,7 @@ docstring. Zero dependência extra.
 |---|---|---|
 | P-001 Todo requisito tem prova | "Implementei tudo" sem teste | gate intrínseco do audit |
 | P-002 Nada do futuro no score | Vazamento de rótulo | regex proibida em `risk.py` + teste que apaga o futuro |
-| P-003 Nenhum número digitado à mão | IA inventando/arredondando número | teste compara 102 números do relatório com o pipeline |
+| P-003 Nenhum número digitado à mão | IA inventando/arredondando número | teste compara cada número marcado do relatório e do README com o pipeline |
 | P-004 Correlação ≠ causa | Recomendar ação com base em correlação | teste: todo achado rotulado; causal traz experimento |
 | P-005 Polars em produção | Desvio de stack | regex proíbe `import pandas` em `src/` |
 | P-006 Reprodutível | Resultado que muda a cada execução | `SEED` obrigatório + teste de bytes idênticos |
@@ -73,7 +76,7 @@ docstring. Zero dependência extra.
 | **Agente** | Claude Code (Opus 5) executa as tarefas a partir da spec |
 | **Comandos** | `onp-spec new/verify/audit/tarefa`, `uv run python -m churn_diag`, `pytest`, `ruff` |
 | **Gate mecânico** | `onp-spec audit --ci` + testes de princípio; a IA não declara "pronto" |
-| **Revisão humana** | Suposições e perguntas abertas ficam para o dono do produto (ASM-001, Q-001, Q-002) |
+| **Revisão humana** | O dono do produto confirmou ASM-001, formalizou Q-001/Q-002 e decidiu tratar a quebra como ambiente (ASM-006) — o que mudou a conclusão |
 | **Rastreabilidade** | História → critério → tarefa → teste → commit (`T-00X diagnostico-churn: …`) |
 
 ## 5. Desenvolvimento seguro

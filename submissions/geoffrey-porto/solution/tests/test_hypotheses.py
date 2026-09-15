@@ -56,9 +56,15 @@ def test_every_finding_has_one_claim_label(findings: list[Finding]) -> None:
 
 
 def test_age_effect_is_reported_per_environment(real_tables: Tables) -> None:
-    """@spec:AC-011 — razão de risco jovem/madura por indústria, plano e canal."""
+    """@spec:AC-011 — razão de risco jovem/madura por indústria, plano, canal e período."""
     inv = invariance_table(real_tables, exposure_panel(real_tables.subscriptions))
-    assert set(inv["env_type"].unique()) == {"industry", "plan_tier", "referral_source"}
+    assert set(inv["env_type"].unique()) == {
+        "industry",
+        "plan_tier",
+        "referral_source",
+        "periodo",
+    }
+    assert inv.filter(inv["env_type"] == "periodo").height == 2  # antes/depois
     assert {"hr", "ci_low", "ci_high", "direction", "stable_in_type"} <= set(
         inv.columns
     )

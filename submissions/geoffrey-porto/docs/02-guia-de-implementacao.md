@@ -63,7 +63,7 @@ Checksums SHA-256 dos CSVs usados (para conferir que o dado é o mesmo):
 | Isolation Forest | **Desnecessário** | As anomalias relevantes são determinísticas (datas fora do ciclo de vida) e foram contadas exatamente |
 | Propensity Score Matching (escalação) | **Descartado** | Escalação não tem associação com churn (AUC ~0,5); confusor latente (encaixe do produto) invalida o casamento |
 | Causal Forest / Uplift (T/X-learner) | **Adiado para depois do A/B** | Sem variação exógena nos dados; o teste A/B proposto gera exatamente o dado que esses métodos exigem |
-| ICP / IRM (invariância) | **ICP em versão enxuta** | Razão de risco jovem/madura > 1 em 13/13 ambientes; IRM completo sem poder com ~500 contas |
+| ICP / IRM (invariância) | **ICP em versão enxuta** | Razão de risco nova/madura > 1 nos 13 perfis de cliente, mas **não no tempo**: 1,2× antes da quebra (IC cruza 1) e 4,1× depois → regime novo (ASM-006); IRM completo sem poder com ~500 contas |
 | Quase-experimento / DiD | **Buscado** | Quebra estrutural detectada em out/2024 (controle 3σ); o evento de negócio por trás é a pergunta Q-001 |
 | Janelas 30/60/90 dias antes do churn | **Descartado** | 77% do uso é anterior à assinatura; 54% dos tickets anteriores ao cadastro → a janela seria ruído |
 | TimesFM / suavização exponencial | **Substituído por controle 3σ** (YAGNI) | O controle simples já detectou a quebra; modelo temporal pesado sem dado confiável não agrega |

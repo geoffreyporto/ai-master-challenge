@@ -72,6 +72,10 @@ def _hz(hz: pl.DataFrame, period: str, bucket: str) -> float:
     )
 
 
+def _env(inv: pl.DataFrame, env: str, col: str, nd: int) -> float:
+    return round(float(inv.filter(pl.col("env") == env)[col][0]), nd)
+
+
 def _starts(t: Tables, start: str, end: str) -> int:
     d = pl.col("start_date")
     lo, hi = pl.lit(start).str.to_date(), pl.lit(end).str.to_date()
@@ -93,6 +97,7 @@ def analyse(t: Tables, cs_top_n: int) -> Result:
     findings = run_all(Context(t, panel, oot))
     ff = findings_frame(findings)
     inv = invariance_table(t, panel)
+    cross = inv.filter(pl.col("env_type") != "periodo")  # indústria, plano, canal
     sub_risk = subscription_risk(t, monthly_hazard_by_age(panel))
     cs = cs_priority_list(t, sub_risk, cs_top_n)
     exc = excess_mrr(panel)
@@ -234,11 +239,17 @@ def analyse(t: Tables, cs_top_n: int) -> Result:
         ),
         "oot_mrr_only_mrr_recall_pct": _pct(o["so_mrr"]["mrr_recall_at_10"]),
         "oot_gbm_mrr_recall_pct": _pct(o["gbm_todas_tabelas"]["mrr_recall_at_10"]),
-        "invariance_envs": inv.height,
-        "invariance_positive": int((inv["direction"] == "+").sum()),
-        "invariance_ci_excludes_1": int(inv["ci_excludes_1"].sum()),
-        "invariance_hr_min_x": round(float(inv["hr"].min()), 1),
-        "invariance_hr_max_x": round(float(inv["hr"].max()), 1),
+        "invariance_envs": cross.height,
+        "invariance_positive": int((cross["direction"] == "+").sum()),
+        "invariance_ci_excludes_1": int(cross["ci_excludes_1"].sum()),
+        "invariance_hr_min_x": round(float(cross["hr"].min()), 1),
+        "invariance_hr_max_x": round(float(cross["hr"].max()), 1),
+        "hr_before_break_x": _env(inv, "antes (jan-set/24)", "hr", 1),
+        "hr_before_ci_low": _env(inv, "antes (jan-set/24)", "ci_low", 2),
+        "hr_before_ci_high": _env(inv, "antes (jan-set/24)", "ci_high", 2),
+        "hr_after_break_x": _env(inv, "depois (out-dez/24)", "hr", 1),
+        "hr_after_ci_low": _env(inv, "depois (out-dez/24)", "ci_low", 2),
+        "hr_after_ci_high": _env(inv, "depois (out-dez/24)", "ci_high", 2),
         # risco e impacto
         "paid_mrr_active_k": _k(sub_risk["paid_mrr"].sum()),
         "expected_loss_90d_k": _k(sub_risk["expected_loss"].sum()),

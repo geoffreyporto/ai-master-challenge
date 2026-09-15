@@ -3,7 +3,7 @@
 ## Sobre mim
 
 - **Nome:** Geoffrey Porto
-- **LinkedIn:** _(adicionar)_
+- **LinkedIn:** [linkedin.com/in/geoffreyporto](https://www.linkedin.com/in/geoffreyporto/)
 - **Challenge escolhido:** 001 — Diagnóstico de Churn (RavenStack)
 
 ---
@@ -52,7 +52,8 @@ em jogo, US$ <!--m:excess_mrr_per_month_k-->221 mil de MRR por mês acima do nor
 3. **Especificação com gate (SDD):** constituição com princípios verificáveis,
    18 critérios de aceite, cada um provado por teste (`onp-spec verify`: 18/18).
 4. **Hipóteses testadas, não opiniões:** <!--m:n_hypotheses-->12 hipóteses cruzando
-   as 5 tabelas, correção de Holm, invariância em 13 ambientes, validação fora do tempo.
+   as 5 tabelas, correção de Holm, invariância (13 perfis de cliente + antes/depois
+   da quebra de set–out/2024) e validação fora do tempo.
 
 ### Resultados / Findings
 
@@ -61,6 +62,10 @@ em jogo, US$ <!--m:excess_mrr_per_month_k-->221 mil de MRR por mês acima do nor
 - **[Fato]** O risco de sair no 1º mês foi de <!--m:hz_0_30_ref_pct-->0,95% para
   <!--m:hz_0_30_target_pct-->5,74%; assinaturas maduras ficaram estáveis
   (<!--m:hz_mature_ref_pct-->0,88% → <!--m:hz_mature_target_pct-->1,09%).
+- **[Fato]** Esse padrão é **novo**: antes de outubro a razão de risco
+  nova/madura era <!--m:hr_before_break_x-->1,2× (sem diferença estatística);
+  depois, <!--m:hr_after_break_x-->4,1×. A causa está no que mudou em
+  set–out/2024 — pergunta que só a diretoria responde (seção 3 do relatório).
 - **[Fato]** CSAT, uso, tickets, motivo declarado, indústria, país, canal e
   plano **não** explicam o churn depois da correção estatística.
 - **[Previsão]** Só a idade da assinatura prevê fora do tempo
@@ -78,13 +83,14 @@ em jogo, US$ <!--m:excess_mrr_per_month_k-->221 mil de MRR por mês acima do nor
    (US$ <!--m:cs_top_expected_loss_k-->171 mil de MRR em risco).
 3. Uma definição única de churn e instrumentação ligada ao ciclo de vida.
 4. No board: churn de MRR por idade da assinatura no lugar de CSAT e "uso total".
-5. Perguntar a Vendas o que mudou em set–out/2024 (candidato a experimento natural).
+5. Perguntar a Vendas/Produto/CS o que mudou em set–out/2024 — a pergunta aberta
+   que decide a causa (candidato a experimento natural).
 
 ### Limitações
 
 Dados sintéticos com linhas do tempo quebradas; três definições de churn em
 conflito; nenhum efeito causal provado (não há variação exógena); amostra
-pequena na validação (<!--m:oot_positives-->96 saídas). Detalhes na seção 4 do relatório.
+pequena na validação (<!--m:oot_positives-->96 saídas). Detalhes na seção 5 do relatório.
 
 ---
 
@@ -117,17 +123,22 @@ pequena na validação (<!--m:oot_positives-->96 saídas). Detalhes na seção 4
   do 4º tri foi de 1,95× para 2,82×.
 - O rascunho do relatório e o notebook tinham números "de memória" (ex.: 356 em
   vez de 341); o princípio "nenhum número digitado à mão" virou teste e pegou isso.
-- A IA marcou como "confirmada" uma suposição que só o dono do produto pode
-  confirmar; voltou para "aberta".
+- A IA marcou como "confirmada" uma suposição que só eu podia confirmar (a
+  definição de churn) e como "invalidada" outra que os dados não decidem; as
+  duas voltaram para "aberta" até a minha revisão.
 - A leitura "churn precoce é a causa raiz" estava confiante demais; o teste de
   coorte mostrou que um defeito de registro produz o mesmo padrão.
 
 ### O que eu adicionei que a IA sozinha não faria
 
 O enquadramento (separar descrição, predição e causa; buscar invariância e
-quase-experimento), o processo com gate que obrigou a IA a provar cada número
-e as decisões que continuam humanas: a definição oficial de churn, as perguntas
-ao CEO e o que publicar.
+quase-experimento) e o processo com gate que obrigou a IA a provar cada número.
+No gate, confirmei a definição de churn (com a ressalva de que downgrade não é
+cancelamento), mantive as duas perguntas ao CEO abertas e formalizadas em vez
+de "passar" o gate, e decidi tratar a quebra de set–out/2024 como ambiente na
+análise de invariância — o que revelou que o risco extra das assinaturas novas
+**não existia antes de outubro**, mudando a conclusão de "traço do negócio" para
+"regime novo com causa a identificar".
 
 ---
 
