@@ -20,6 +20,7 @@ from churn_diag.pipeline import Result, analyse
 
 REPORT = SOLUTION_ROOT / "RELATORIO.md"
 SUBMISSION_README = SOLUTION_ROOT.parent / "README.md"
+FEATURE_MATRIX = SOLUTION_ROOT.parent / "docs" / "04-matriz-de-features.md"
 METRICS = SOLUTION_ROOT / "outputs" / "metrics.json"
 MARK = re.compile(r"<!--m:([a-z0-9_]+)-->\s*(?:US\$\s*)?([−-]?\d[\d.]*(?:,\d+)?)")
 TOP10 = re.compile(r"<!--top10:start-->(.*?)<!--top10:end-->", re.S)
@@ -44,7 +45,9 @@ def test_parse_br_handles_thousands_and_decimals() -> None:
     assert parse_br("−83,2") == (-83.2, 1)
 
 
-@pytest.mark.parametrize(("doc", "min_marks"), [(REPORT, 60), (SUBMISSION_README, 15)])
+@pytest.mark.parametrize(
+    ("doc", "min_marks"), [(REPORT, 60), (SUBMISSION_README, 15), (FEATURE_MATRIX, 15)]
+)
 def test_every_marked_number_matches_the_pipeline(
     fresh: Result, doc: Path, min_marks: int
 ) -> None:
