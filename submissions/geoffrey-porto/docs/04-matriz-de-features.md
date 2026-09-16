@@ -8,9 +8,10 @@ de origem em `solution/outputs/`.
 
 ## 1. Resumo
 
-- **Cobertura:** das 20 features da referência, **2 são iguais**, **14 aparecem
-  de forma parcial** (outra granularidade, outra janela ou contagem em vez de
-  taxa) e **4 não existem aqui**.
+- **Cobertura:** das 20 features da referência, **15 estão implementadas** (a
+  maioria no painel por conta do incremento 2), **3 estão em quarentena** por não
+  terem data e **2 foram excluídas** porque dependem da linha do tempo de uso,
+  que está quebrada. Os **8 controles** estão todos implementados.
 - **Os dois desenhos diferem em unidade, janela e rótulo** (tabela 2), então as
   métricas de desempenho não se comparam diretamente.
 - **Divergência principal:** a referência se apoia em janelas de 90 dias de uso
@@ -45,57 +46,51 @@ para comparar 0,144 com o PR-AUC daqui (`oot_validation.csv`).
 
 ## 3. Matriz das 20 features
 
-Legenda: ✅ igual · 🟡 parcial · ❌ ausente. "Benchmark" = entra só na logística
-e no GBM com todas as tabelas, que empatam com o acaso fora do tempo; nesses
-casos não há evidência individual da feature.
+Legenda: ✅ implementada (com o painel e a coluna que a implementam) · 🔒 em
+quarentena (campo sem data, P-009) · ⛔ excluída pela linha do tempo quebrada ·
+⬜ ainda não construída. **O status vem do registro único
+`churn_diag.features.REFERENCE_FEATURES`** e um teste confere que toda feature
+marcada como implementada aponta uma coluna que existe de verdade no painel —
+esta tabela não é mantida à mão.
 
-| # | Feature (referência) | Fonte | Equivalente aqui | Status | Diferença | Evidência neste projeto |
-|---|---|---|---|---|---|---|
-| 1 | `tenure_days` | Accounts | `tenure_days` (T0 − `signup_date`) | ✅ | — | Benchmark. O sinal forte aqui é a idade da **assinatura**, não da conta: o "tenure" da referência pode estar capturando o mesmo efeito |
-| 2 | `active_mrr` | Subscriptions | `mrr_amount` da assinatura | 🟡 | Por assinatura, não soma por conta | Peso do score de perda esperada. "Só MRR" captura <!--m:oot_mrr_only_mrr_recall_pct-->58,2% do MRR que sai no top 10%; perda esperada, <!--m:oot_expected_loss_mrr_recall_pct-->49% |
-| 3 | `plan_tier` | Accounts/Subs | `plan_tier` da assinatura (one-hot) | ✅ | — | H12 (plano inicial da conta): sem diferença após Holm |
-| 4 | `active_subscriptions` | Subscriptions | — | ❌ | Unidade é a assinatura | No nível de conta, mais assinaturas = mais chance de "alguma encerrar" (efeito de exposição, não de risco) |
-| 5 | `annual_share` | Subscriptions | `billing_frequency` (one-hot) | 🟡 | Categoria da assinatura, não proporção | Benchmark |
-| 6 | `auto_renew_share` | Subscriptions | — (quarentena) | ❌ | Flag sem data | **Removida** de todas as matrizes (P-009). Sem ela, os modelos não pioraram (seção 8) |
-| 7 | `upgrade_share` | Subscriptions | — (quarentena) | ❌ | Flag sem data | **Removida** (P-009): "medir antes de t0" não é verificável |
-| 8 | `downgrade_share` | Subscriptions | — (quarentena) | ❌ | Flag sem data | **Removida** (P-009) |
-| 9 | `active_seats` | Subscriptions | `seats` (assinatura) + `acct_seats` (conta) | 🟡 | Não é soma de assentos ativos | Benchmark |
-| 10 | `usage_total_90d` | Feature usage | `u_count` | 🟡 | Todo o histórico, não 90 dias | Benchmark. Uso total mensal ficou parado em 2024; por assinatura ativa caiu <!--m:usage_change_per_sub_pct-->−83,2% (H4) |
-| 11 | `usage_trend_ratio_90d` | Feature usage | — | ❌ | Descartada | Tendência dentro da janela mediria datas desalinhadas (uso antes da assinatura) |
-| 12 | `days_since_last_usage` | Feature usage | — | ❌ | Descartada | Mesmo motivo; há uso registrado até depois do fim da assinatura |
-| 13 | `feature_breadth_90d` | Feature usage | `u_breadth` | 🟡 | Todo o histórico | Benchmark |
-| 14 | `usage_duration_90d` | Feature usage | — | ❌ | Não usada | — |
-| 15 | `errors_per_100_uses_90d` | Feature usage | `errors_per_100_uses` (90d e histórico) | ✅ | — | **Medida:** AUC <!--m:rate_errors_auc_90d-->0,525 (90 dias) e <!--m:rate_errors_auc_all-->0,528 (histórico) — sem significância após Holm |
-| 16 | `beta_usage_share_90d` | Feature usage | `u_beta_share` | 🟡 | Todo o histórico | Benchmark |
-| 17 | `tickets_90d` | Support | `t_n` (por conta) | 🟡 | Todo o histórico | Benchmark |
-| 18 | `escalation_rate_90d` | Support | `escalation_rate` (90d e histórico) | ✅ | — | **Medida:** AUC <!--m:rate_escalation_auc_90d-->0,474 e <!--m:rate_escalation_auc_all-->0,481 — sem sinal; H6 já mostrava atrito igual entre quem declarou "suporte" e os demais |
-| 19 | `response_time_p90_90d` | Support | `t_frt` | 🟡 | Média, não p90 | Benchmark |
-| 20 | `satisfaction_missing_share_90d` | Support | `satisfaction_missing_share` (90d e histórico) | ✅ | — | **Medida:** AUC <!--m:rate_satisfaction_missing_auc_90d-->0,500 e <!--m:rate_satisfaction_missing_auc_all-->0,500 — nenhum sinal; <!--m:csat_missing_pct-->41,2% dos tickets sem nota |
-
-Contagem depois da medição: ✅ 5 · 🟡 8 · ❌ 7 (4 fora + 3 em quarentena).
-
-> **Leitura do status:** a coluna "Equivalente aqui" desta tabela descreve o
-> **painel do diagnóstico** (por assinatura). O painel **por conta** criado no
-> incremento 2 (seção 8) implementa **15 das 20** features da referência e os
-> **8 controles** — as 8 marcadas 🟡 existem lá na forma original. Só ficam de
-> fora as 3 em quarentena (sem data) e as 2 que dependem da linha do tempo de
-> uso (`usage_trend_ratio_90d`, `days_since_last_usage`).
+| # | Feature | Fonte | Onde está aqui | Status | Evidência / motivo |
+|---|---|---|---|---|---|
+| 1 | `tenure_days` | accounts | painel por conta: `tenure_days` · diagnóstico: `tenure_days` | ✅ | Medida: AUC 0,34 (menor = mais risco), significativa após Holm. É o sinal forte do painel por conta — e **não** é o mesmo que idade da assinatura (§8.3) |
+| 2 | `active_mrr` | subscriptions | painel por conta: `active_mrr` | ✅ | Medida: AUC 0,41, significativa após Holm — conta menor sai mais. Também é o peso do score de perda esperada |
+| 3 | `plan_tier` | accounts/subscriptions | painel por conta: `plan_tier` · diagnóstico: `plan_tier` | ✅ | H12: sem diferença após Holm |
+| 4 | `active_subscriptions` | subscriptions | painel por conta: `active_subscriptions` | ✅ | Não medida isoladamente. Cuidado: mais assinaturas = mais chance de alguma encerrar (exposição, não risco) |
+| 5 | `annual_share` | subscriptions | painel por conta: `annual_share` | ✅ | Medida: AUC 0,45, sem significância |
+| 6 | `auto_renew_share` | subscriptions | — | 🔒 | Em quarentena (P-009); tirar as três flags não custou desempenho (§8.4) |
+| 7 | `upgrade_share` | subscriptions | — | 🔒 | Em quarentena (P-009) |
+| 8 | `downgrade_share` | subscriptions | — | 🔒 | Em quarentena (P-009) |
+| 9 | `active_seats` | subscriptions | painel por conta: `active_seats` | ✅ | Não medida isoladamente |
+| 10 | `usage_total_90d` | feature_usage | painel por conta: `usage_total_90d` | ✅ | Medida: AUC 0,52, sem significância. No agregado, uso parado em 2024 e queda de 83,2% por assinatura ativa (H4) |
+| 11 | `usage_trend_ratio_90d` | feature_usage | — | ⛔ | Excluída: 76,6% do uso é anterior ao início da assinatura — a tendência mediria datas erradas |
+| 12 | `days_since_last_usage` | feature_usage | — | ⛔ | Excluída pelo mesmo motivo; há uso registrado até depois do fim da assinatura |
+| 13 | `feature_breadth_90d` | feature_usage | painel por conta: `feature_breadth_90d` | ✅ | Não medida isoladamente |
+| 14 | `usage_duration_90d` | feature_usage | painel por conta: `usage_duration_90d` | ✅ | Não medida isoladamente |
+| 15 | `errors_per_100_uses_90d` | feature_usage | painel por conta: `errors_per_100_uses_90d` | ✅ | Medida: AUC 0,525 (90 dias) e 0,528 (histórico) — sem significância (§8.2) |
+| 16 | `beta_usage_share_90d` | feature_usage | painel por conta: `beta_usage_share_90d` | ✅ | Não medida isoladamente |
+| 17 | `tickets_90d` | support_tickets | painel por conta: `tickets_90d` | ✅ | Medida: AUC 0,51, sem significância |
+| 18 | `escalation_rate_90d` | support_tickets | painel por conta: `escalation_rate_90d` | ✅ | Medida: AUC 0,474 (90 dias) e 0,481 (histórico) — sem sinal (§8.2) |
+| 19 | `response_time_p90_90d` | support_tickets | painel por conta: `response_time_p90_90d` | ✅ | Não medida isoladamente |
+| 20 | `satisfaction_missing_share_90d` | support_tickets | painel por conta: `satisfaction_missing_share_90d` | ✅ | Medida: AUC 0,500 nos dois recortes — nenhum sinal (§8.2) |
 
 ## 4. Controles contextuais
 
 A referência usa estes 8 como controles de segmentação e de estabilidade entre
 ambientes — o mesmo papel da análise de invariância daqui.
 
-| Controle (referência) | Aqui | Uso |
-|---|---|---|
-| `industry` | ✅ feature + ambiente | Invariância (5 indústrias) e H9 |
-| `country` | ✅ feature | H10 (sem diferença após Holm) |
-| `referral_source` | ✅ feature + ambiente | Invariância (5 canais) e H11 |
-| `is_trial` | 🟡 filtro | Trials fora do painel fora do tempo; MRR zero no score |
-| `seats` da conta | ✅ `acct_seats` | Benchmark |
-| `high_priority_ticket_share_90d` | ❌ | — |
-| `resolution_time_mean_90d` | ✅ `t_res` (todo o histórico) | Benchmark |
-| `satisfaction_mean_90d` | ✅ `t_csat` (todo o histórico) | H3 |
+| Controle | Fonte | Onde está aqui | Status | Evidência / motivo |
+|---|---|---|---|---|
+| `industry` | accounts | painel por conta: `industry` · diagnóstico: `industry` | ✅ | Ambiente da análise de invariância (5 indústrias) e H9 |
+| `country` | accounts | painel por conta: `country` · diagnóstico: `country` | ✅ | H10: sem diferença após Holm |
+| `referral_source` | accounts | painel por conta: `referral_source` · diagnóstico: `referral_source` | ✅ | Ambiente da invariância (5 canais) e H11 |
+| `is_trial` | accounts | painel por conta: `is_trial` | ✅ | No diagnóstico é filtro (trials fora do painel); no painel por conta é coluna |
+| `seats` | accounts | painel por conta: `seats` · diagnóstico: `acct_seats` | ✅ | Tamanho declarado da conta |
+| `high_priority_ticket_share_90d` | support_tickets | painel por conta: `high_priority_ticket_share_90d` | ✅ | Só no painel por conta |
+| `resolution_time_mean_90d` | support_tickets | painel por conta: `resolution_time_mean_90d` | ✅ | Painel por conta em 90 dias; no diagnóstico, `t_res` sobre todo o histórico |
+| `satisfaction_mean_90d` | support_tickets | painel por conta: `satisfaction_mean_90d` | ✅ | Medida: AUC 0,55, sem significância. No diagnóstico, `t_csat` (histórico) — H3 |
 
 Resultado da estabilidade aqui: a relação idade → risco se mantém nos
 <!--m:invariance_envs-->13 ambientes de perfil (razão entre
@@ -106,11 +101,13 @@ ajustado <!--m:segments_min_p_holm-->0,30).
 
 ## 5. Features derivadas sugeridas pela referência
 
-| Derivada | Aqui | Comentário |
-|---|---|---|
-| `usage_per_active_seat_90d` | ❌ | Só no agregado (uso por assinatura ativa, H4). Faz sentido depois de corrigir a instrumentação |
-| `support_friction_index` | 🟡 | H6 usa "tickets + 2×escalações" para validar o motivo declarado, não como feature e sem z-score |
-| `commercial_contraction_flag` | ❌ | Depende de duas flags sem data, agora em quarentena (P-009) — não é construível com integridade |
+| Controle | Fonte | Onde está aqui | Status | Evidência / motivo |
+|---|---|---|---|---|
+| `usage_per_active_seat_90d` | feature_usage/subscriptions | — | ⬜ | Fase B do plano: `usage_total_90d ÷ max(active_seats, 1)` |
+| `support_friction_index` | support_tickets | — | ⬜ | Fase B: soma de z-scores ajustados só no treino |
+| `commercial_contraction_flag` | subscriptions | — | 🔒 | Bloqueada: depende de duas flags em quarentena |
+
+Cobertura do registro: 23 implementadas · 4 em quarentena · 2 excluídas por linha do tempo · 2 não implementadas (fase B).
 
 ## 6. Features só deste projeto
 
@@ -131,20 +128,6 @@ ajustado <!--m:segments_min_p_holm-->0,30).
 | Qualquer dado ≥ `t0` | Excluído | Excluído | Teste que apaga todos os eventos ≥ T0 e exige features idênticas |
 | `accounts.churn_flag`, `subscriptions.churn_flag` / `end_date` | **Não mencionados** | Excluídos | O painel seleciona só as colunas permitidas; teste confere que não aparecem |
 | `upgrade_flag`, `downgrade_flag`, `auto_renew_flag` (sem data) | Usados como features (7, 8, 6) | **Em quarentena** | P-009: lista única em `features.QUARANTINED_UNDATED`, regex proibida em `risk.py` e teste que confere a ausência nos dois painéis |
-
-## 8. Triagem da referência × evidência daqui
-
-| Top da referência | O que este projeto mostra |
-|---|---|
-| 1. `tenure_days` | Não testada isoladamente; a idade da assinatura é o sinal forte daqui |
-| 2. `errors_per_100_uses_90d` | Não testada como taxa (só contagem bruta) — lacuna |
-| 3. `usage_trend_ratio_90d` | Não usada: datas de uso desalinhadas do ciclo de vida |
-| 4. `plan_tier` | Sem diferença após Holm (H12) |
-| 5. `annual_share` | Só benchmark |
-| 6. `active_seats` | Só benchmark |
-| 7. `satisfaction_missing_share_90d` | Só a versão binária; CSAT médio sem sinal (AUC <!--m:csat_auc-->0,52) |
-| 8. `auto_renew_share` | Só benchmark; flag sem data |
-| 9. `industry` | Sem diferença após Holm (H9); estável como ambiente |
 
 ## 8. Resultados medidos (feature `validacao-features`)
 
@@ -210,6 +193,23 @@ diagnóstico **não piorou** os modelos fora do tempo: a logística ficou em
 <!--m:oot_logit_roc-->0,53 e o GBM em <!--m:oot_gbm_roc-->0,53 (antes, 0,53 e
 0,52). A suposição ASM-009 foi confirmada pelo dono do produto: a quarentena é
 política permanente, não experimento — dá para ser íntegro sem perder poder.
+
+### 8.5 O ranking da referência × a evidência daqui
+
+A triagem da referência ordenou as features por importância de permutação. Com
+as medições acima, o quadro fica assim:
+
+| Top da referência | O que este projeto mostra |
+|---|---|
+| 1. `tenure_days` | **Confirmado como o sinal mais forte** do painel por conta (AUC 0,34, significativo após Holm) — mas é um sinal **diferente** da idade da assinatura (§8.3) |
+| 2. `errors_per_100_uses_90d` | **Medido como taxa:** AUC 0,525 (90 dias) e 0,528 (histórico), sem significância. Na referência, a importância era +0,003 com desvio ±0,004 — ou seja, dentro do ruído lá também |
+| 3. `usage_trend_ratio_90d` | Não construída: datas de uso desalinhadas do ciclo de vida |
+| 4. `plan_tier` | Sem diferença após Holm (H12) |
+| 5. `annual_share` | Medida: AUC 0,45, sem significância |
+| 6. `active_seats` | Não medida isoladamente |
+| 7. `satisfaction_missing_share_90d` | **Medida:** AUC 0,500 nos dois recortes — nenhum sinal |
+| 8. `auto_renew_share` | Em quarentena (campo sem data) |
+| 9. `industry` | Sem diferença após Holm (H9); estável como ambiente da invariância |
 
 ## 9. Próxima iteração recomendada
 
