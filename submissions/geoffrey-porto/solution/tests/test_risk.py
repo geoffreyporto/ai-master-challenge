@@ -6,12 +6,14 @@ import polars as pl
 import pytest
 from fixtures import make_tables, sub
 
+from churn_diag.features import QUARANTINED_UNDATED
 from churn_diag.loader import Tables
 from churn_diag.risk import (
     CAT_FEATURES,
     NUMERIC_FEATURES,
     build_oot_panel,
     cs_priority_list,
+    design_matrix,
     oot_validation,
     subscription_risk,
 )
@@ -103,3 +105,14 @@ def test_oot_report_has_business_metrics(real_tables: Tables) -> None:
     assert {"roc_auc", "pr_auc", "lift_at_10", "mrr_recall_at_10"} <= set(oot.columns)
     assert {"idade_da_assinatura", "gbm_todas_tabelas", "so_mrr"} <= set(oot["scorer"])
     assert oot["roc_auc"].is_between(0, 1).all()
+
+
+def test_diagnosis_panel_has_no_undated_flags(real_tables: Tables) -> None:
+    """@spec:AC-024 @principle:P-009 — flags sem data fora da matriz do diagnóstico."""
+    panel = build_oot_panel(real_tables, date(2024, 7, 1))
+    _, categories = design_matrix(panel)
+    columns = set(panel.columns) | {
+        f"{c}={v}" for c, vs in categories.items() for v in vs
+    }
+    for flag in QUARANTINED_UNDATED:
+        assert not any(flag in c for c in columns), flag

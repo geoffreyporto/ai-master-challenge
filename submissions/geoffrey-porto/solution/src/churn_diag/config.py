@@ -21,6 +21,10 @@ REPO_DATASET_DIR: Final[Path] = (
 )
 LOCAL_DATASET_DIR: Final[Path] = SOLUTION_ROOT / "data"
 DEFAULT_OUT_DIR: Final[Path] = SOLUTION_ROOT / "outputs"
+# Triagem publicada pelo candidato (cópia versionada da referência).
+REFERENCE_SCREEN_JSON: Final[Path] = (
+    SOLUTION_ROOT.parent / "docs" / "referencia" / "ravenstack_feature_screen.json"
+)
 
 # Último dia observado em todas as tabelas (ASM-002).
 SNAPSHOT_DATE: Final[date] = date(2024, 12, 31)

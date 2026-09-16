@@ -1,0 +1,14 @@
+feature,n,n_pos,auc,p_value,p_holm,direction,abs_lift,significant
+tenure_days,854,91,0.339700,0.000001,0.000007,menor = mais risco,0.160300,true
+min_sub_age_days,854,91,0.390200,0.000609,0.007303,menor = mais risco,0.109800,true
+active_mrr,854,91,0.405500,0.003191,0.035103,menor = mais risco,0.094500,true
+annual_share,854,91,0.451100,0.125617,1.000000,menor = mais risco,0.048900,false
+satisfaction_mean_90d,238,30,0.545900,0.391658,1.000000,maior = mais risco,0.045900,false
+errors_per_100_uses_all,854,91,0.528500,0.373356,1.000000,maior = mais risco,0.028500,false
+escalation_rate_90d,356,43,0.473600,0.205202,1.000000,menor = mais risco,0.026400,false
+errors_per_100_uses_90d,847,91,0.525100,0.433180,1.000000,maior = mais risco,0.025100,false
+escalation_rate_all,840,89,0.481500,0.385892,1.000000,menor = mais risco,0.018500,false
+usage_total_90d,847,91,0.515300,0.634065,1.000000,maior = mais risco,0.015300,false
+tickets_90d,356,43,0.505900,0.851374,1.000000,maior = mais risco,0.005900,false
+satisfaction_missing_share_90d,356,43,0.499600,0.992837,1.000000,menor = mais risco,0.000400,false
+satisfaction_missing_share_all,840,89,0.500200,0.995147,1.000000,maior = mais risco,0.000200,false

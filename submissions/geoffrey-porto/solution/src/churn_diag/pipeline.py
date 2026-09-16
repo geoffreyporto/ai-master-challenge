@@ -15,7 +15,13 @@ import numpy as np
 import polars as pl
 
 from churn_diag import figures
+from churn_diag.account_panel import (
+    attach_full_history_rates,
+    build_account_panel,
+    split_train_test,
+)
 from churn_diag.config import AGE_BUCKETS, CONTROL_SIGMA, YOUNG_AGE_DAYS, Settings
+from churn_diag.features import QUARANTINED_UNDATED, RATE_FEATURES
 from churn_diag.hypotheses import Context, findings_frame, invariance_table, run_all
 from churn_diag.impact import ab_test_design, excess_mrr, recovery_scenarios
 from churn_diag.loader import Tables, load_tables
@@ -36,6 +42,12 @@ from churn_diag.risk import (
     monthly_hazard_by_age,
     oot_validation,
     subscription_risk,
+)
+from churn_diag.screening import (
+    age_signal_comparison,
+    published_reference_metrics,
+    reference_replication,
+    univariate_screening,
 )
 
 AGE_ORDER = [b[0] for b in AGE_BUCKETS]
@@ -72,6 +84,21 @@ def _hz(hz: pl.DataFrame, period: str, bucket: str) -> float:
     )
 
 
+ACCOUNT_SCREEN_EXTRA: tuple[str, ...] = (
+    "tenure_days",
+    "min_sub_age_days",
+    "active_mrr",
+    "annual_share",
+    "usage_total_90d",
+    "tickets_90d",
+    "satisfaction_mean_90d",
+)
+
+
+def _auc(screening: pl.DataFrame, feature: str) -> float:
+    return round(float(screening.filter(pl.col("feature") == feature)["auc"][0]), 3)
+
+
 def _env(inv: pl.DataFrame, env: str, col: str, nd: int) -> float:
     return round(float(inv.filter(pl.col("env") == env)[col][0]), nd)
 
@@ -104,6 +131,17 @@ def analyse(t: Tables, cs_top_n: int) -> Result:
     rec = recovery_scenarios(exc["excess_mrr_per_month"])
     ab = ab_test_design(panel)
     cohorts = cohort_churn_profile(t)
+
+    # Validação das features da referência (feature validacao-features).
+    acc_panel = attach_full_history_rates(t, build_account_panel(t))
+    _, acc_test = split_train_test(acc_panel)
+    rate_cols = [f"{r}_90d" for r in RATE_FEATURES] + [
+        f"{r}_all" for r in RATE_FEATURES
+    ]
+    screening = univariate_screening(acc_test, rate_cols + list(ACCOUNT_SCREEN_EXTRA))
+    replication = reference_replication(acc_panel)
+    published = published_reference_metrics()
+    ages = age_signal_comparison(acc_panel)
 
     young_mask = pl.col("age_days") < YOUNG_AGE_DAYS
     tgt = panel.filter(pl.col("period") == "target")
@@ -273,6 +311,39 @@ def analyse(t: Tables, cs_top_n: int) -> Result:
         "ab_n_per_arm": ab["n_per_arm"],
         "ab_new_paid_subs_month": int(ab["new_paid_subs_per_month"]),
         "ab_weeks_to_enroll": ab["weeks_to_enroll"],
+        # validação das features da referência
+        "quarantined_features_n": len(QUARANTINED_UNDATED),
+        "repl_train_rows": replication["train_rows"],
+        "repl_test_rows": replication["test_rows"],
+        "repl_test_positive_rate_pct": _pct(replication["test_positive_rate"]),
+        "repl_test_roc": round(replication["test_roc_auc"], 2),
+        "repl_test_ap": round(replication["test_average_precision"], 3),
+        "ref_published_roc": published["test_roc_auc"],
+        "ref_published_ap": published["test_average_precision"],
+        "rates_significant_n": int(
+            screening.filter(pl.col("feature").is_in(rate_cols))["significant"].sum()
+        ),
+        "rate_errors_auc_90d": _auc(screening, "errors_per_100_uses_90d"),
+        "rate_errors_auc_all": _auc(screening, "errors_per_100_uses_all"),
+        "rate_escalation_auc_90d": _auc(screening, "escalation_rate_90d"),
+        "rate_escalation_auc_all": _auc(screening, "escalation_rate_all"),
+        "rate_satisfaction_missing_auc_90d": _auc(
+            screening, "satisfaction_missing_share_90d"
+        ),
+        "rate_satisfaction_missing_auc_all": _auc(
+            screening, "satisfaction_missing_share_all"
+        ),
+        "age_spearman": float(ages["spearman_tenure_vs_sub_age"][0]),
+        "age_auc_tenure": float(ages["auc_tenure_days"][0]),
+        "age_auc_min_sub": float(ages["auc_min_sub_age_days"][0]),
+        "age_roc_tenure_only": float(
+            ages.filter(pl.col("modelo") == "só idade da conta")["roc_auc"][0]
+        ),
+        "age_roc_sub_only": float(
+            ages.filter(pl.col("modelo") == "só idade da assinatura")["roc_auc"][0]
+        ),
+        "age_roc_both": float(ages.filter(pl.col("modelo") == "as duas")["roc_auc"][0]),
+        "age_gain_both": float(ages["ganho_ao_juntar"][0]),
     }
     report = {
         k: (v.item() if isinstance(v, np.generic) else v) for k, v in report.items()
@@ -287,6 +358,14 @@ def analyse(t: Tables, cs_top_n: int) -> Result:
         "cs_priority_accounts": cs,
         "cohort_churn_profile": cohorts,
         "usage_vs_base_2024": usage_idx,
+        "feature_screening": screening,
+        "age_comparison": ages,
+        "account_panel_metrics": pl.DataFrame(
+            [
+                {"fonte": "replicação (este projeto)", **replication},
+                {"fonte": "referência publicada", **published},
+            ]
+        ),
     }
     return Result(report=report, quality=quality, tables=out_tables)
 

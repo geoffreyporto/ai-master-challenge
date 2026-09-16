@@ -1,0 +1,4 @@
+modelo,roc_auc,average_precision,spearman_tenure_vs_sub_age,auc_tenure_days,auc_min_sub_age_days,ganho_ao_juntar,veredito
+só idade da conta,0.679400,0.217700,0.322000,0.339700,0.390200,-0.031800,sinais distintos: as idades não andam juntas ou juntá-las melhora o modelo
+só idade da assinatura,0.519500,0.122300,0.322000,0.339700,0.390200,-0.031800,sinais distintos: as idades não andam juntas ou juntá-las melhora o modelo
+as duas,0.647600,0.196100,0.322000,0.339700,0.390200,-0.031800,sinais distintos: as idades não andam juntas ou juntá-las melhora o modelo

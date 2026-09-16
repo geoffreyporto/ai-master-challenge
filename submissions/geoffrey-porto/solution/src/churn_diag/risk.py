@@ -1,7 +1,8 @@
 """Score de risco: perda esperada de MRR, lista do CS e validação fora do tempo.
 
 Regra de ouro (P-002): nenhuma variável usa informação de depois do corte T0,
-e nada que só existe depois que o cliente saiu entra no score.
+e nada que só existe depois que o cliente saiu entra no score. Campos sem data
+(P-009) também ficam de fora: não há como provar que são anteriores ao corte.
 """
 
 from __future__ import annotations
@@ -48,7 +49,8 @@ NUMERIC_FEATURES: tuple[str, ...] = (
     "acct_seats",
     "tenure_days",
 )
-BOOL_FEATURES: tuple[str, ...] = ("upgrade_flag", "downgrade_flag", "auto_renew_flag")
+# Campos sem carimbo de tempo ficam em quarentena (P-009): a lista mora em
+# `features.QUARANTINED_UNDATED` e nenhum deles entra na matriz abaixo.
 CAT_FEATURES: tuple[str, ...] = (
     "plan_tier",
     "billing_frequency",
@@ -111,7 +113,6 @@ def build_oot_panel(
         "account_id",
         "y",
         *NUMERIC_FEATURES,
-        *BOOL_FEATURES,
         *CAT_FEATURES,
     ]
     return (
@@ -133,7 +134,6 @@ def design_matrix(
     if categories is None:
         categories = {c: sorted(panel[c].unique().to_list()) for c in CAT_FEATURES}
     cols = [pl.col(n).cast(pl.Float64) for n in NUMERIC_FEATURES]
-    cols += [pl.col(b).cast(pl.Float64) for b in BOOL_FEATURES]
     cols += [
         (pl.col(c) == v).cast(pl.Float64).alias(f"{c}={v}")
         for c, values in categories.items()
