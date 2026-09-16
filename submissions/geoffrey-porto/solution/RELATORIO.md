@@ -181,6 +181,52 @@ descrevem o cliente antes do corte — e, sem elas, o desempenho não piorou.
 Comparação completa em `docs/04-matriz-de-features.md`. **Leitura:** o score serve para
 priorizar a fila do CS (risco × dinheiro), não para prometer quem vai sair.
 
+### 2.1 Abrindo o modelo: o que ele aprendeu, variável por variável [Fato]
+
+Um ROC de <!--m:xai_audit_roc-->0,5084 diz que o modelo não separa. Não diz
+*por quê*. Para isso, calculei os valores de Shapley das
+<!--m:xai_features_n-->8 variáveis de negócio — **exatos**, por enumeração das
+256 coalizões, não aproximados: a soma das contribuições mais o valor base
+reproduz a previsão do modelo com erro de <!--m:xai_efficiency_error-->0
+(a biblioteca `shap` não roda em Python 3.14, e a aproximação dela não teria
+essa garantia).
+
+![Contribuição por variável](outputs/figures/06_contribuicao_por_variavel.png)
+
+**A nuvem de cada variável está centrada em zero.** A variável mais influente,
+`tenure_days`, move o risco previsto em <!--m:xai_top_feature_pp-->1,01 ponto
+percentual em média — contra uma base de 3,2%. É a única com direção legível
+(mais tempo de casa, laranja à esquerda, menos risco). As outras sete são
+simétricas: o modelo não aprendeu regra, aprendeu ruído. O gráfico de
+dependência (`07`) confirma: nenhum limiar, nenhuma quebra.
+
+![Contribuição por ambiente](outputs/figures/09_contribuicao_por_ambiente.png)
+
+O heatmap por indústria é o teste de atalho espúrio, e é onde está o achado
+útil: <!--m:xai_sign_flip_n-->3 das 8 variáveis **trocam de sinal** entre
+indústrias. Em uma, MRR alto empurra o risco para cima; em outra, para baixo.
+Isso não é efeito fraco — é efeito inexistente, sendo lido como sinal por
+amostra pequena. Qualquer modelo treinado nessas variáveis vai quebrar quando o
+mix de clientes mudar.
+
+**O score que o CS recebe se explica sem nenhum gráfico.** Ele não sai de um
+modelo: é `risco da faixa de idade × MRR pago`, somado pelas
+<!--m:xai_score_subs_n-->10 assinaturas da conta. A figura `08` mostra uma conta
+aberta linha a linha, e o CSV
+[`outputs/score_explicado.csv`](outputs/score_explicado.csv) tem a mesma conta em
+números que somam exatamente a perda esperada. Foi escolha de projeto: um score
+que o CS pode conferir na mão vale mais do que um que precisa de biblioteca para
+ser defendido.
+
+![Escada de CATE](outputs/figures/10_escada_de_cate.png)
+
+Por fim, a pergunta de segmentação: *existe um grupo que responde mais à
+cobrança anual?* Ordenei as contas pelo efeito previsto (DR-learner, ajustado em
+metade das contas) e medi o efeito real na outra metade. A escada é **plana**:
+amplitude de <!--m:cate_spread_pp-->4,61 p.p. contra erro padrão de até
+<!--m:cate_max_se_pp-->4,79 p.p. Não há subgrupo a mirar — coerente com o efeito
+médio nulo da seção de DML.
+
 ---
 
 ## 3. O que os dados não conseguem responder (e por que importa)

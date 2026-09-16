@@ -57,6 +57,9 @@
     "age_roc_sub_only": 0.5195,
     "age_roc_tenure_only": 0.6794,
     "age_spearman": 0.322,
+    "cate_heterogeneidade": 0,
+    "cate_max_se_pp": 4.79,
+    "cate_spread_pp": 4.61,
     "churn_def_disagree": 400,
     "churn_def_disagree_pct": 80.0,
     "churn_def_event_but_flag_false": 277,
@@ -195,6 +198,13 @@
     "usage_monthly_max": 11450,
     "usage_monthly_min": 10039,
     "usage_trend_p": 0.88,
+    "xai_audit_roc": 0.5084,
+    "xai_efficiency_error": 2.949029909160572e-17,
+    "xai_features_n": 8,
+    "xai_score_subs_n": 10,
+    "xai_sign_flip_n": 3,
+    "xai_top_feature_abs_shapley": 0.010128,
+    "xai_top_feature_pp": 1.01,
     "young_share_q4_events_pct": 79.6
   }
 }
