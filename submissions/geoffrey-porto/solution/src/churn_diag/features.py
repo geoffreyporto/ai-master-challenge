@@ -241,19 +241,19 @@ REFERENCE_FEATURES: Final[tuple[ReferenceFeature, ...]] = (
         (("conta", "satisfaction_mean_90d"),),
     ),
     # --- as 3 derivadas
-    _blocked(
+    ReferenceFeature(
         "usage_per_active_seat_90d",
         "feature_usage/subscriptions",
-        NAO_IMPLEMENTADA,
-        FASE_B,
-        group="derivada",
+        "derivada",
+        IMPLEMENTADA,
+        (("conta", "usage_per_active_seat_90d"),),
     ),
-    _blocked(
+    ReferenceFeature(
         "support_friction_index",
         "support_tickets",
-        NAO_IMPLEMENTADA,
-        FASE_B,
-        group="derivada",
+        "derivada",
+        IMPLEMENTADA,
+        (("conta", "support_friction_index"),),
     ),
     _blocked(
         "commercial_contraction_flag",
@@ -271,3 +271,73 @@ def reference_counts() -> dict[str, int]:
     for f in REFERENCE_FEATURES:
         counts[f.status] = counts.get(f.status, 0) + 1
     return counts
+
+
+# ------------------------------------------------- derivadas da referência (B)
+# Duas features compostas sugeridas pelo documento da referência. A terceira
+# (`commercial_contraction_flag`) depende de flags em quarentena e não é
+# construível com integridade.
+FRICTION_COMPONENTS: Final[tuple[str, ...]] = (
+    "tickets_90d",
+    "escalation_rate_90d",
+    "response_time_p90_90d",
+    "high_priority_ticket_share_90d",
+)
+DERIVED_FEATURES: Final[tuple[str, ...]] = (
+    "usage_per_active_seat_90d",
+    "support_friction_index",
+)
+
+
+def usage_per_active_seat_expr() -> pl.Expr:
+    """Uso da janela ÷ assentos ativos (mínimo 1), como na referência.
+
+    Conta sem uso na janela recebe **zero** — "não usou" é informação, não
+    ausência de dado (diferente das taxas, onde falta o denominador).
+    """
+    seats = pl.max_horizontal(pl.col("active_seats"), pl.lit(1))
+    return (pl.col("usage_total_90d").fill_null(0) / seats).alias(
+        "usage_per_active_seat_90d"
+    )
+
+
+def zscore_stats(
+    train: pl.DataFrame, columns: tuple[str, ...] = FRICTION_COMPONENTS
+) -> dict[str, tuple[float, float]]:
+    """Média e desvio de cada componente, **só do treino** (evita vazamento)."""
+    stats: dict[str, tuple[float, float]] = {}
+    for col in columns:
+        series = train[col].drop_nulls()
+        mean = float(series.mean()) if series.len() else 0.0
+        std = float(series.std()) if series.len() > 1 else 0.0
+        stats[col] = (mean, std if std and std > 0 else 1.0)
+    return stats
+
+
+def support_friction_expr(stats: dict[str, tuple[float, float]]) -> pl.Expr:
+    """Soma dos z-scores de atrito; vazio quando a conta não teve ticket.
+
+    As quatro componentes faltam em bloco (ASM-012), então basta uma guarda:
+    sem ticket na janela, não existe índice de atrito — e zero diria
+    "atrito médio", que é outra coisa.
+    """
+    total = None
+    for col in FRICTION_COMPONENTS:
+        mean, std = stats[col]
+        z = (pl.col(col) - mean) / std
+        total = z if total is None else total + z
+    return (
+        pl.when(pl.col("tickets_90d").is_null())
+        .then(None)
+        .otherwise(total)
+        .alias("support_friction_index")
+    )
+
+
+def attach_derived_features(
+    panel: pl.DataFrame, stats: dict[str, tuple[float, float]]
+) -> pl.DataFrame:
+    """Acrescenta as duas derivadas ao painel, com os parâmetros dados."""
+    return panel.with_columns(
+        usage_per_active_seat_expr(), support_friction_expr(stats)
+    )
