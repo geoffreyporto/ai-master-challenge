@@ -194,3 +194,113 @@ def dml_effect(
         significativo=significativo,
         leitura=leitura,
     )
+
+
+def _cross_fitted_dr_scores(
+    x: np.ndarray,
+    d: np.ndarray,
+    y: np.ndarray,
+    groups: np.ndarray,
+    *,
+    n_splits: int,
+    trim: tuple[float, float],
+) -> np.ndarray:
+    """Pseudo-desfecho duplamente robusto (AIPW), com as partições por conta."""
+    psi = np.zeros(len(y))
+    n_splits = min(n_splits, len(np.unique(groups)))
+    for fit_idx, pred_idx in GroupKFold(n_splits=n_splits).split(x, y, groups):
+        e = (
+            HistGradientBoostingClassifier(
+                max_depth=3, learning_rate=0.05, max_iter=200, random_state=SEED
+            )
+            .fit(x[fit_idx], d[fit_idx])
+            .predict_proba(x[pred_idx])[:, 1]
+        )
+        e = np.clip(e, *trim)
+        tratados, controles = fit_idx[d[fit_idx] == 1], fit_idx[d[fit_idx] == 0]
+        mu1 = (
+            HistGradientBoostingRegressor(
+                max_depth=3, learning_rate=0.05, max_iter=200, random_state=SEED
+            )
+            .fit(x[tratados], y[tratados])
+            .predict(x[pred_idx])
+        )
+        mu0 = (
+            HistGradientBoostingRegressor(
+                max_depth=3, learning_rate=0.05, max_iter=200, random_state=SEED
+            )
+            .fit(x[controles], y[controles])
+            .predict(x[pred_idx])
+        )
+        d_p, y_p = d[pred_idx], y[pred_idx]
+        psi[pred_idx] = (
+            mu1 - mu0 + d_p * (y_p - mu1) / e - (1 - d_p) * (y_p - mu0) / (1 - e)
+        )
+    return psi
+
+
+def cate_quantiles(
+    panel: pl.DataFrame,
+    treatment: str,
+    outcome: str,
+    confounders: tuple[tuple[str, ...], tuple[str, ...]],
+    *,
+    cluster: str = "account_id",
+    n_quantis: int = 5,
+    n_splits: int = 5,
+) -> pl.DataFrame:
+    """Escada de CATE avaliada FORA DA AMOSTRA (AC-042).
+
+    Os quantis são formados com o efeito previsto por um modelo ajustado numa
+    metade das contas; as médias saem na outra metade. Ordenar e medir no mesmo
+    dado produziria escada bonita a partir de ruído puro.
+    """
+    numeric, categorical = confounders
+    dados = panel.drop_nulls([treatment, outcome, cluster, *categorical])
+    x, _ = build_matrix(dados, list(numeric), list(categorical))
+    d = dados[treatment].cast(pl.Float64).to_numpy()
+    y = dados[outcome].cast(pl.Float64).to_numpy()
+    groups = dados[cluster].to_numpy()
+    psi = _cross_fitted_dr_scores(x, d, y, groups, n_splits=n_splits, trim=TRIM_BOUNDS)
+
+    ajuste, avaliacao = next(GroupKFold(n_splits=2).split(x, y, groups))
+    modelo = HistGradientBoostingRegressor(
+        max_depth=3, learning_rate=0.05, max_iter=200, random_state=SEED
+    ).fit(x[ajuste], psi[ajuste])
+    cate = modelo.predict(x[avaliacao])
+    psi_aval, grupos_aval = psi[avaliacao], groups[avaliacao]
+
+    cortes = np.quantile(cate, np.linspace(0, 1, n_quantis + 1)[1:-1])
+    faixa = np.digitize(cate, cortes)
+    linhas = []
+    for q in range(n_quantis):
+        mask = faixa == q
+        if not mask.any():
+            continue
+        valores, grupos = psi_aval[mask], grupos_aval[mask]
+        por_conta = {}
+        for g, v in zip(grupos, valores, strict=True):
+            por_conta.setdefault(g, []).append(v)
+        medias = np.array([np.mean(v) for v in por_conta.values()])
+        erro = (
+            float(np.std(medias, ddof=1) / np.sqrt(len(medias)))
+            if len(medias) > 1
+            else 0.0
+        )
+        linhas.append(
+            {
+                "quantil": f"Q{q + 1}",
+                "n": int(mask.sum()),
+                "n_contas": len(por_conta),
+                "cate_previsto": round(float(cate[mask].mean()), 5),
+                "efeito_medio": round(float(valores.mean()), 5),
+                "erro_padrao": round(erro, 5),
+            }
+        )
+    tabela = pl.DataFrame(linhas)
+    spread = float(tabela["efeito_medio"].max() - tabela["efeito_medio"].min())
+    maior_erro = float(tabela["erro_padrao"].max())
+    return tabela.with_columns(
+        spread=round(spread, 5),
+        heterogeneidade=spread > 2 * maior_erro,
+    )
