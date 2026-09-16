@@ -18,6 +18,25 @@ uv run python -m churn_diag               # gera outputs/ (≈10 s)
 uv run pytest                             # suíte completa, inclusive a do relatório
 ```
 
+### Rodar o notebook
+
+O notebook precisa do **kernel do projeto** — um kernel genérico do Jupyter
+(miniforge, sistema, conda) não tem Polars nem o pacote `churn_diag` e falha na
+primeira célula. Registre o kernel uma vez:
+
+```bash
+cd submissions/geoffrey-porto/solution
+uv sync
+uv run python -m ipykernel install --user --name churn-diag \
+    --display-name "Python 3.14 (churn-diag)"
+```
+
+Depois, no JupyterLab/VS Code, selecione **Python 3.14 (churn-diag)**. Ou rode o
+Jupyter já dentro do ambiente, sem registrar nada: `uv run jupyter lab`.
+A primeira célula do notebook é uma guarda: se o kernel estiver errado, ela diz
+qual interpretador está em uso e como corrigir, em vez de um `ModuleNotFoundError`
+seco. Para remover o kernel depois: `jupyter kernelspec remove churn-diag`.
+
 O pipeline procura os CSVs em `--data-dir`, depois em `RAVENSTACK_DATA_DIR`,
 depois em `solution/data/` e por fim em `challenges/data-001-churn/dataset/` do
 fork. Checagens de engenharia:
@@ -97,3 +116,4 @@ apaga todos os eventos ≥ T0 e exige que nenhuma variável mude (P-002).
 | `SchemaContractError: tabela 'x': coluna(s) ausente(s)` | versão diferente do dataset | conferir os checksums acima |
 | `outputs/metrics.json desatualizado` no teste | código mudou e o pipeline não rodou | `uv run python -m churn_diag` |
 | `git status` não mostra a pasta `submissions/` | o `.gitignore` do fork ignora `submissions/` | `git add -f submissions/<nome>` |
+| `No module named 'polars'` ou `'churn_diag'` no notebook | kernel genérico do Jupyter, sem o ambiente do projeto | selecione o kernel *Python 3.14 (churn-diag)* (ver "Rodar o notebook") |
