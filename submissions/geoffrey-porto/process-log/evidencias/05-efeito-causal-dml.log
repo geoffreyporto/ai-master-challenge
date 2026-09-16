@@ -1,0 +1,7 @@
+# Efeito causal (DML) — cross-fitting e erro-padrão agrupados por conta
+$ cat outputs/dml_use_cases.csv
+
+caso                       tratamento  desfecho  theta_pp   ci_low_pp  ci_high_pp  p_value   se_cluster_pp  se_naive_pp  mde_pp    n     n_contas  n_t
+cobranca_anual             anual       y         -0.429000  -2.005000  1.147000    0.593900  0.804000       0.815000     2.250000  4246  439       162
+escalacao_suporte          escalou     y         -2.964000  -8.118000  2.189000    0.259600  2.629000       2.583000     7.370000  1031  285       104
+cobranca_anual_pos_quebra  anual       y         -0.141000  -4.406000  4.125000    0.948400  2.176000       2.080000     6.100000  854   439       311

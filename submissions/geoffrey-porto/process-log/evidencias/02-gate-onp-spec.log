@@ -1,0 +1,22 @@
+$ onp-spec status
+feature                        status             critérios com-teste provados suposições? perguntas?
+─────────────────────────────────────────────────────────────────────────────────────────────────────
+completude-features            implementada               2         2        2           0          0
+derivadas-features             implementada               4         4        4           0          0
+diagnostico-churn              em-implementacao          18        18       18           2          2
+efeito-causal-dml              em-implementacao           5         5        5           1          1
+linha-do-tempo                 implementada               4         4        4           0          0
+validacao-features             implementada               6         6        6           0          0
+
+legenda: critérios = critérios de aceite · com-teste = têm teste anotado (@spec:) ·
+         provados = PASS no último verify · suposições?/perguntas? = ainda abertas
+
+$ onp-spec audit --ci
+ERRO  pergunta em aberto (Q_ABERTA) [diagnostico-churn] Q-001 em aberto durante implementação: "O que mudou entre setembro e outubro de 2024?" .spec/features/diagnostico-churn/spec.md:191
+ERRO  pergunta em aberto (Q_ABERTA) [diagnostico-churn] Q-002 em aberto durante implementação: "Qual é a definição oficial de churn da RavenStack (e quem é dono dela e da instrumentação de eventos)?" .spec/features/diagnostico-churn/spec.md:192
+ERRO  pergunta em aberto (Q_ABERTA) [efeito-causal-dml] Q-004 em aberto durante implementação: "Com efeito nulo e intervalo estreito para cobrança anual, o desconto por contrato anual continua?" .spec/features/efeito-causal-dml/spec.md:73
+
+resumo: 6 feature(s) · 14 história(s) de usuário · 39 critério(s) de aceite · 39/39 com teste · 39/39 provados · 3 suposição(ões) aberta(s) · 3 pergunta(s) aberta(s)
+✘ 3 erro(s), 0 aviso(s)
+3 sinal(is) registrados no histórico — depois de corrigir: onp-spec licoes sugerir
+exit=1

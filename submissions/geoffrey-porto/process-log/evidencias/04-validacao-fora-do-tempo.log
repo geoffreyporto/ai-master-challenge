@@ -1,0 +1,12 @@
+# Validação fora do tempo: modelo complexo x sinal simples
+$ cat outputs/oot_validation.csv
+
+scorer                   roc_auc   pr_auc    lift_at_10  mrr_recall_at_10  p_value   roc_auc_in_sample  n_test  base_rate
+idade_da_assinatura      0.585800  0.050200  1.250000    0.177000          0.003409  0.646000           2330    0.041200
+perda_esperada_mrr       0.560200  0.053600  1.354000    0.489600          0.045548  0.536700           2330    0.041200
+so_mrr                   0.519300  0.055800  1.562000    0.582500          0.521340  0.477200           2330    0.041200
+logistica_todas_tabelas  0.533400  0.052000  1.667000    0.078900          0.266860  0.754000           2330    0.041200
+gbm_todas_tabelas        0.526200  0.047200  1.250000    0.103300          0.384711  0.999400           2330    0.041200
+
+# Leitura: o GBM acerta 1,00 no treino e 0,53 fora do tempo (0,50 = acaso).
+# Só a idade da assinatura mantém sinal (0,59, p = 0,003).

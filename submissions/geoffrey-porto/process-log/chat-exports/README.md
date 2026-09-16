@@ -1,14 +1,14 @@
-# Chat exports
+# Chat export
 
-A sessão do Claude Code que produziu esta entrega fica registrada localmente
-pelo próprio Claude Code (transcrição `.jsonl` da sessão). Ela não foi copiada
-automaticamente para cá porque inclui caminhos locais e metadados da máquina —
-a publicação é decisão do candidato.
+[`conversa-claude-code.md`](conversa-claude-code.md) — a conversa inteira que
+produziu esta entrega (120 mensagens), do primeiro prompt ao fim.
 
-Para anexar:
+**O que foi redigido:** caminhos locais viraram `~` e `<repo>`, e-mails foram
+removidos. **O que ficou de fora:** as chamadas de ferramenta e suas saídas —
+milhares de linhas de comando, código e resultado. Elas estão, em forma
+verificável, em dois lugares melhores: as transcrições de execução em
+[`../evidencias/`](../evidencias/) e os commits do git, um por tarefa.
 
-1. Exportar a conversa pelo app (ou copiar a transcrição da sessão) e revisar o
-   conteúdo antes de publicar.
-2. Salvar nesta pasta como `claude-code-sessao-diagnostico-churn.md` (ou `.jsonl`).
-3. Adicionar prints das etapas-chave em `../screenshots/` (sugestão: o primeiro
-   `audit` vermelho, o `verify` 18/18 e o teste de mutação do relatório falhando).
+O arquivo bruto da sessão (7 MB, com todas as chamadas de ferramenta) fica na
+máquina do candidato e não foi publicado: carrega caminhos e metadados locais
+que não interessam ao avaliador.

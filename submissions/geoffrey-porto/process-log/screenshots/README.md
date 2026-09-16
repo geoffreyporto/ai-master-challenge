@@ -1,8 +1,14 @@
 # Screenshots
 
-Prints do processo (a adicionar pelo candidato). Sugestões:
+Vazio de propósito. O guia de submissão aceita **um ou mais** formatos de
+evidência: capturas de tela, gravação, chat export, narrativa escrita, histórico
+git ou notebook comentado. Esta entrega usa quatro deles:
 
-- `01-audit-vermelho.png` — primeiro `onp-spec audit`: 18 critérios sem teste.
-- `02-verify-18-de-18.png` — `onp-spec verify diagnostico-churn` com 18/18 PASS.
-- `03-mutacao-relatorio.png` — teste de rastreabilidade falhando após editar um número à mão.
-- `04-validacao-fora-do-tempo.png` — GBM 1,00 no treino vs 0,52 fora do tempo.
+- **Chat export** — [`../chat-exports/conversa-claude-code.md`](../chat-exports/conversa-claude-code.md)
+- **Transcrições de execução** — [`../evidencias/`](../evidencias/) (comandos e saídas reais)
+- **Histórico git** — um commit por tarefa, `T-0XX <feature>: …`
+- **Notebook comentado e executado** — [`../../solution/notebooks/diagnostico_churn.ipynb`](../../solution/notebooks/diagnostico_churn.ipynb)
+
+Capturas de tela seriam a quinta cópia da mesma informação, e imagens não são
+verificáveis: um log de terminal pode ser reproduzido com um comando; um print,
+não. Se o avaliador preferir o formato, o candidato adiciona aqui.

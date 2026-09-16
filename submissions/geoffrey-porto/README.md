@@ -159,8 +159,9 @@ análise de invariância — o que revelou que o risco extra das assinaturas nov
 
 ## Evidências
 
-- [ ] Screenshots das conversas com IA — `process-log/screenshots/`
-- [ ] Chat export — `process-log/chat-exports/`
+- [x] Chat export (conversa completa, redigida) — [`process-log/chat-exports/conversa-claude-code.md`](process-log/chat-exports/conversa-claude-code.md)
+- [x] Transcrições de execução (comandos e saídas reais) — [`process-log/evidencias/`](process-log/evidencias/)
+- [ ] Screenshots — não incluídos de propósito: os mesmos fatos estão em log reproduzível ([`process-log/screenshots/`](process-log/screenshots/) explica)
 - [x] Git history — spec primeiro, depois uma tarefa por commit (`T-00X diagnostico-churn: …`)
 - [x] Notebook comentado e executado — `solution/notebooks/diagnostico_churn.ipynb`
 - [x] Outro: prova mecânica do onp-spec — `solution/.spec/verification/diagnostico-churn.json`

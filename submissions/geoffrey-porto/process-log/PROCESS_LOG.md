@@ -190,4 +190,8 @@ desenho só enxerga 7,4 pp, e a leitura honesta é "sem poder", não "sem efeito
 - **Prova mecânica:** `solution/.spec/verification/diagnostico-churn.json`
   (18/18 critérios com PASS).
 - **Notebook comentado:** `solution/notebooks/diagnostico_churn.ipynb` (executado).
-- **Chat export:** ver `chat-exports/README.md`.
+- **Chat export:** `chat-exports/conversa-claude-code.md` — 120 mensagens, com
+  caminhos locais e e-mails redigidos.
+- **Transcrições de execução:** `evidencias/` — suíte de testes, gate do
+  onp-spec, teste de mutação do relatório pegando um número editado à mão,
+  validação fora do tempo e os dois casos de DML.

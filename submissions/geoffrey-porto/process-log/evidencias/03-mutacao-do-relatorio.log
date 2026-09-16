@@ -1,0 +1,13 @@
+# Teste de mutação: editar um número do relatório à mão
+
+$ sed -i "s/2,82×/3,20×/" RELATORIO.md   # alteração manual, como um humano faria
+$ uv run pytest tests/test_report.py -q
+                wrong.append(f"{key}: relatório {raw} ≠ pipeline {fresh.report[key]}")
+E       AssertionError: q4_ratio_x: relatório 3,20 ≠ pipeline 2.82
+E       assert not ['q4_ratio_x: relatório 3,20 ≠ pipeline 2.82']
+tests/test_report.py:70: AssertionError
+1 failed, 5 passed in 166.94s (0:02:46)
+
+$ git checkout RELATORIO.md   # desfeita a alteração
+$ uv run pytest tests/test_report.py -q
+6 passed in 158.05s (0:02:38)
