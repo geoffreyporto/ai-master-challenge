@@ -201,7 +201,8 @@ não uma propriedade estável de contas jovens.
 Tirar as <!--m:quarantined_features_n-->3 flags sem data da matriz do
 diagnóstico **não piorou** os modelos fora do tempo: a logística ficou em
 <!--m:oot_logit_roc-->0,53 e o GBM em <!--m:oot_gbm_roc-->0,53 (antes, 0,53 e
-0,52). A suposição ASM-009 se confirma: dá para ser íntegro sem perder poder.
+0,52). A suposição ASM-009 foi confirmada pelo dono do produto: a quarentena é
+política permanente, não experimento — dá para ser íntegro sem perder poder.
 
 ## 9. Próxima iteração recomendada
 

@@ -38,8 +38,9 @@ só se resolvem medindo:
 - **Muda números publicados:** ao remover as flags, a logística e o GBM do
   `oot_validation.csv` são reestimados; o relatório e o README acompanham (os
   números são conferidos por teste).
-- **Não muda o score de produção** (risco por idade da assinatura) nesta etapa —
-  se as taxas tiverem sinal, entrar no score é decisão do dono do produto (Q-003).
+- **Não muda o score de produção** (risco por idade da assinatura): nenhuma das
+  três taxas teve sinal, e o dono do produto decidiu (Q-003, 15/09/2026) que
+  nenhuma entra no score enquanto a instrumentação não for corrigida.
 - **Fora de escopo:** tendência de uso e recência (`usage_trend_ratio_90d`,
   `days_since_last_usage`) seguem descartadas enquanto a instrumentação não for
   corrigida (ação 3 do relatório).

@@ -114,6 +114,25 @@ de aceite, todos provados.
 assinatura. Era hipótese apresentada como quase-fato; a medição mostrou o
 contrário (sinais distintos). O texto foi corrigido com o número na frente.
 
+### Decisões do dono do produto no fecho do incremento 2 (15/09/2026)
+
+1. **ASM-009 confirmada:** a quarentena dos campos sem data (P-009) vale como
+   política permanente, não como experimento — a medição mostrou que não custa
+   desempenho.
+2. **ASM-010 confirmada, com ressalva registrada:** plano, assentos, MRR e
+   frequência de cobrança são tratados como estáveis desde o início da
+   assinatura. É uma declaração de negócio do dono do produto — o dataset não
+   tem histórico dessas colunas para provar. Se a instrumentação mostrar que são
+   mutáveis, elas caem no mesmo problema das flags e a suposição reabre.
+3. **Q-003 respondida:** nenhuma das três taxas entra no score de produção, que
+   segue sendo risco por idade × MRR. A pergunta só reabre se a correção da
+   instrumentação mudar os dados de uso e de tickets.
+
+Com isso a feature `validacao-features` fechou como `implementada`: 6 critérios
+provados, nenhuma suposição e nenhuma pergunta em aberto. O `audit --ci` segue
+apontando as duas perguntas do diagnóstico (Q-001 e Q-002), que são da diretoria
+da RavenStack.
+
 ## O que foi descartado de propósito (julgamento, não omissão)
 
 - **Janelas 30/60/90 dias antes do churn** (sugeridas no guia de referência):

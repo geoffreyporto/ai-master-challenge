@@ -1,7 +1,7 @@
 # Spec: Validação das features da referência
 
 > feature: validacao-features
-> status: em-implementacao
+> status: implementada
 
 <!--
   Formato verificado por `onp-spec audit`.
@@ -89,11 +89,11 @@ promessa.
 |---|---|---|---|
 | ASM-007 | O rótulo da referência é "evento de churn não-reativação nos 30 dias seguintes ao snapshot", diferente do rótulo desta entrega (assinatura encerrada em 92 dias) | confirmada | Lido no script da referência (`docs/referencia/screen_ravenstack_features.py`), linhas do bloco `future = churn.loc[...]`. A replicação usa o rótulo da referência para ser comparável. |
 | ASM-008 | Medir as taxas em janela de 90 dias herda o problema de linha do tempo (ASM-004) | confirmada | 76,6% do uso é anterior à assinatura. Por isso a triagem reporta os dois recortes: 90 dias e histórico completo. |
-| ASM-009 | Remover as flags sem data não piora o diagnóstico de forma relevante | aberta | **Medido:** sem as flags, a logística foi de 0,53 para 0,53 e o GBM de 0,52 para 0,53 fora do tempo — não piorou. Falta o dono do produto confirmar que aceita a quarentena como política permanente. |
-| ASM-010 | Plano, assentos, MRR e frequência de cobrança descrevem a assinatura **desde o início**, e não só o estado na extração | aberta | O dataset não tem histórico dessas colunas: se forem mutáveis (como as flags em quarentena), o mesmo problema de data se aplica a elas. Registrado como risco declarado; validação junto com a ação 3 do relatório (instrumentação). |
+| ASM-009 | Remover as flags sem data não piora o diagnóstico de forma relevante | confirmada | **Medido:** sem as flags, a logística ficou em 0,53 e o GBM foi de 0,52 para 0,53 fora do tempo — não piorou. **Confirmada pelo dono do produto em 15/09/2026:** a quarentena (P-009) vale como política permanente, não como experimento. |
+| ASM-010 | Plano, assentos, MRR e frequência de cobrança descrevem a assinatura **desde o início**, e não só o estado na extração | confirmada | **Confirmada pelo dono do produto em 15/09/2026**, com a ressalva registrada: o dataset **não** tem histórico dessas colunas, então isto é uma declaração de negócio, não um fato verificado. Se a instrumentação (ação 3 do relatório) mostrar que são mutáveis, o mesmo problema de data das flags se aplica a elas e a suposição volta a ficar aberta. |
 
 ## Perguntas em aberto
 
 | ID | Pergunta | Status | Resposta |
 |---|---|---|---|
-| Q-003 | Se alguma taxa tiver sinal fora do tempo, ela entra no score de produção (hoje só idade × MRR) ou espera a correção da instrumentação? | aberta | — Decisão do dono do produto, depois de ver `feature_screening.csv`. |
+| Q-003 | Se alguma taxa tiver sinal fora do tempo, ela entra no score de produção (hoje só idade × MRR) ou espera a correção da instrumentação? | respondida | **Respondida pelo dono do produto em 15/09/2026:** nenhuma das três taxas tem sinal (0 significativas após Holm, nos dois recortes de janela), então **nenhuma entra no score de produção** — que segue sendo risco por idade × MRR. A pergunta só se reabre se a correção da instrumentação (ação 3 do relatório) mudar os dados de uso e de tickets; aí vira nova feature de spec. |
