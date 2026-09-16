@@ -72,7 +72,14 @@ casos não há evidência individual da feature.
 | 19 | `response_time_p90_90d` | Support | `t_frt` | 🟡 | Média, não p90 | Benchmark |
 | 20 | `satisfaction_missing_share_90d` | Support | `satisfaction_missing_share` (90d e histórico) | ✅ | — | **Medida:** AUC <!--m:rate_satisfaction_missing_auc_90d-->0,500 e <!--m:rate_satisfaction_missing_auc_all-->0,500 — nenhum sinal; <!--m:csat_missing_pct-->41,2% dos tickets sem nota |
 
-Contagem depois da medição: ✅ 5 · 🟡 11 · ❌ 4 + 3 em quarentena.
+Contagem depois da medição: ✅ 5 · 🟡 8 · ❌ 7 (4 fora + 3 em quarentena).
+
+> **Leitura do status:** a coluna "Equivalente aqui" desta tabela descreve o
+> **painel do diagnóstico** (por assinatura). O painel **por conta** criado no
+> incremento 2 (seção 8) implementa **15 das 20** features da referência e os
+> **8 controles** — as 8 marcadas 🟡 existem lá na forma original. Só ficam de
+> fora as 3 em quarentena (sem data) e as 2 que dependem da linha do tempo de
+> uso (`usage_trend_ratio_90d`, `days_since_last_usage`).
 
 ## 4. Controles contextuais
 
