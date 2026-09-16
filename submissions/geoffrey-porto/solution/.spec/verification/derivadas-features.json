@@ -1,40 +1,30 @@
 {
-  "feature": "validacao-features",
-  "timestamp": "2026-09-16T01:41:44.521Z",
+  "feature": "derivadas-features",
+  "timestamp": "2026-09-16T01:43:35.162Z",
   "gitRev": "c3c45e3",
   "command": "uv run --frozen pytest -q -p no:cacheprovider --tap",
   "reporter": "tap",
   "exitCode": 0,
   "testsParsed": 51,
   "results": {
-    "AC-019": {
+    "AC-027": {
       "status": "pass",
-      "testName": "tests/test_features.py::test_rates_match_hand_calculation @spec:AC-019",
+      "testName": "tests/test_derived.py::test_usage_per_seat_divides_by_active_seats @spec:AC-027",
       "method": "tap"
     },
-    "AC-020": {
+    "AC-028": {
       "status": "pass",
-      "testName": "tests/test_screening.py::test_screening_separates_signal_from_noise @spec:AC-020",
+      "testName": "tests/test_derived.py::test_friction_index_is_empty_without_tickets @spec:AC-028",
       "method": "tap"
     },
-    "AC-021": {
+    "AC-029": {
       "status": "pass",
-      "testName": "tests/test_account_panel.py::test_panel_reproduces_the_reference_design @spec:AC-021",
+      "testName": "tests/test_screening.py::test_derived_features_reach_the_screening @spec:AC-029",
       "method": "tap"
     },
-    "AC-022": {
+    "AC-030": {
       "status": "pass",
-      "testName": "tests/test_account_panel.py::test_account_panel_never_sees_the_future @spec:AC-022",
-      "method": "tap"
-    },
-    "AC-023": {
-      "status": "pass",
-      "testName": "tests/test_screening.py::test_identical_ages_are_called_the_same_signal @spec:AC-023",
-      "method": "tap"
-    },
-    "AC-024": {
-      "status": "pass",
-      "testName": "tests/test_account_panel.py::test_quarantined_flags_are_absent @spec:AC-024 @principle:P-009",
+      "testName": "tests/test_screening.py::test_composite_decomposition_exposes_the_denominator @spec:AC-030",
       "method": "tap"
     }
   },

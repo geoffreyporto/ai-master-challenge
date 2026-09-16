@@ -1,0 +1,5 @@
+feature,n,auc,p_value,direction,papel,spearman_composta_x_denominador,spearman_composta_x_numerador
+1/active_seats,854,0.601300,0.001559,maior = mais risco,inverso do denominador,-0.654000,0.475000
+usage_per_active_seat_90d,854,0.592400,0.003908,maior = mais risco,composta,-0.654000,0.475000
+usage_total_90d,847,0.515300,0.634065,maior = mais risco,numerador,-0.654000,0.475000
+active_seats,854,0.398700,0.001559,menor = mais risco,denominador,-0.654000,0.475000

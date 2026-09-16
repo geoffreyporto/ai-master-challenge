@@ -23,6 +23,9 @@ de origem em `solution/outputs/`.
   virá de uma definição melhor de churn, não de um modelo mais complexo.
 - **Achado que a referência não tem:** a única variável com sinal fora do tempo
   aqui é a **idade da assinatura** (`age_days`), que não está na lista das 20.
+- **Derivadas medidas** (fase B, §8.6): `support_friction_index` não tem sinal;
+  `usage_per_active_seat_90d` parece ter, mas a decomposição mostra que o sinal é
+  do denominador — é "conta pequena" com outro nome.
 - **Medido depois desta matriz** (feature `validacao-features`, seção 8): as três
   taxas da referência foram calculadas e **nenhuma tem sinal** aqui
   (<!--m:rates_significant_n-->0 significativas após Holm); o desenho da
@@ -48,7 +51,7 @@ para comparar 0,144 com o PR-AUC daqui (`oot_validation.csv`).
 
 Legenda: ✅ implementada (com o painel e a coluna que a implementam) · 🔒 em
 quarentena (campo sem data, P-009) · ⛔ excluída pela linha do tempo quebrada ·
-⬜ ainda não construída. **O status vem do registro único
+⬜ ainda não construída (nenhuma, depois da fase B). **O status vem do registro único
 `churn_diag.features.REFERENCE_FEATURES`** e um teste confere que toda feature
 marcada como implementada aponta uma coluna que existe de verdade no painel —
 esta tabela não é mantida à mão.
@@ -103,11 +106,11 @@ ajustado <!--m:segments_min_p_holm-->0,30).
 
 | Controle | Fonte | Onde está aqui | Status | Evidência / motivo |
 |---|---|---|---|---|
-| `usage_per_active_seat_90d` | feature_usage/subscriptions | — | ⬜ | Fase B do plano: `usage_total_90d ÷ max(active_seats, 1)` |
-| `support_friction_index` | support_tickets | — | ⬜ | Fase B: soma de z-scores ajustados só no treino |
+| `usage_per_active_seat_90d` | feature_usage/subscriptions | painel por conta: `usage_per_active_seat_90d` | ✅ | Medida (§8.6): AUC 0,592, significativa por pouco — mas a decomposição mostra que o sinal é do denominador (tamanho da conta) |
+| `support_friction_index` | support_tickets | painel por conta: `support_friction_index` | ✅ | Medida (§8.6): AUC 0,452, sem sinal. Z-scores ajustados só no treino |
 | `commercial_contraction_flag` | subscriptions | — | 🔒 | Bloqueada: depende de duas flags em quarentena |
 
-Cobertura do registro: 23 implementadas · 4 em quarentena · 2 excluídas por linha do tempo · 2 não implementadas (fase B).
+Cobertura do registro: 25 implementadas · 4 em quarentena · 2 excluídas por linha do tempo · 0 não implementadas (fase B).
 
 ## 6. Features só deste projeto
 
@@ -193,6 +196,34 @@ diagnóstico **não piorou** os modelos fora do tempo: a logística ficou em
 <!--m:oot_logit_roc-->0,53 e o GBM em <!--m:oot_gbm_roc-->0,53 (antes, 0,53 e
 0,52). A suposição ASM-009 foi confirmada pelo dono do produto: a quarentena é
 política permanente, não experimento — dá para ser íntegro sem perder poder.
+
+### 8.6 As duas derivadas construíveis (fase B)
+
+| Derivada | AUC | p ajustado (Holm) | Leitura |
+|---|---|---|---|
+| `usage_per_active_seat_90d` | <!--m:derived_usage_per_seat_auc-->0,592 | 0,047 | Significativa **por pouco** — e o sinal não é de uso (ver abaixo) |
+| `support_friction_index` | <!--m:derived_friction_index_auc-->0,452 | 1,000 | Sem sinal. Definido só nas 39% de linhas com ticket na janela |
+
+**A única composta com sinal não é sobre uso — é sobre tamanho.** Antes de virar
+achado, a razão foi decomposta (regra AC-030):
+
+| Papel | Feature | AUC |
+|---|---|---|
+| Inverso do denominador | `1/active_seats` | <!--m:derived_usage_per_seat_inv_seats_auc-->0,601 |
+| Composta | `usage_per_active_seat_90d` | <!--m:derived_usage_per_seat_auc-->0,592 |
+| Numerador | `usage_total_90d` | <!--m:derived_usage_per_seat_numerator_auc-->0,515 (p = 0,63) |
+
+O inverso do denominador sozinho prevê **melhor** que a razão; o numerador não
+prevê nada; e a razão correlaciona
+<!--m:derived_usage_per_seat_rho_denominador-->−0,654 com os assentos ativos. Ou
+seja: `usage_per_active_seat` é "conta pequena" escrito de outro jeito — o mesmo
+sinal que `active_seats` (AUC 0,399) e `active_mrr` (AUC 0,406) já davam.
+
+**Achado descritivo que vale registrar:** no painel por conta, com o rótulo de
+evento de churn, **contas menores saem mais** (assentos e MRR ativos, os dois
+significativos após Holm). Não é o mesmo corte do relatório do CEO, que mede
+churn de MRR por assinatura — mas aponta na mesma direção da recomendação de
+priorizar por dinheiro em risco, e não por tamanho.
 
 ### 8.5 O ranking da referência × a evidência daqui
 

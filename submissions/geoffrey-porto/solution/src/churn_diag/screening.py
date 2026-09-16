@@ -189,3 +189,43 @@ def published_reference_metrics(path=REFERENCE_SCREEN_JSON) -> dict[str, float]:
         "test_roc_auc": float(data["test_roc_auc"]),
         "test_average_precision": float(data["test_average_precision"]),
     }
+
+
+def composite_decomposition(
+    panel: pl.DataFrame, composite: str, numerator: str, denominator: str
+) -> pl.DataFrame:
+    """De onde vem o sinal de uma feature composta: numerador ou denominador?
+
+    Uma razão pode parecer preditiva só porque o denominador é. A tabela põe
+    lado a lado a composta, o numerador e o inverso do denominador — e a
+    correlação da composta com o denominador.
+    """
+    d = panel.with_columns(
+        (1 / pl.col(denominator).cast(pl.Float64).clip(1e-9)).alias(f"1/{denominator}")
+    )
+    features = [composite, numerator, denominator, f"1/{denominator}"]
+    papel = {
+        composite: "composta",
+        numerator: "numerador",
+        denominator: "denominador",
+        f"1/{denominator}": "inverso do denominador",
+    }
+    screening = univariate_screening(d, features).select(
+        "feature", "n", "auc", "p_value", "direction"
+    )
+    pairs = d.select(composite, denominator, numerator).drop_nulls()
+    rho_den = float(
+        stats.spearmanr(
+            pairs[composite].to_numpy(), pairs[denominator].to_numpy()
+        ).statistic
+    )
+    rho_num = float(
+        stats.spearmanr(
+            pairs[composite].to_numpy(), pairs[numerator].to_numpy()
+        ).statistic
+    )
+    return screening.with_columns(
+        papel=pl.col("feature").replace_strict(papel, default="—"),
+        spearman_composta_x_denominador=round(rho_den, 3),
+        spearman_composta_x_numerador=round(rho_num, 3),
+    ).sort("auc", descending=True)

@@ -1,11 +1,11 @@
 {
   "feature": "diagnostico-churn",
-  "timestamp": "2026-09-16T01:24:43.272Z",
-  "gitRev": "4acf6da",
+  "timestamp": "2026-09-16T01:40:29.894Z",
+  "gitRev": "c3c45e3",
   "command": "uv run --frozen pytest -q -p no:cacheprovider --tap",
   "reporter": "tap",
   "exitCode": 0,
-  "testsParsed": 46,
+  "testsParsed": 51,
   "results": {
     "AC-001": {
       "status": "pass",

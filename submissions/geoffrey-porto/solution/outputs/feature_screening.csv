@@ -1,8 +1,10 @@
 feature,n,n_pos,auc,p_value,p_holm,direction,abs_lift,significant
-tenure_days,854,91,0.339700,0.000001,0.000007,menor = mais risco,0.160300,true
-min_sub_age_days,854,91,0.390200,0.000609,0.007303,menor = mais risco,0.109800,true
-active_mrr,854,91,0.405500,0.003191,0.035103,menor = mais risco,0.094500,true
+tenure_days,854,91,0.339700,0.000001,0.000008,menor = mais risco,0.160300,true
+min_sub_age_days,854,91,0.390200,0.000609,0.008521,menor = mais risco,0.109800,true
+active_mrr,854,91,0.405500,0.003191,0.041486,menor = mais risco,0.094500,true
+usage_per_active_seat_90d,854,91,0.592400,0.003908,0.046892,maior = mais risco,0.092400,true
 annual_share,854,91,0.451100,0.125617,1.000000,menor = mais risco,0.048900,false
+support_friction_index,356,43,0.451800,0.305798,1.000000,menor = mais risco,0.048200,false
 satisfaction_mean_90d,238,30,0.545900,0.391658,1.000000,maior = mais risco,0.045900,false
 errors_per_100_uses_all,854,91,0.528500,0.373356,1.000000,maior = mais risco,0.028500,false
 escalation_rate_90d,356,43,0.473600,0.205202,1.000000,menor = mais risco,0.026400,false
