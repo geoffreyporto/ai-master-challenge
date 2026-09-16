@@ -18,6 +18,7 @@ from typing import Final
 
 import polars as pl
 
+from churn_diag.config import REGIME_BREAK
 from churn_diag.features import (
     DERIVED_FEATURES,
     TIMELINE_UNRELIABLE,
@@ -176,6 +177,7 @@ def build_account_panel(
             .join(_label(t, t0, horizon_days), on="account_id", how="left")
             .with_columns(
                 snapshot_date=pl.lit(t0),
+                regime=pl.lit("depois" if t0 >= REGIME_BREAK else "antes"),
                 tenure_days=(pl.lit(t0) - pl.col("signup_date")).dt.total_days(),
                 y=pl.col("y").fill_null(0),
             )
@@ -186,6 +188,7 @@ def build_account_panel(
     return panel.select(
         "account_id",
         "snapshot_date",
+        "regime",
         "y",
         *ACCOUNT_NUMERIC,
         *ACCOUNT_CATEGORICAL,

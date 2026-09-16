@@ -33,6 +33,9 @@ SNAPSHOT_DATE: Final[date] = date(2024, 12, 31)
 REFERENCE_START: Final[date] = date(2024, 1, 1)
 REFERENCE_END: Final[date] = date(2024, 9, 30)
 TARGET_START: Final[date] = date(2024, 10, 1)
+# Quebra de set-out/2024 (ASM-006): um snapshot é "depois" quando a janela do
+# rótulo cai no 4º tri — ou seja, a partir do corte de 30/09/2024.
+REGIME_BREAK: Final[date] = date(2024, 9, 30)
 TARGET_END: Final[date] = date(2024, 12, 31)
 PANEL_START: Final[date] = date(2023, 1, 1)
 

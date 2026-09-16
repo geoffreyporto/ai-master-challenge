@@ -77,7 +77,7 @@ def univariate_screening(
     )
 
 
-def _matrix(
+def build_matrix(
     df: pl.DataFrame,
     numeric: list[str],
     categorical: list[str],
@@ -114,8 +114,8 @@ def _gbm() -> HistGradientBoostingClassifier:
 def _fit_score(
     train: pl.DataFrame, test: pl.DataFrame, numeric: list[str], categorical: list[str]
 ) -> tuple[float, float]:
-    x_tr, cats = _matrix(train, numeric, categorical)
-    x_te, _ = _matrix(test, numeric, categorical, cats)
+    x_tr, cats = build_matrix(train, numeric, categorical)
+    x_te, _ = build_matrix(test, numeric, categorical, cats)
     model = _gbm().fit(x_tr, train["y"].to_numpy())
     p = model.predict_proba(x_te)[:, 1]
     y = test["y"].to_numpy()
