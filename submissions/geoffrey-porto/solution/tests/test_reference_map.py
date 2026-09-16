@@ -1,0 +1,97 @@
+"""O mapa entre as features da referência e o que este projeto implementa.
+
+Sem este teste, a matriz publicada em `docs/04-matriz-de-features.md` volta a
+ser mantida à mão — e a envelhecer em silêncio (foi o que aconteceu: a contagem
+publicada dizia 11 parciais quando a tabela tinha 8).
+"""
+
+from __future__ import annotations
+
+import re
+
+from churn_diag.account_panel import ACCOUNT_CATEGORICAL, ACCOUNT_NUMERIC
+from churn_diag.config import SOLUTION_ROOT
+from churn_diag.features import (
+    IMPLEMENTADA,
+    REFERENCE_FEATURES,
+    STATUS_EMOJI,
+    reference_counts,
+)
+from churn_diag.risk import CAT_FEATURES, NUMERIC_FEATURES
+
+MATRIX_DOC = SOLUTION_ROOT.parent / "docs" / "04-matriz-de-features.md"
+PANEL_COLUMNS = {
+    "conta": set(ACCOUNT_NUMERIC) | set(ACCOUNT_CATEGORICAL),
+    "diagnostico": set(NUMERIC_FEATURES) | set(CAT_FEATURES),
+}
+# Tamanhos declarados no documento da referência (docs/referencia/).
+REFERENCE_SIZES = {"feature": 20, "controle": 8, "derivada": 3}
+
+
+def test_registry_covers_the_whole_reference() -> None:
+    """@spec:AC-025 — 20 features, 8 controles e 3 derivadas, sem repetição."""
+    sizes: dict[str, int] = {}
+    for f in REFERENCE_FEATURES:
+        sizes[f.group] = sizes.get(f.group, 0) + 1
+    assert sizes == REFERENCE_SIZES
+    names = [f.name for f in REFERENCE_FEATURES]
+    assert len(names) == len(set(names))
+
+
+def test_implemented_features_point_to_real_columns() -> None:
+    """@spec:AC-025 — "implementada" só vale se a coluna existe no painel indicado."""
+    for f in REFERENCE_FEATURES:
+        if f.status != IMPLEMENTADA:
+            continue
+        assert f.columns, f"{f.name} marcada implementada sem coluna"
+        for panel, column in f.columns:
+            assert panel in PANEL_COLUMNS, f"{f.name}: painel desconhecido {panel}"
+            assert column in PANEL_COLUMNS[panel], f"{f.name}: {panel} não tem {column}"
+
+
+def test_unimplemented_features_state_a_reason() -> None:
+    """@spec:AC-025 — o que não existe diz por quê, e não finge ter coluna."""
+    for f in REFERENCE_FEATURES:
+        if f.status == IMPLEMENTADA:
+            continue
+        assert not f.columns, f"{f.name} não implementada mas aponta coluna"
+        assert len(f.reason) > 20, f"{f.name} sem motivo escrito"
+
+
+def _matrix_rows() -> list[str]:
+    """Linhas das tabelas do registro (seções 3 a 5 do documento)."""
+    doc = MATRIX_DOC.read_text(encoding="utf-8")
+    block = doc[doc.index("## 3. Matriz das 20 features") : doc.index("## 6. Features")]
+    return [line for line in block.splitlines() if line.startswith("|")]
+
+
+def test_doc_table_matches_the_registry() -> None:
+    """@spec:AC-026 — cada feature aparece na tabela com o status do registro."""
+    rows = _matrix_rows()
+    for f in REFERENCE_FEATURES:
+        matching = [r for r in rows if f"`{f.name}`" in r]
+        assert len(matching) == 1, f"{f.name}: {len(matching)} linhas na tabela"
+        assert STATUS_EMOJI[f.status] in matching[0], (
+            f"{f.name}: status do documento difere do registro ({f.status})"
+        )
+
+
+def test_doc_publishes_the_registry_counts() -> None:
+    """@spec:AC-026 — a contagem publicada é a do registro, não uma conta à mão."""
+    doc = MATRIX_DOC.read_text(encoding="utf-8")
+    line = next(
+        ln for ln in doc.splitlines() if ln.startswith("Cobertura do registro:")
+    )
+    published = [
+        int(n)
+        for n in re.findall(
+            r"(\d+)\s+(?:implementadas|em quarentena|excluídas|não implementadas)", line
+        )
+    ]
+    counts = reference_counts()
+    assert published == [
+        counts["implementada"],
+        counts["quarentena"],
+        counts["excluida_linha_do_tempo"],
+        counts["nao_implementada"],
+    ]
