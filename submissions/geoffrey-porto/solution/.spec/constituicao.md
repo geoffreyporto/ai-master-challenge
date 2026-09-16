@@ -81,3 +81,13 @@ O pipeline nunca escreve no diretório dos CSVs originais; toda saída vai para
 registradas no relatório de qualidade.
 
 - verificação(proibido): `write_csv\(\s*(DATA_DIR|data_dir)` em `src/**/*.py`
+
+## P-009 [DEVE] Campo sem data não vira feature preditiva
+
+`upgrade_flag`, `downgrade_flag` e `auto_renew_flag` não têm carimbo de tempo:
+não dá para provar que descrevem o cliente ANTES do corte. Ficam numa lista de
+quarentena única (`features.QUARANTINED_UNDATED`) e fora de qualquer matriz de
+features, no diagnóstico e no painel por conta.
+
+- verificação(proibido): `(upgrade|downgrade|auto_renew)_flag` em `src/churn_diag/risk.py`
+- verificação(teste): @principle:P-009
