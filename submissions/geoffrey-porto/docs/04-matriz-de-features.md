@@ -23,6 +23,10 @@ de origem em `solution/outputs/`.
   virá de uma definição melhor de churn, não de um modelo mais complexo.
 - **Achado que a referência não tem:** a única variável com sinal fora do tempo
   aqui é a **idade da assinatura** (`age_days`), que não está na lista das 20.
+- **Linha do tempo medida sob bandeira** (fase C, §8.7): consertar a
+  instrumentação de uso levaria a tendência de 0,51 para ~0,55 de AUC, ainda sem
+  significância — o motivo para consertar é product analytics, não o modelo. Os
+  seis itens que seguem bloqueados viraram contrato de dados (§8.8).
 - **Derivadas medidas** (fase B, §8.6): `support_friction_index` não tem sinal;
   `usage_per_active_seat_90d` parece ter, mas a decomposição mostra que o sinal é
   do denominador — é "conta pequena" com outro nome.
@@ -51,7 +55,7 @@ para comparar 0,144 com o PR-AUC daqui (`oot_validation.csv`).
 
 Legenda: ✅ implementada (com o painel e a coluna que a implementam) · 🔒 em
 quarentena (campo sem data, P-009) · ⛔ excluída pela linha do tempo quebrada ·
-⬜ ainda não construída (nenhuma, depois da fase B). **O status vem do registro único
+⚠️ medida sob bandeira (existe só para medição, nunca no score). **O status vem do registro único
 `churn_diag.features.REFERENCE_FEATURES`** e um teste confere que toda feature
 marcada como implementada aponta uma coluna que existe de verdade no painel —
 esta tabela não é mantida à mão.
@@ -68,8 +72,8 @@ esta tabela não é mantida à mão.
 | 8 | `downgrade_share` | subscriptions | — | 🔒 | Em quarentena (P-009) |
 | 9 | `active_seats` | subscriptions | painel por conta: `active_seats` | ✅ | Não medida isoladamente |
 | 10 | `usage_total_90d` | feature_usage | painel por conta: `usage_total_90d` | ✅ | Medida: AUC 0,52, sem significância. No agregado, uso parado em 2024 e queda de 83,2% por assinatura ativa (H4) |
-| 11 | `usage_trend_ratio_90d` | feature_usage | — | ⛔ | Excluída: 76,6% do uso é anterior ao início da assinatura — a tendência mediria datas erradas |
-| 12 | `days_since_last_usage` | feature_usage | — | ⛔ | Excluída pelo mesmo motivo; há uso registrado até depois do fim da assinatura |
+| 11 | `usage_trend_ratio_90d` | feature_usage | triagem: `usage_trend_ratio_90d_bruto` · `…_consistente` | ⚠️ | Medida sob bandeira (§8.7): AUC 0,510 no bruto e 0,554 no recorte consistente, sem significância. Fora do score |
+| 12 | `days_since_last_usage` | feature_usage | triagem: `days_since_last_usage_bruto` · `…_consistente` | ⚠️ | Medida sob bandeira (§8.7): AUC 0,473 e 0,463, sem significância. Fora do score |
 | 13 | `feature_breadth_90d` | feature_usage | painel por conta: `feature_breadth_90d` | ✅ | Não medida isoladamente |
 | 14 | `usage_duration_90d` | feature_usage | painel por conta: `usage_duration_90d` | ✅ | Não medida isoladamente |
 | 15 | `errors_per_100_uses_90d` | feature_usage | painel por conta: `errors_per_100_uses_90d` | ✅ | Medida: AUC 0,525 (90 dias) e 0,528 (histórico) — sem significância (§8.2) |
@@ -110,7 +114,7 @@ ajustado <!--m:segments_min_p_holm-->0,30).
 | `support_friction_index` | support_tickets | painel por conta: `support_friction_index` | ✅ | Medida (§8.6): AUC 0,452, sem sinal. Z-scores ajustados só no treino |
 | `commercial_contraction_flag` | subscriptions | — | 🔒 | Bloqueada: depende de duas flags em quarentena |
 
-Cobertura do registro: 25 implementadas · 4 em quarentena · 2 excluídas por linha do tempo · 0 não implementadas (fase B).
+Cobertura do registro: 25 implementadas · 4 em quarentena · 2 medidas sob bandeira.
 
 ## 6. Features só deste projeto
 
@@ -224,6 +228,38 @@ evento de churn, **contas menores saem mais** (assentos e MRR ativos, os dois
 significativos após Holm). Não é o mesmo corte do relatório do CEO, que mede
 churn de MRR por assinatura — mas aponta na mesma direção da recomendação de
 priorizar por dinheiro em risco, e não por tamanho.
+
+### 8.7 Quanto valeria consertar a linha do tempo (fase C)
+
+As duas features que dependem da data do uso foram construídas **sob bandeira**:
+medidas, nunca usadas no score (um teste garante que não aparecem no painel do
+diagnóstico, na replicação nem na lista do CS). Cada uma foi medida em dois
+recortes — o dado bruto e o subconjunto consistente (uso cuja data cai dentro da
+janela da assinatura: 5.568 dos 25.000 eventos, 22,3%).
+
+| Feature | AUC no dado bruto | AUC no recorte consistente | Significativa? |
+|---|---|---|---|
+| `usage_trend_ratio_90d` | <!--m:timeline_trend_auc_bruto-->0,510 | <!--m:timeline_trend_auc_consistente-->0,554 | não |
+| `days_since_last_usage` | <!--m:timeline_recency_auc_bruto-->0,473 | <!--m:timeline_recency_auc_consistente-->0,463 | não |
+
+**Resposta para a diretoria:** consertar a instrumentação de uso levaria a
+tendência de uso de 0,51 para ~0,55 de AUC — ainda sem significância
+(<!--m:timeline_significant_n-->0 das 4 medições). Ou seja, **pelo que dá para
+medir hoje, a correção não compra um modelo melhor**. O motivo para fazê-la é
+outro: sem ela, o time de produto não consegue medir adoção, e metade dos
+indicadores de uso do board não significa o que diz.
+
+**Ressalva:** o recorte consistente tem menos linhas (739 contra 847) e o
+próprio filtro seleciona contas — é um limite inferior do ganho, não uma medida
+definitiva.
+
+### 8.8 O que ficou bloqueado e o pedido a Engenharia (fase D)
+
+Seis itens continuam bloqueados por falta de dado: as três flags sem data, a
+derivada que depende delas e as duas features de linha do tempo. Cada um virou
+uma linha em [`05-contrato-de-dados.md`](05-contrato-de-dados.md), com o campo
+que falta e o **teste de aceitação** que o destrava — e um teste automático
+garante que nenhum item bloqueado fica sem pedido correspondente.
 
 ### 8.5 O ranking da referência × a evidência daqui
 
