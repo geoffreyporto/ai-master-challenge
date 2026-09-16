@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RavenStack — Painéis de churn</title>
+    <meta
+      name="description"
+      content="Cinco painéis (CEO, Vendas, Marketing, Financeiro, Operações) com métricas e KPIs do diagnóstico de churn da RavenStack."
+    />
+    <!-- Tudo local: a página abre por file:// e funciona sem internet. -->
+    <script src="vendor/tailwind-play.js"></script>
+    <script src="vendor/d3.v7.min.js"></script>
+    <style>
+      /* CSS3 próprio para o que Tailwind não cobre sem build. */
+      :root {
+        color-scheme: light;
+        --tinta: #1b1b1a;
+        --papel: #fbfaf8;
+      }
+      body {
+        background:
+          radial-gradient(60rem 30rem at 80% -10%, #eef4fb 0%, transparent 60%),
+          var(--papel);
+        color: var(--tinta);
+        font-feature-settings: "tnum" 1;
+      }
+      .trilho::-webkit-scrollbar {
+        height: 6px;
+      }
+      .trilho::-webkit-scrollbar-thumb {
+        background: #d6d3ce;
+        border-radius: 999px;
+      }
+      svg text {
+        font-family: inherit;
+      }
+      @media print {
+        .sem-impressao {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body class="min-h-screen antialiased">
+    <div class="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+      <header class="mb-6">
+        <p class="text-xs font-medium uppercase tracking-widest text-stone-500">
+          RavenStack · diagnóstico de churn
+        </p>
+        <h1 class="mt-1 text-3xl font-semibold tracking-tight text-stone-900">
+          Painéis de decisão
+        </h1>
+        <p class="mt-2 max-w-3xl text-sm leading-relaxed text-stone-600">
+          Cinco visões, cada uma com os quatro níveis de análise — descritivo,
+          diagnóstico, preditivo e prescritivo. Os números vêm do pipeline
+          (<code class="rounded bg-stone-200 px-1 py-0.5 text-[12px]">outputs/metrics.json</code>)
+          e das cinco tabelas do dataset; nada é digitado à mão nesta página.
+        </p>
+      </header>
+
+      <nav
+        id="abas"
+        class="trilho sem-impressao mb-8 flex gap-1 overflow-x-auto rounded-lg bg-stone-100 p-1"
+        aria-label="Escolha do painel"
+      ></nav>
+
+      <main id="painel"></main>
+
+      <footer
+        id="rodape"
+        class="mt-10 border-t border-stone-200 pt-4 text-xs leading-relaxed text-stone-500"
+      ></footer>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

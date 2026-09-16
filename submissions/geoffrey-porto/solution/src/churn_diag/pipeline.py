@@ -23,8 +23,27 @@ from churn_diag.account_panel import (
     build_account_panel,
     split_train_test,
 )
-from churn_diag.config import AGE_BUCKETS, CONTROL_SIGMA, YOUNG_AGE_DAYS, Settings
-from churn_diag.dml import OverlapError, dml_effect
+from churn_diag.config import (
+    AGE_BUCKETS,
+    CONTROL_SIGMA,
+    SOLUTION_ROOT,
+    YOUNG_AGE_DAYS,
+    Settings,
+)
+from churn_diag.dashboards import build_payload, write_payload
+from churn_diag.dml import OverlapError, cate_quantiles, dml_effect
+from churn_diag.explainability import (
+    AUDIT_FEATURES,
+    arrays_from_tidy,
+    beeswarm,
+    cate_staircase,
+    dependence,
+    environment_heatmap,
+    run_audit,
+    score_contributions,
+    tidy_shapley,
+    waterfall,
+)
 from churn_diag.features import DERIVED_FEATURES, QUARANTINED_UNDATED, RATE_FEATURES
 from churn_diag.hypotheses import Context, findings_frame, invariance_table, run_all
 from churn_diag.impact import ab_test_design, excess_mrr, recovery_scenarios
@@ -102,6 +121,14 @@ DML_CATEGORICAL: tuple[str, ...] = (
     "country",
     "referral_source",
 )
+
+
+def run_cate(panel: pl.DataFrame) -> pl.DataFrame:
+    """Escada de CATE do caso da cobrança anual, medida fora da amostra (AC-042)."""
+    base = panel.with_columns(anual=(pl.col("annual_share") > 0.5).cast(pl.Int8))
+    return cate_quantiles(
+        base, "anual", "y", (DML_NUMERIC, (*DML_CATEGORICAL, "regime"))
+    )
 
 
 def run_dml_use_cases(panel: pl.DataFrame) -> pl.DataFrame:
@@ -224,6 +251,11 @@ def analyse(t: Tables, cs_top_n: int) -> Result:
     published = published_reference_metrics()
     ages = age_signal_comparison(acc_panel)
     dml = run_dml_use_cases(acc_panel)
+    cate = run_cate(acc_panel)
+    audit = run_audit(t)
+    shapley = audit.frame.with_columns(valor_base=pl.lit(audit.base))
+    conta_exemplo = cs["account_id"][0]
+    score_conta = score_contributions(sub_risk, conta_exemplo)
     decomposition = composite_decomposition(
         acc_test, "usage_per_active_seat_90d", "usage_total_90d", "active_seats"
     )
@@ -494,6 +526,16 @@ def analyse(t: Tables, cs_top_n: int) -> Result:
         ),
         "age_roc_both": float(ages.filter(pl.col("modelo") == "as duas")["roc_auc"][0]),
         "age_gain_both": float(ages["ganho_ao_juntar"][0]),
+        "xai_features_n": len(AUDIT_FEATURES),
+        "xai_audit_roc": audit.audit_roc,
+        "xai_efficiency_error": float(audit.efficiency_error),
+        "xai_top_feature_abs_shapley": float(shapley["mean_abs_shapley"][0]),
+        "xai_top_feature_pp": round(100 * float(shapley["mean_abs_shapley"][0]), 2),
+        "xai_sign_flip_n": int(shapley["troca_de_sinal"].sum()),
+        "cate_spread_pp": round(100 * float(cate["spread"][0]), 2),
+        "cate_max_se_pp": round(100 * float(cate["erro_padrao"].max()), 2),
+        "cate_heterogeneidade": int(bool(cate["heterogeneidade"][0])),
+        "xai_score_subs_n": int(score_conta.height),
     }
     report = {
         k: (v.item() if isinstance(v, np.generic) else v) for k, v in report.items()
@@ -511,6 +553,10 @@ def analyse(t: Tables, cs_top_n: int) -> Result:
         "feature_screening": screening,
         "age_comparison": ages,
         "dml_use_cases": dml,
+        "cate_quantiles": cate,
+        "shapley_summary": shapley,
+        "shapley_values": tidy_shapley(audit),
+        "score_explicado": score_conta,
         "derived_decomposition": decomposition,
         "account_panel_metrics": pl.DataFrame(
             [
@@ -567,11 +613,45 @@ def write_outputs(result: Result, out_dir: Path) -> list[Path]:
             tb["oot_validation"], fig_dir / "05_validacao_fora_do_tempo.png"
         ),
     ]
+    written += _explainability_figures(tb, fig_dir)
     return written
+
+
+def _explainability_figures(tb: dict[str, pl.DataFrame], fig_dir: Path) -> list[Path]:
+    """Figuras 06–10: as cinco de explicabilidade, reconstruídas do CSV longo."""
+    phi, x, nomes, _ = arrays_from_tidy(tb["shapley_values"])
+    base = float(tb["shapley_summary"]["valor_base"][0])
+    top = int(np.argmax(np.abs(phi).sum(axis=1)))
+    return [
+        beeswarm(phi, x, nomes, fig_dir / "06_contribuicao_por_variavel.png"),
+        dependence(
+            phi,
+            x,
+            nomes,
+            feature="tenure_days",
+            interaction="mrr_amount",
+            path=fig_dir / "07_dependencia_tempo_de_casa.png",
+        ),
+        waterfall(
+            phi[top],
+            x[top],
+            nomes,
+            base=base,
+            path=fig_dir / "08_conta_explicada.png",
+        ),
+        environment_heatmap(
+            tb["shapley_summary"], fig_dir / "09_contribuicao_por_ambiente.png"
+        ),
+        cate_staircase(tb["cate_quantiles"], fig_dir / "10_escada_de_cate.png"),
+    ]
 
 
 def run(settings: Settings) -> Result:
     tables = load_tables(settings.data_dir)
     result = analyse(tables, settings.cs_top_n)
     write_outputs(result, settings.out_dir)
+    write_payload(
+        build_payload(tables, result.report, result.tables),
+        SOLUTION_ROOT / "dashboard" / "data.js",
+    )
     return result
