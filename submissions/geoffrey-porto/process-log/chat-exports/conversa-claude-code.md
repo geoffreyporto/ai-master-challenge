@@ -1329,3 +1329,200 @@ Three things. Starting with the chat export — loading the export tool.
 
 ---
 
+
+### Candidato — 2026-09-16 04:12
+
+*(anexo: `Model interpretability explainability plots.md`)*
+
+Implement the defined explainability graphs in a file and integrate with the report.
+
+## Disturbing quests
+- Is it a solution or a real problem?
+- Does anyone understand and act on what you delivered?
+- Does the predictive churn model work?
+- What automation or CS time could be used?
+- Which analysis would be most relevant and high-impact for business?
+
+## Quality criteria / ## Considerations
+*(critérios de avaliação do desafio e cinco considerações: cruzar uso de features
+com eventos de churn; tickets de quem saiu vs. quem ficou; "o uso cresceu" vale
+para todos os segmentos?; nem todo churn pesa igual, US$ 50 vs US$ 5.000;
+cuidado com conclusões apressadas)*
+
+Generate a file .md answering these questions.
+
+---
+
+### Claude Code (Opus 5) — 2026-09-16 05:10
+
+Duas entregas.
+
+**Explicabilidade como auditoria (7ª feature da spec).** A `shap` não instala em
+Python 3.14 — depende de `numba`, que só vai até 3.9. Em vez de rebaixar o
+Python, os valores de Shapley saem **exatos**, por enumeração das 256 coalizões
+(8 variáveis), com função de valor intervencional. Erro de eficiência:
+2,9 × 10⁻¹⁷ — e isso virou o `AC-040`, não uma afirmação no texto.
+
+Os cinco gráficos pedidos (beeswarm, dependência, waterfall, heatmap por
+ambiente, escada de CATE) viraram as figuras 06–10, mais um sexto específico
+desta entrega: o waterfall **exato** do score de produção, que soma US$ a US$ a
+perda esperada da conta.
+
+O que a auditoria mostrou, e que vale mais que os gráficos: o ROC fora do tempo
+do modelo de auditoria é 0,5084, a nuvem de cada variável está centrada em zero,
+a mais influente move o risco em 1,01 p.p. — e **3 das 8 variáveis trocam de
+sinal entre indústrias**. Não é efeito fraco; é ausência de efeito lida como
+padrão por amostra pequena.
+
+A escada de CATE (DR-learner, quantis formados em metade das contas e efeito
+medido na outra metade) saiu **plana**: amplitude de 4,61 p.p. contra erro-padrão
+de até 4,79 p.p. Não há subgrupo a mirar — coerente com o efeito médio nulo.
+
+**`docs/07-perguntas-incomodas.md`.** As cinco perguntas, os cinco critérios e as
+cinco considerações, com todo número marcado e conferido contra o pipeline
+(o arquivo entrou no portão de rastreabilidade com no mínimo 60 marcas).
+
+As respostas curtas: é **problema de verdade**, e o problema é de instrumentação
+antes de ser de churn. O modelo preditivo **não funciona** — e a linha mais
+desconfortável da tabela é que ordenar por MRR, sem modelo nenhum, captura 58,2%
+do MRR que sai contra 10,3% do GBM. "O uso cresceu" é **falso por assinatura**
+(−83,2%): o total está plano e a base quintuplicou. E a análise de maior impacto
+é a que eu **não** consegui fazer: descobrir o que mudou entre setembro e outubro
+de 2024, que vale US$ 662 mil de MRR excedente.
+
+---
+
+### Candidato — 2026-09-16 05:24
+
+Very important: Clearly document the entire software tech stack used (Python,
+Polars, rtk, archify, graphify, etc.) and development best practices (CRISP-DM,
+SDD, SOLID, DRY, etc.), including tools for compression and token savings.
+
+---
+
+### Claude Code (Opus 5) — 2026-09-16 05:31
+
+`docs/08-stack-e-praticas.md`, com as versões conferidas na máquina, não de
+memória: Python 3.14.0, Polars 1.44.2, NumPy 2.5.3, SciPy 1.18.1,
+scikit-learn 1.9.1, Matplotlib 3.11.2, uv 0.12.13, ruff 0.16.7, pytest 9.1.1.
+
+Inclui o que **não** entrou e por quê (pandas, seaborn, xgboost, statsmodels), a
+tabela de práticas com o arquivo onde cada uma se materializa, e a seção sobre a
+restrição do Python 3.14 que produziu o Shapley exato.
+
+Sobre o ferramental de tokens, mantive factual em vez de elogioso:
+
+- **rtk 0.42.0** — real, por hook, 72,8 M de tokens poupados em 7.610 comandos
+  (94,1%). Ressalva registrada no próprio documento: `rtk gain` reporta o
+  contador **global da máquina**, não um recorte deste projeto.
+- **graphify 0.9.32** — instalado, **não usado** nesta entrega. Registrado como
+  tal para não dar a entender que o grafo sustentou alguma conclusão.
+- **archify** — **não instalado** nesta máquina, não usado.
+
+---
+
+### Candidato — 2026-09-16 05:44
+
+Concrete analysis: cross-reference the churn series with a **business event log**
+and run a time-series interruption study. Is this possible? How?
+
+---
+
+### Claude Code (Opus 5) — 2026-09-16 05:47
+
+Metade é possível hoje; a metade que atribui causa, não — e a divisão é
+exatamente onde está o buraco de instrumentação.
+
+**Possível agora:** a série existe (painel de exposição), a data da quebra pode
+ser *encontrada* por busca de ponto de mudança (deviance de Poisson) em vez de
+estimada a olho, e o contrafactual é o segmento pré-quebra extrapolado — mas
+**padronizado por idade**, senão o ITS credita à quebra o churn que é só a base
+tendo ficado mais jovem (ela quintuplicou em 2024). Modelo: Poisson/binomial
+negativa segmentada com `log(exposição)` como offset.
+
+**Impossível sem o log:** ITS é quase-experimento cuja hipótese de identificação
+é "nada mais mudou naquela data". Com uma série e uma quebra, preço, release,
+concorrente e *mudança na forma de registrar churn* explicam igualmente bem — e
+os 80% de desacordo entre as duas definições de churn fazem da última uma
+hipótese viva. Sem nome, o efeito não vira decisão.
+
+Ressalva de tamanho: ~3 pontos pós-quebra. ITS quer 8–12 por segmento. Qualquer
+intervalo sairia largo, e eu teria que dizer isso.
+
+**O pedido concreto:** uma tabela de seis colunas — `event_date`, `event_type`,
+`scope`, `description`, `owner`, `source_ref` — preenchível retroativamente a
+partir de release notes, aprovações de preço, calendário de campanha e tickets de
+incidente. Com vários eventos em datas distintas, o desenho deixa de ser um ITS
+de quebra única e vira um ITS escalonado, onde eventos que atingem segmentos
+diferentes em momentos diferentes se identificam mutuamente. É isso que torna a
+atribuição possível — não um modelo melhor.
+
+---
+
+### Candidato — 2026-09-16 06:02
+
+*(anexo: `09-Dashboards - Metrics and KPIs.md`)*
+
+We need to present dashboards featuring metrics and KPIs to support
+decision-making. Generate a webpage (client-side only) using HTML, TypeScript,
+Tailwind CSS, CSS3, D3.js, etc., capable of displaying all dashboards
+(CEO, Sales, Marketing, Finance, and Operations) with actionable metrics and KPIs.
+
+---
+
+### Claude Code (Opus 5) — 2026-09-16 07:05
+
+Página em `solution/dashboard/`: HTML + TypeScript compilado por `tsc` para um
+`app.js` versionado, Tailwind + CSS3 próprio, D3 v7. `d3` e `tailwind`
+**vendorizados** (671 KB) — a página abre por `file://`, sem servidor e sem
+internet, na máquina do avaliador daqui a seis meses. Os dados vêm de
+`data.js`, gerado pelo pipeline; `fetch` em `file://` esbarraria em CORS.
+
+Duas coisas que valem registro.
+
+**Um número pego antes de embarcar.** A primeira versão da agregação mensal do
+painel deu 6,75% de churn de MRR em dezembro; o relatório diz 3,52%. Numerador e
+denominador de coortes diferentes. A correção foi delegar a `monthly_churn`, a
+função canônica, em vez de recalcular — e o `AC-047` agora prende os dois
+números juntos. Um painel que discorda do relatório vale menos que nenhum painel.
+
+**Os quadrantes vazios são deliberados.** O documento pede CAC, LTV, ROI de
+mídia, frequência de login, descontos e fluxo de caixa. Nada disso existe nas
+cinco tabelas. Em vez de preencher com estimativa plausível, cada painel termina
+com "O que este painel NÃO mostra", listando o KPI e o motivo. O teste
+`test_kpi_impossivel_nao_vira_numero` varre os rótulos atrás de `cac`, `ltv`,
+`roas`, `verba` e `login`: se alguém adicionar um desses cartões, a suíte quebra.
+
+Os painéis também carregam as leituras incômodas em vez de escondê-las: nenhuma
+vertical se separa depois de Holm, canal não prevê quem fica, reembolsos somam
+US$ 8.652 contra US$ 662 mil de MRR excedente perdido, e os tempos de resolução
+são idênticos entre prioridades — a fila não está sendo priorizada.
+
+Oitava feature da spec (`paineis`, US-016, AC-044 a AC-047), 8 testes novos,
+`docs/10-paineis-por-stakeholder.md` com a tabela completa de lacunas. Suíte:
+**86 testes passando**.
+
+---
+
+### Candidato — 2026-09-16 07:12
+
+update now: the screenshots and the chat export.
+
+---
+
+### Claude Code (Opus 5) — 2026-09-16 07:30
+
+Feito. As capturas agora existem porque passou a haver algo visual que os logs
+não cobrem: a página dos painéis. São as cinco páginas **inteiras**, do cabeçalho
+ao rodapé — inclusive a seção "O que este painel NÃO mostra", que é a parte que
+um print de dashboard normalmente corta.
+
+Não são fotos de tela: a página foi servida localmente, renderizada em viewport
+de 1.360 px e capturada via `html2canvas`, o que qualquer pessoa reproduz com
+dois comandos. O `README.md` da pasta explica o método e mantém a posição
+original — imagem não é verificável, então ela é a **quinta** forma de evidência
+desta entrega, não a única.
+
+Este export foi atualizado até aqui.
+
+---

@@ -35,8 +35,9 @@ em jogo, US$ <!--m:excess_mrr_per_month_k-->221 mil de MRR por mês acima do nor
 | Lista de contas para o CS (50, com motivo e ação) | [`solution/outputs/cs_priority_accounts.csv`](solution/outputs/cs_priority_accounts.csv) |
 | Pipeline reprodutível (Python 3.14 + Polars) | [`solution/src/churn_diag/`](solution/src/churn_diag/) |
 | Notebook técnico (CRISP-DM, executado) | [`solution/notebooks/diagnostico_churn.ipynb`](solution/notebooks/diagnostico_churn.ipynb) |
-| Especificação SDD (2 features: diagnóstico e validação de features) | [`solution/.spec/`](solution/.spec/) |
-| Plano de trabalho · Guia · Arquitetura · Matriz de features · Contrato de dados · Casos DML · Referência | [`docs/`](docs/) |
+| Especificação SDD (8 features, de diagnóstico a painéis) | [`solution/.spec/`](solution/.spec/) |
+| Plano de trabalho · Guia · Arquitetura · Matriz de features · Contrato de dados · Casos DML · Perguntas incômodas · Stack e práticas · **Painéis** · Referência | [`docs/`](docs/) |
+| **Painéis por stakeholder** (CEO, Vendas, Marketing, Financeiro, Operações) | [`solution/dashboard/index.html`](solution/dashboard/index.html) |
 
 ### Abordagem
 
@@ -161,7 +162,7 @@ análise de invariância — o que revelou que o risco extra das assinaturas nov
 
 - [x] Chat export (conversa completa, redigida) — [`process-log/chat-exports/conversa-claude-code.md`](process-log/chat-exports/conversa-claude-code.md)
 - [x] Transcrições de execução (comandos e saídas reais) — [`process-log/evidencias/`](process-log/evidencias/)
-- [ ] Screenshots — não incluídos de propósito: os mesmos fatos estão em log reproduzível ([`process-log/screenshots/`](process-log/screenshots/) explica)
+- [x] Screenshots — os cinco painéis de decisão, página inteira — [`process-log/screenshots/`](process-log/screenshots/)
 - [x] Git history — spec primeiro, depois uma tarefa por commit (`T-00X diagnostico-churn: …`)
 - [x] Notebook comentado e executado — `solution/notebooks/diagnostico_churn.ipynb`
 - [x] Outro: prova mecânica do onp-spec — `solution/.spec/verification/diagnostico-churn.json`
