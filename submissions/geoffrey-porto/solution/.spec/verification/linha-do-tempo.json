@@ -1,40 +1,30 @@
 {
-  "feature": "validacao-features",
-  "timestamp": "2026-09-16T02:36:45.021Z",
+  "feature": "linha-do-tempo",
+  "timestamp": "2026-09-16T02:49:11.237Z",
   "gitRev": "1acf7e4",
   "command": "uv run --frozen pytest -q -p no:cacheprovider --tap",
   "reporter": "tap",
   "exitCode": 0,
   "testsParsed": 67,
   "results": {
-    "AC-019": {
+    "AC-031": {
       "status": "pass",
-      "testName": "tests/test_features.py::test_rates_match_hand_calculation @spec:AC-019",
+      "testName": "tests/test_timeline.py::test_trend_and_recency_in_the_raw_cut @spec:AC-031",
       "method": "tap"
     },
-    "AC-020": {
+    "AC-032": {
       "status": "pass",
-      "testName": "tests/test_screening.py::test_screening_separates_signal_from_noise @spec:AC-020",
+      "testName": "tests/test_timeline.py::test_unreliable_list_is_declared_once @spec:AC-032",
       "method": "tap"
     },
-    "AC-021": {
+    "AC-033": {
       "status": "pass",
-      "testName": "tests/test_account_panel.py::test_panel_reproduces_the_reference_design @spec:AC-021",
+      "testName": "tests/test_timeline.py::test_both_cuts_are_screened_separately @spec:AC-033",
       "method": "tap"
     },
-    "AC-022": {
+    "AC-034": {
       "status": "pass",
-      "testName": "tests/test_account_panel.py::test_account_panel_never_sees_the_future @spec:AC-022",
-      "method": "tap"
-    },
-    "AC-023": {
-      "status": "pass",
-      "testName": "tests/test_screening.py::test_identical_ages_are_called_the_same_signal @spec:AC-023",
-      "method": "tap"
-    },
-    "AC-024": {
-      "status": "pass",
-      "testName": "tests/test_account_panel.py::test_quarantined_flags_are_absent @spec:AC-024 @principle:P-009",
+      "testName": "tests/test_timeline.py::test_contract_covers_every_blocked_item @spec:AC-034",
       "method": "tap"
     }
   },

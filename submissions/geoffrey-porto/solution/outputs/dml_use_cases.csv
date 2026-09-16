@@ -1,0 +1,4 @@
+caso,tratamento,desfecho,theta_pp,ci_low_pp,ci_high_pp,p_value,se_cluster_pp,se_naive_pp,mde_pp,n,n_contas,n_tratados,eventos_tratados,overlap_min,overlap_max,aparados,significativo,leitura,tratamento_do_regime
+cobranca_anual,anual,y,-0.429000,-2.005000,1.147000,0.593900,0.804000,0.815000,2.250000,4246,439,1627,119,0.061100,0.948200,0,false,sem efeito detectável; o desenho só enxergaria diferenças de 2.3 pp ou mais,regime no ajuste
+escalacao_suporte,escalou,y,-2.964000,-8.118000,2.189000,0.259600,2.629000,2.583000,7.370000,1031,285,104,7,0.000600,0.573600,626,false,sem efeito detectável; o desenho só enxergaria diferenças de 7.4 pp ou mais,regime no ajuste
+cobranca_anual_pos_quebra,anual,y,-0.141000,-4.406000,4.125000,0.948400,2.176000,2.080000,6.100000,854,439,311,30,0.024900,0.871100,0,false,sem efeito detectável; o desenho só enxergaria diferenças de 6.1 pp ou mais,restrito ao regime depois

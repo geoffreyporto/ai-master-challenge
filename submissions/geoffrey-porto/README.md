@@ -36,7 +36,7 @@ em jogo, US$ <!--m:excess_mrr_per_month_k-->221 mil de MRR por mês acima do nor
 | Pipeline reprodutível (Python 3.14 + Polars) | [`solution/src/churn_diag/`](solution/src/churn_diag/) |
 | Notebook técnico (CRISP-DM, executado) | [`solution/notebooks/diagnostico_churn.ipynb`](solution/notebooks/diagnostico_churn.ipynb) |
 | Especificação SDD (2 features: diagnóstico e validação de features) | [`solution/.spec/`](solution/.spec/) |
-| Plano de trabalho · Guia · Arquitetura · Matriz de features · Referência | [`docs/`](docs/) |
+| Plano de trabalho · Guia · Arquitetura · Matriz de features · Contrato de dados · Casos DML · Referência | [`docs/`](docs/) |
 
 ### Abordagem
 
@@ -73,6 +73,14 @@ em jogo, US$ <!--m:excess_mrr_per_month_k-->221 mil de MRR por mês acima do nor
   sair em 90 dias se o padrão continuar.
 - **[Hipótese]** O salto de novas assinaturas no 4º tri trouxe assinaturas que não
   se sustentam — a validar com o teste A/B (<!--m:ab_n_per_arm-->783 por braço).
+- **[Hipótese causal]** Com Double Machine Learning (cross-fitting e erro-padrão
+  agrupados por conta, sobreposição verificada): cobrança anual não muda o churn
+  de forma detectável (<!--m:dml_cobranca_anual_theta-->−0,43 pp, IC
+  <!--m:dml_cobranca_anual_ci_low-->−2,01 a <!--m:dml_cobranca_anual_ci_high-->+1,15)
+  — intervalo estreito o bastante para descartar desconto por retenção. Já
+  escalar ticket é **impossível de responder** com estes dados: só 7 eventos
+  entre tratados, efeito mínimo detectável de
+  <!--m:dml_escalacao_suporte_mde-->7,4 pp (`docs/06-casos-dml.md`).
 - **[Previsão]** As três features de taxa da minha referência de engenharia
   (erros por 100 usos, escalação, CSAT sem resposta) foram medidas e **não têm
   sinal** aqui (<!--m:rates_significant_n-->0 significativas); a replicação do

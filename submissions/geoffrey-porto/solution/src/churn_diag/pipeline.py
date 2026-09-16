@@ -24,6 +24,7 @@ from churn_diag.account_panel import (
     split_train_test,
 )
 from churn_diag.config import AGE_BUCKETS, CONTROL_SIGMA, YOUNG_AGE_DAYS, Settings
+from churn_diag.dml import OverlapError, dml_effect
 from churn_diag.features import DERIVED_FEATURES, QUARANTINED_UNDATED, RATE_FEATURES
 from churn_diag.hypotheses import Context, findings_frame, invariance_table, run_all
 from churn_diag.impact import ab_test_design, excess_mrr, recovery_scenarios
@@ -86,6 +87,74 @@ def _hz(hz: pl.DataFrame, period: str, bucket: str) -> float:
             0
         ]
     )
+
+
+DML_NUMERIC: tuple[str, ...] = (
+    "tenure_days",
+    "active_mrr",
+    "active_seats",
+    "active_subscriptions",
+    "min_sub_age_days",
+)
+DML_CATEGORICAL: tuple[str, ...] = (
+    "plan_tier",
+    "industry",
+    "country",
+    "referral_source",
+)
+
+
+def run_dml_use_cases(panel: pl.DataFrame) -> pl.DataFrame:
+    """Os dois casos de uso + a versão restrita ao regime pós-quebra (AC-039)."""
+    base = panel.with_columns(
+        anual=(pl.col("annual_share") > 0.5).cast(pl.Int8),
+        escalou=(pl.col("escalation_rate_90d") > 0).cast(pl.Int8),
+    )
+    com_ticket = base.filter(pl.col("tickets_90d").is_not_null())
+    pos_quebra = base.filter(pl.col("regime") == "depois")
+    casos = [
+        (
+            "cobranca_anual",
+            base,
+            "anual",
+            DML_NUMERIC,
+            (*DML_CATEGORICAL, "regime"),
+            "regime no ajuste",
+        ),
+        (
+            "escalacao_suporte",
+            com_ticket,
+            "escalou",
+            (*DML_NUMERIC, "tickets_90d"),
+            (*DML_CATEGORICAL, "regime"),
+            "regime no ajuste",
+        ),
+        (
+            "cobranca_anual_pos_quebra",
+            pos_quebra,
+            "anual",
+            DML_NUMERIC,
+            DML_CATEGORICAL,
+            "restrito ao regime depois",
+        ),
+    ]
+    linhas = []
+    for caso, dados, tratamento, num, cat, regime in casos:
+        try:
+            resultado = dml_effect(
+                dados, tratamento, "y", (num, cat), caso=caso
+            ).as_row()
+        except (
+            OverlapError
+        ) as exc:  # sem par comparável: registra, não quebra o pipeline
+            resultado = {
+                "caso": caso,
+                "tratamento": tratamento,
+                "desfecho": "y",
+                "leitura": f"não estimado — {exc}",
+            }
+        linhas.append({**resultado, "tratamento_do_regime": regime})
+    return pl.DataFrame(linhas, infer_schema_length=None)
 
 
 ACCOUNT_SCREEN_EXTRA: tuple[str, ...] = (
@@ -154,6 +223,7 @@ def analyse(t: Tables, cs_top_n: int) -> Result:
     replication = reference_replication(acc_panel)
     published = published_reference_metrics()
     ages = age_signal_comparison(acc_panel)
+    dml = run_dml_use_cases(acc_panel)
     decomposition = composite_decomposition(
         acc_test, "usage_per_active_seat_90d", "usage_total_90d", "active_seats"
     )
@@ -377,6 +447,37 @@ def analyse(t: Tables, cs_top_n: int) -> Result:
                 "significant"
             ].sum()
         ),
+        "dml_cobranca_anual_theta": float(
+            dml.filter(pl.col("caso") == "cobranca_anual")["theta_pp"][0]
+        ),
+        "dml_cobranca_anual_ci_low": float(
+            dml.filter(pl.col("caso") == "cobranca_anual")["ci_low_pp"][0]
+        ),
+        "dml_cobranca_anual_ci_high": float(
+            dml.filter(pl.col("caso") == "cobranca_anual")["ci_high_pp"][0]
+        ),
+        "dml_cobranca_anual_mde": float(
+            dml.filter(pl.col("caso") == "cobranca_anual")["mde_pp"][0]
+        ),
+        "dml_escalacao_suporte_theta": float(
+            dml.filter(pl.col("caso") == "escalacao_suporte")["theta_pp"][0]
+        ),
+        "dml_escalacao_suporte_ci_low": float(
+            dml.filter(pl.col("caso") == "escalacao_suporte")["ci_low_pp"][0]
+        ),
+        "dml_escalacao_suporte_ci_high": float(
+            dml.filter(pl.col("caso") == "escalacao_suporte")["ci_high_pp"][0]
+        ),
+        "dml_escalacao_suporte_mde": float(
+            dml.filter(pl.col("caso") == "escalacao_suporte")["mde_pp"][0]
+        ),
+        "dml_significant_n": int(dml["significativo"].sum()),
+        "dml_escalacao_aparados": int(
+            dml.filter(pl.col("caso") == "escalacao_suporte")["aparados"][0]
+        ),
+        "dml_anual_pos_quebra_theta_pp": float(
+            dml.filter(pl.col("caso") == "cobranca_anual_pos_quebra")["theta_pp"][0]
+        ),
         "derived_significant_n": int(
             screening.filter(pl.col("feature").is_in(list(DERIVED_FEATURES)))[
                 "significant"
@@ -409,6 +510,7 @@ def analyse(t: Tables, cs_top_n: int) -> Result:
         "usage_vs_base_2024": usage_idx,
         "feature_screening": screening,
         "age_comparison": ages,
+        "dml_use_cases": dml,
         "derived_decomposition": decomposition,
         "account_panel_metrics": pl.DataFrame(
             [

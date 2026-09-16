@@ -5,19 +5,19 @@
       "codigo": "Q_ABERTA",
       "feature": "diagnostico-churn",
       "ref": "Q-001",
-      "ocorrencias": 16,
+      "ocorrencias": 20,
       "primeiraVez": "2026-09-15T00:53:09.374Z",
-      "ultimaVez": "2026-09-16T01:43:35.526Z",
-      "gitRev": "c3c45e3"
+      "ultimaVez": "2026-09-16T02:53:38.766Z",
+      "gitRev": "1acf7e4"
     },
     "Q_ABERTA::diagnostico-churn::Q-002": {
       "codigo": "Q_ABERTA",
       "feature": "diagnostico-churn",
       "ref": "Q-002",
-      "ocorrencias": 16,
+      "ocorrencias": 20,
       "primeiraVez": "2026-09-15T00:53:09.380Z",
-      "ultimaVez": "2026-09-16T01:43:35.527Z",
-      "gitRev": "c3c45e3"
+      "ultimaVez": "2026-09-16T02:53:38.773Z",
+      "gitRev": "1acf7e4"
     },
     "ARQUIVO_INEXISTENTE::diagnostico-churn::T-001": {
       "codigo": "ARQUIVO_INEXISTENTE",
@@ -477,6 +477,33 @@
       "primeiraVez": "2026-09-16T01:23:27.047Z",
       "ultimaVez": "2026-09-16T01:23:36.599Z",
       "gitRev": "4acf6da"
+    },
+    "ASM_ABERTA::efeito-causal-dml::ASM-015": {
+      "codigo": "ASM_ABERTA",
+      "feature": "efeito-causal-dml",
+      "ref": "ASM-015",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-16T02:52:58.777Z",
+      "ultimaVez": "2026-09-16T02:53:13.015Z",
+      "gitRev": "1acf7e4"
+    },
+    "ASM_ABERTA::efeito-causal-dml::ASM-016": {
+      "codigo": "ASM_ABERTA",
+      "feature": "efeito-causal-dml",
+      "ref": "ASM-016",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-16T02:52:58.777Z",
+      "ultimaVez": "2026-09-16T02:53:13.015Z",
+      "gitRev": "1acf7e4"
+    },
+    "Q_ABERTA::efeito-causal-dml::Q-004": {
+      "codigo": "Q_ABERTA",
+      "feature": "efeito-causal-dml",
+      "ref": "Q-004",
+      "ocorrencias": 3,
+      "primeiraVez": "2026-09-16T02:52:58.777Z",
+      "ultimaVez": "2026-09-16T02:53:38.773Z",
+      "gitRev": "1acf7e4"
     }
   }
 }

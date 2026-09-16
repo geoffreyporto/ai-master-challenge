@@ -1,11 +1,11 @@
 {
   "feature": "derivadas-features",
-  "timestamp": "2026-09-16T01:43:35.162Z",
-  "gitRev": "c3c45e3",
+  "timestamp": "2026-09-16T02:45:06.512Z",
+  "gitRev": "1acf7e4",
   "command": "uv run --frozen pytest -q -p no:cacheprovider --tap",
   "reporter": "tap",
   "exitCode": 0,
-  "testsParsed": 51,
+  "testsParsed": 67,
   "results": {
     "AC-027": {
       "status": "pass",

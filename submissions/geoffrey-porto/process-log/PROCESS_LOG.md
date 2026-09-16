@@ -133,6 +133,29 @@ provados, nenhuma suposição e nenhuma pergunta em aberto. O `audit --ci` segue
 apontando as duas perguntas do diagnóstico (Q-001 e Q-002), que são da diretoria
 da RavenStack.
 
+### Terceiro incremento: efeito causal com DML (15/09/2026)
+
+O candidato trouxe um segundo documento de referência, com o método de Double
+Machine Learning e código pronto. Ao aplicar o código a este painel, três
+defeitos apareceram — e cada um deles **estreita o intervalo de confiança**, ou
+seja, faz parecer que há evidência onde não há:
+
+| Defeito no código da referência | Efeito neste painel | Correção |
+|---|---|---|
+| `KFold` embaralhado | A mesma conta em treino e validação (19 snapshots por conta) | `GroupKFold` por conta |
+| Erro-padrão sem agrupamento | ICC do churn ≈ 0,36 e 9,7 linhas por conta | Sanduíche agrupado por conta |
+| Sobreposição não verificada | Tratados sem par entram na conta | Checagem obrigatória + aparo, com erro claro quando não há par |
+
+**Correção vinda do candidato durante a implementação:** a estimativa não pode
+misturar os regimes de antes e depois da quebra de set–out/2024 (razão de risco
+1,2× → 4,1×). Virou o critério AC-039: toda estimativa ou leva o regime no
+ajuste, ou é restrita a um regime, e diz qual. Condicionar mudou o efeito da
+cobrança anual de −0,64 pp para −0,43 pp.
+
+Resultado dos dois casos: nenhum efeito detectável. Para a cobrança anual isso
+decide (intervalo estreito); para a escalação de tickets, não decide nada — o
+desenho só enxerga 7,4 pp, e a leitura honesta é "sem poder", não "sem efeito".
+
 ## O que foi descartado de propósito (julgamento, não omissão)
 
 - **Janelas 30/60/90 dias antes do churn** (sugeridas no guia de referência):
