@@ -29,11 +29,11 @@ tsc -p dashboard/tsconfig.json              # recompila src/*.ts em app.js
 | `index.html` | Casca da página: cabeçalho, abas, rodapé. Estilo em Tailwind + CSS3 próprio. |
 | `src/tipos.ts` | Contrato do payload (o mesmo formato que `churn_diag.dashboards` grava). |
 | `src/formato.ts` | Formatação pt-BR e a paleta do relatório — o painel não conta a história com outras cores. |
-| `src/graficos.ts` | Gráficos D3: séries, barras, barras agrupadas e tabelas. |
+| `src/graficos.ts` | Gráficos: Plotly para as duas séries (zoom, pan, hover unificado), Chart.js para barras e barras agrupadas (tooltip, legenda clicável); tabela ordenável em DOM puro. |
 | `src/app.ts` | Montagem dos painéis, abas e blocos de nível. |
 | `app.js` | Saída do `tsc` — versionada para a página abrir sem build. |
 | `data.js` | Payload gerado pelo pipeline Python. **Não editar à mão.** |
-| `vendor/` | `d3` 7.9 e `tailwind` 3.4 vendorizados, para a página funcionar offline. |
+| `vendor/` | `chart.js` 4.4, `plotly.js` 2.35 (bundle básico) e `tailwind` 3.4 vendorizados, para a página funcionar offline. |
 
 ## Duas decisões que valem explicação
 

@@ -1221,12 +1221,12 @@ window.DASHBOARD_DATA = {
           },
           {
             "eventos": 104,
-            "reason_code": "budget",
+            "reason_code": "support",
             "share_pct": 17.3
           },
           {
             "eventos": 104,
-            "reason_code": "support",
+            "reason_code": "budget",
             "share_pct": 17.3
           },
           {

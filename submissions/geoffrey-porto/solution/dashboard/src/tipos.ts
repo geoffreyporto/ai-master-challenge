@@ -57,7 +57,8 @@ interface Payload {
   paineis: { [nome: string]: Painel };
 }
 
-declare const d3: any;
+declare const Plotly: any;
+declare const Chart: any;
 
 interface Window {
   DASHBOARD_DATA: Payload;

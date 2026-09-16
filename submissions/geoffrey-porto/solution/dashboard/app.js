@@ -287,6 +287,16 @@ function render() {
             ? "rounded-md bg-stone-900 px-3.5 py-2 text-sm font-medium text-white"
             : "rounded-md px-3.5 py-2 text-sm font-medium text-stone-600 hover:bg-stone-200";
     });
+    // Os gráficos Plotly são desenhados antes de `caixa` entrar no DOM (o bloco
+    // que os contém só é anexado depois, no fim de `render`), então o primeiro
+    // layout usa o tamanho padrão da biblioteca em vez do container real. Um
+    // redimensionamento no próximo frame, já com tudo anexado, corrige o
+    // tamanho sem precisar reordenar a montagem do DOM.
+    requestAnimationFrame(() => {
+        document.querySelectorAll("#painel .js-plotly-plot").forEach((div) => {
+            Plotly.Plots.resize(div);
+        });
+    });
 }
 function iniciar() {
     const dados = window.DASHBOARD_DATA;
@@ -356,282 +366,314 @@ function mesCurto(iso) {
     const d = new Date(iso + "T00:00:00");
     return meses[d.getMonth()] + "/" + String(d.getFullYear()).slice(2);
 }
-/** Gráficos D3 — um por tipo declarado no payload.
+/** Gráficos interativos: Plotly.js para as duas séries (zoom, pan, hover
+ *  unificado, exportação nativa em PNG) e Chart.js para barras e barras
+ *  agrupadas (tooltip, legenda clicável, responsivo).
  *
- *  Regra de projeto: nenhum gráfico inventa escala nem esconde zero. Barra
- *  começa em zero; série temporal mostra o eixo inteiro; barra de erro aparece
- *  sempre que o payload traz erro-padrão. Gráfico que engana é pior que tabela.
+ *  Regra de projeto herdada da versão em D3: nenhum gráfico inventa escala
+ *  nem esconde zero. Barra começa em zero; série temporal mostra o eixo
+ *  inteiro; barra de erro aparece sempre que o payload traz erro-padrão.
+ *  Gráfico que engana é pior que tabela.
  */
-const MARGEM = { topo: 16, direita: 18, baixo: 44, esquerda: 64 };
-function svgBase(alvo, altura) {
-    const largura = Math.max(alvo.clientWidth || 640, 320);
-    d3.select(alvo).selectAll("*").remove();
-    const svg = d3
-        .select(alvo)
-        .append("svg")
-        .attr("viewBox", `0 0 ${largura} ${altura}`)
-        .attr("width", "100%")
-        .attr("height", altura)
-        .attr("role", "img");
-    return { svg, largura, altura };
+const FONTE = "ui-sans-serif, system-ui, -apple-system, sans-serif";
+/** Cada canvas/div de gráfico guarda a instância que o criou, para destruir
+ *  antes de redesenhar — sem isso, redimensionar a janela vaza um Chart por
+ *  resize. */
+function limpar(alvo) {
+    const existente = alvo._chart;
+    if (existente)
+        existente.destroy();
+    alvo.innerHTML = "";
 }
-function eixoY(g, escala, largura, rotulo) {
-    g.append("g")
-        .call(d3.axisLeft(escala).ticks(5).tickSize(-largura))
-        .call((sel) => sel.select(".domain").remove())
-        .call((sel) => sel.selectAll(".tick line").attr("stroke", PALETA.grade))
-        .call((sel) => sel.selectAll("text").attr("fill", PALETA.tinta2).attr("font-size", 11));
-    g.append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", -MARGEM.esquerda + 14)
-        .attr("x", -10)
-        .attr("fill", PALETA.tinta2)
-        .attr("font-size", 11)
-        .attr("text-anchor", "end")
-        .text(rotulo);
+function novoCanvas(alvo, altura) {
+    limpar(alvo);
+    const caixa = document.createElement("div");
+    caixa.style.position = "relative";
+    caixa.style.height = altura + "px";
+    caixa.style.width = "100%";
+    const canvas = document.createElement("canvas");
+    caixa.appendChild(canvas);
+    alvo.appendChild(caixa);
+    return canvas;
 }
+function novoDiv(alvo, altura) {
+    limpar(alvo);
+    const div = document.createElement("div");
+    div.style.width = "100%";
+    div.style.height = altura + "px";
+    alvo.appendChild(div);
+    return div;
+}
+const TOOLTIP_BASE = {
+    backgroundColor: "#1b1b1a",
+    titleFont: { family: FONTE, size: 11 },
+    bodyFont: { family: FONTE, size: 12 },
+    padding: 8,
+    cornerRadius: 6,
+    displayColors: false,
+};
+/** 1–2. Barra vertical ou horizontal, com tooltip formatado no mesmo padrão
+ *  pt-BR do relatório. Interatividade: hover realça a barra, tooltip mostra
+ *  o valor exato, e passar o mouse na legenda (quando houver) filtra a série. */
 function barras(alvo, dados, op) {
-    const altura = op.horizontal ? Math.max(180, dados.length * 30 + 60) : 300;
-    const { svg, largura } = svgBase(alvo, altura);
-    const g = svg
-        .append("g")
-        .attr("transform", `translate(${MARGEM.esquerda},${MARGEM.topo})`);
-    const w = largura - MARGEM.esquerda - MARGEM.direita;
-    const h = altura - MARGEM.topo - MARGEM.baixo;
+    const altura = op.horizontal ? Math.max(200, dados.length * 34 + 60) : 300;
+    const canvas = novoCanvas(alvo, altura);
     const fmt = op.formatador || brAuto;
+    const rotulos = dados.map((d) => String(d[op.campoX]));
     const valores = dados.map((d) => Number(d[op.campoY]) || 0);
-    const maximo = Math.max(0, ...valores);
-    const minimo = Math.min(0, ...valores);
-    if (op.horizontal) {
-        const y = d3
-            .scaleBand()
-            .domain(dados.map((d) => String(d[op.campoX])))
-            .range([0, h])
-            .padding(0.25);
-        const x = d3.scaleLinear().domain([minimo, maximo * 1.15]).range([0, w]);
-        g.append("g")
-            .attr("transform", `translate(0,${h})`)
-            .call(d3.axisBottom(x).ticks(5))
-            .call((s) => s.selectAll("text").attr("fill", PALETA.tinta2).attr("font-size", 11));
-        g.append("g")
-            .call(d3.axisLeft(y).tickSize(0))
-            .call((s) => s.select(".domain").remove())
-            .call((s) => s.selectAll("text").attr("fill", PALETA.tinta2).attr("font-size", 11));
-        g.selectAll("rect")
-            .data(dados)
-            .join("rect")
-            .attr("y", (d) => y(String(d[op.campoX])))
-            .attr("x", (d) => x(Math.min(0, Number(d[op.campoY]))))
-            .attr("height", y.bandwidth())
-            .attr("width", (d) => Math.abs(x(Number(d[op.campoY])) - x(0)))
-            .attr("fill", (d) => Number(d[op.campoY]) < 0 ? PALETA.laranja : op.cor || PALETA.azul)
-            .attr("rx", 2);
-        g.selectAll("text.valor")
-            .data(dados)
-            .join("text")
-            .attr("class", "valor")
-            .attr("y", (d) => y(String(d[op.campoX])) + y.bandwidth() / 2 + 4)
-            .attr("x", (d) => x(Number(d[op.campoY])) + 6)
-            .attr("fill", PALETA.tinta2)
-            .attr("font-size", 11)
-            .text((d) => fmt(Number(d[op.campoY])));
-        return;
-    }
-    const x = d3
-        .scaleBand()
-        .domain(dados.map((d) => String(d[op.campoX])))
-        .range([0, w])
-        .padding(0.22);
-    const y = d3.scaleLinear().domain([minimo, maximo * 1.12 || 1]).range([h, 0]);
-    eixoY(g, y, w, op.rotuloY);
-    g.append("g")
-        .attr("transform", `translate(0,${h})`)
-        .call(d3.axisBottom(x).tickSize(0))
-        .call((s) => s.select(".domain").attr("stroke", PALETA.grade))
-        .call((s) => s
-        .selectAll("text")
-        .attr("fill", PALETA.tinta2)
-        .attr("font-size", 11)
-        .attr("transform", dados.length > 6 ? "rotate(-20)" : null)
-        .attr("text-anchor", dados.length > 6 ? "end" : "middle"));
-    g.selectAll("rect")
-        .data(dados)
-        .join("rect")
-        .attr("x", (d) => x(String(d[op.campoX])))
-        .attr("y", (d) => y(Math.max(0, Number(d[op.campoY]))))
-        .attr("width", x.bandwidth())
-        .attr("height", (d) => Math.abs(y(Number(d[op.campoY])) - y(0)))
-        .attr("fill", (d) => Number(d[op.campoY]) < 0 ? PALETA.laranja : op.cor || PALETA.azul)
-        .attr("rx", 2);
-    g.selectAll("text.valor")
-        .data(dados)
-        .join("text")
-        .attr("class", "valor")
-        .attr("x", (d) => x(String(d[op.campoX])) + x.bandwidth() / 2)
-        .attr("y", (d) => y(Number(d[op.campoY])) - 6)
-        .attr("text-anchor", "middle")
-        .attr("fill", PALETA.tinta2)
-        .attr("font-size", 11)
-        .text((d) => fmt(Number(d[op.campoY])));
+    const cores = valores.map((v) => (v < 0 ? PALETA.laranja : op.cor || PALETA.azul));
+    const chart = new Chart(canvas, {
+        type: "bar",
+        data: {
+            labels: rotulos,
+            datasets: [
+                {
+                    data: valores,
+                    backgroundColor: cores,
+                    hoverBackgroundColor: cores.map((c) => c),
+                    borderRadius: 3,
+                    borderSkipped: false,
+                },
+            ],
+        },
+        options: {
+            indexAxis: op.horizontal ? "y" : "x",
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 260 },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    ...TOOLTIP_BASE,
+                    callbacks: {
+                        label: (ctx) => fmt(op.horizontal ? ctx.parsed.x : ctx.parsed.y),
+                    },
+                },
+            },
+            scales: {
+                x: op.horizontal
+                    ? {
+                        beginAtZero: true,
+                        ticks: { font: { family: FONTE, size: 10 }, callback: (v) => fmt(v) },
+                        grid: { color: PALETA.grade },
+                    }
+                    : {
+                        ticks: { font: { family: FONTE, size: 10 } },
+                        grid: { display: false },
+                    },
+                y: op.horizontal
+                    ? { ticks: { font: { family: FONTE, size: 11 } }, grid: { display: false } }
+                    : {
+                        beginAtZero: true,
+                        title: { display: true, text: op.rotuloY, font: { family: FONTE, size: 10 } },
+                        ticks: { font: { family: FONTE, size: 10 }, callback: (v) => fmt(v) },
+                        grid: { color: PALETA.grade },
+                    },
+            },
+        },
+    });
+    alvo._chart = chart;
 }
-/** Série mensal: barras de MRR perdido + linha da taxa, com limite de controle. */
-function serieChurn(alvo, dados, ucl) {
-    const pontos = dados.filter((d) => String(d["month"]) >= "2024-01-01");
-    const altura = 320;
-    const { svg, largura } = svgBase(alvo, altura);
-    const g = svg
-        .append("g")
-        .attr("transform", `translate(${MARGEM.esquerda},${MARGEM.topo})`);
-    const w = largura - MARGEM.esquerda - MARGEM.direita * 3;
-    const h = altura - MARGEM.topo - MARGEM.baixo;
-    const x = d3
-        .scaleBand()
-        .domain(pontos.map((d) => String(d["month"])))
-        .range([0, w])
-        .padding(0.3);
-    const yMrr = d3
-        .scaleLinear()
-        .domain([0, d3.max(pontos, (d) => Number(d["churned_mrr"])) * 1.15])
-        .range([h, 0]);
-    const yTaxa = d3
-        .scaleLinear()
-        .domain([0, d3.max(pontos, (d) => Number(d["mrr_churn_pct"])) * 1.3])
-        .range([h, 0]);
-    eixoY(g, yMrr, w, "MRR perdido (US$)");
-    g.append("g")
-        .attr("transform", `translate(${w},0)`)
-        .call(d3.axisRight(yTaxa).ticks(5).tickFormat((v) => br(v, 1) + "%"))
-        .call((s) => s.select(".domain").remove())
-        .call((s) => s.selectAll("text").attr("fill", PALETA.laranja).attr("font-size", 11));
-    g.append("g")
-        .attr("transform", `translate(0,${h})`)
-        .call(d3.axisBottom(x).tickFormat((v) => mesCurto(v)))
-        .call((s) => s.select(".domain").attr("stroke", PALETA.grade))
-        .call((s) => s.selectAll("text").attr("fill", PALETA.tinta2).attr("font-size", 11));
-    g.selectAll("rect")
-        .data(pontos)
-        .join("rect")
-        .attr("x", (d) => x(String(d["month"])))
-        .attr("y", (d) => yMrr(Number(d["churned_mrr"])))
-        .attr("width", x.bandwidth())
-        .attr("height", (d) => h - yMrr(Number(d["churned_mrr"])))
-        .attr("fill", PALETA.azul)
-        .attr("opacity", 0.85)
-        .attr("rx", 2);
-    const linha = d3
-        .line()
-        .x((d) => x(String(d["month"])) + x.bandwidth() / 2)
-        .y((d) => yTaxa(Number(d["mrr_churn_pct"])));
-    g.append("path")
-        .datum(pontos)
-        .attr("fill", "none")
-        .attr("stroke", PALETA.laranja)
-        .attr("stroke-width", 2.4)
-        .attr("d", linha);
-    g.selectAll("circle")
-        .data(pontos)
-        .join("circle")
-        .attr("cx", (d) => x(String(d["month"])) + x.bandwidth() / 2)
-        .attr("cy", (d) => yTaxa(Number(d["mrr_churn_pct"])))
-        .attr("r", 3.5)
-        .attr("fill", PALETA.laranja);
-    if (ucl) {
-        g.append("line")
-            .attr("x1", 0)
-            .attr("x2", w)
-            .attr("y1", yTaxa(ucl))
-            .attr("y2", yTaxa(ucl))
-            .attr("stroke", PALETA.ruim)
-            .attr("stroke-dasharray", "5 4")
-            .attr("stroke-width", 1.2);
-        g.append("text")
-            .attr("x", 4)
-            .attr("y", yTaxa(ucl) - 5)
-            .attr("fill", PALETA.ruim)
-            .attr("font-size", 10)
-            .text(`limite de controle ${br(ucl, 2)}%`);
-    }
-}
-/** Barras agrupadas: risco por faixa de idade, referência × período-alvo. */
+/** 3. Barras agrupadas: risco por faixa de idade, referência × período-alvo.
+ *  Clicar num item da legenda esconde/mostra o período inteiro — útil para
+ *  isolar visualmente o efeito da quebra de regime. */
 function risco(alvo, dados) {
-    const periodos = ["reference", "target"];
-    const rotulo = {
+    const rotuloPeriodo = {
         reference: "jan–set/24",
         target: "out–dez/24",
     };
     const faixas = Array.from(new Set(dados.map((d) => String(d["age_bucket"]))));
-    const altura = 300;
-    const { svg, largura } = svgBase(alvo, altura);
-    const g = svg
-        .append("g")
-        .attr("transform", `translate(${MARGEM.esquerda},${MARGEM.topo})`);
-    const w = largura - MARGEM.esquerda - MARGEM.direita;
-    const h = altura - MARGEM.topo - MARGEM.baixo;
-    const x0 = d3.scaleBand().domain(faixas).range([0, w]).padding(0.25);
-    const x1 = d3.scaleBand().domain(periodos).range([0, x0.bandwidth()]).padding(0.1);
-    const y = d3
-        .scaleLinear()
-        .domain([0, d3.max(dados, (d) => Number(d["hazard_pct"])) * 1.2])
-        .range([h, 0]);
-    eixoY(g, y, w, "risco mensal (%)");
-    g.append("g")
-        .attr("transform", `translate(0,${h})`)
-        .call(d3.axisBottom(x0).tickSize(0))
-        .call((s) => s.select(".domain").attr("stroke", PALETA.grade))
-        .call((s) => s.selectAll("text").attr("fill", PALETA.tinta2).attr("font-size", 11));
-    g.selectAll("rect")
-        .data(dados.filter((d) => periodos.indexOf(String(d["period"])) >= 0))
-        .join("rect")
-        .attr("x", (d) => x0(String(d["age_bucket"])) + x1(String(d["period"])))
-        .attr("y", (d) => y(Number(d["hazard_pct"])))
-        .attr("width", x1.bandwidth())
-        .attr("height", (d) => h - y(Number(d["hazard_pct"])))
-        .attr("fill", (d) => d["period"] === "target" ? PALETA.laranja : PALETA.azul)
-        .attr("rx", 2);
-    const legenda = g.append("g").attr("transform", `translate(${w - 190},0)`);
-    periodos.forEach((p, i) => {
-        legenda
-            .append("rect")
-            .attr("x", i * 95)
-            .attr("y", 0)
-            .attr("width", 10)
-            .attr("height", 10)
-            .attr("fill", p === "target" ? PALETA.laranja : PALETA.azul);
-        legenda
-            .append("text")
-            .attr("x", i * 95 + 15)
-            .attr("y", 9)
-            .attr("fill", PALETA.tinta2)
-            .attr("font-size", 11)
-            .text(rotulo[p]);
+    const canvas = novoCanvas(alvo, 300);
+    const serie = (periodo, cor) => ({
+        label: rotuloPeriodo[periodo],
+        data: faixas.map((faixa) => {
+            const linha = dados.find((d) => d["age_bucket"] === faixa && d["period"] === periodo);
+            return linha ? Number(linha["hazard_pct"]) : null;
+        }),
+        backgroundColor: cor,
+        borderRadius: 3,
+        borderSkipped: false,
     });
+    const chart = new Chart(canvas, {
+        type: "bar",
+        data: {
+            labels: faixas,
+            datasets: [serie("reference", PALETA.azul), serie("target", PALETA.laranja)],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 260 },
+            plugins: {
+                legend: {
+                    position: "top",
+                    align: "end",
+                    labels: { font: { family: FONTE, size: 11 }, boxWidth: 12, boxHeight: 12 },
+                },
+                tooltip: {
+                    ...TOOLTIP_BASE,
+                    callbacks: { label: (ctx) => `${ctx.dataset.label}: ${br(ctx.parsed.y, 2)}%` },
+                },
+            },
+            scales: {
+                x: { ticks: { font: { family: FONTE, size: 10 } }, grid: { display: false } },
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: "risco mensal (%)", font: { family: FONTE, size: 10 } },
+                    ticks: {
+                        font: { family: FONTE, size: 10 },
+                        callback: (v) => br(v, 1) + "%",
+                    },
+                    grid: { color: PALETA.grade },
+                },
+            },
+        },
+    });
+    alvo._chart = chart;
 }
-/** Tabela — quando a leitura correta é linha a linha, não barra. */
-function tabela(alvo, dados, colunas, titulos) {
-    d3.select(alvo).selectAll("*").remove();
-    const t = d3.select(alvo).append("table").attr("class", "w-full text-sm");
-    t.append("thead")
-        .append("tr")
-        .attr("class", "text-left text-xs uppercase tracking-wide text-stone-500")
-        .selectAll("th")
-        .data(titulos)
-        .join("th")
-        .attr("class", "py-2 pr-3 font-semibold border-b border-stone-200")
-        .text((d) => d);
-    const linhas = t
-        .append("tbody")
-        .selectAll("tr")
-        .data(dados)
-        .join("tr")
-        .attr("class", "border-b border-stone-100 align-top");
-    colunas.forEach((c) => {
-        linhas
-            .append("td")
-            .attr("class", "py-2 pr-3 text-stone-700")
-            .text((d) => {
-            const v = d[c];
-            return typeof v === "number" ? brAuto(v) : String(v ?? "—");
+/** 4. Série mensal: barras de MRR perdido + linha da taxa de churn no eixo
+ *  secundário, com o limite de controle marcado. Plotly dá zoom por arraste,
+ *  pan, reset e hover unificado nas duas séries ao mesmo tempo — o ponto
+ *  onde a quebra de regime aparece fica exploratório, não só ilustrado. */
+function serieChurn(alvo, dados, ucl) {
+    const pontos = dados.filter((d) => String(d["month"]) >= "2024-01-01");
+    const div = novoDiv(alvo, 340);
+    const meses = pontos.map((d) => mesCurto(String(d["month"])));
+    const mrrPerdido = pontos.map((d) => Number(d["churned_mrr"]));
+    const taxaChurn = pontos.map((d) => Number(d["mrr_churn_pct"]));
+    const tracos = [
+        {
+            type: "bar",
+            name: "MRR perdido (US$)",
+            x: meses,
+            y: mrrPerdido,
+            marker: { color: PALETA.azul },
+            hovertemplate: "%{x}<br>MRR perdido: US$ %{y:,.0f}<extra></extra>",
+            yaxis: "y",
+        },
+        {
+            type: "scatter",
+            mode: "lines+markers",
+            name: "Churn de MRR (%)",
+            x: meses,
+            y: taxaChurn,
+            line: { color: PALETA.laranja, width: 2.5 },
+            marker: { color: PALETA.laranja, size: 6 },
+            hovertemplate: "%{x}<br>Churn: %{y:.2f}%<extra></extra>",
+            yaxis: "y2",
+        },
+    ];
+    const shapes = [];
+    const anotacoes = [];
+    if (ucl) {
+        shapes.push({
+            type: "line",
+            xref: "paper",
+            x0: 0,
+            x1: 1,
+            yref: "y2",
+            y0: ucl,
+            y1: ucl,
+            line: { color: PALETA.ruim, width: 1.2, dash: "dash" },
         });
+        anotacoes.push({
+            xref: "paper",
+            x: 0,
+            xanchor: "left",
+            yref: "y2",
+            y: ucl,
+            yanchor: "bottom",
+            text: `limite de controle ${br(ucl, 2)}%`,
+            showarrow: false,
+            font: { size: 10, color: PALETA.ruim, family: FONTE },
+        });
+    }
+    Plotly.newPlot(div, tracos, {
+        margin: { t: 20, r: 56, b: 40, l: 64 },
+        font: { family: FONTE, size: 11, color: PALETA.tinta2 },
+        showlegend: true,
+        legend: { orientation: "h", y: 1.12, font: { size: 11 } },
+        hovermode: "x unified",
+        barmode: "group",
+        shapes,
+        annotations: anotacoes,
+        xaxis: { showgrid: false, tickfont: { size: 10 } },
+        yaxis: {
+            title: { text: "MRR perdido (US$)", font: { size: 10 } },
+            gridcolor: PALETA.grade,
+            tickfont: { size: 10 },
+        },
+        yaxis2: {
+            title: { text: "churn de MRR (%)", font: { size: 10 } },
+            overlaying: "y",
+            side: "right",
+            showgrid: false,
+            tickfont: { size: 10 },
+            ticksuffix: "%",
+        },
+        paper_bgcolor: "rgba(0,0,0,0)",
+        plot_bgcolor: "rgba(0,0,0,0)",
+    }, {
+        responsive: true,
+        displaylogo: false,
+        modeBarButtonsToRemove: ["lasso2d", "select2d", "autoScale2d"],
     });
+    alvo._chart = { destroy: () => Plotly.purge(div) };
+}
+/** Tabela — quando a leitura correta é linha a linha, não barra.
+ *  Interatividade: clicar num cabeçalho ordena por aquela coluna (numérica
+ *  ou texto), clicar de novo inverte — sem nenhuma dependência extra. */
+function tabela(alvo, dadosOriginais, colunas, titulos) {
+    limpar(alvo);
+    let dados = [...dadosOriginais];
+    let colunaOrdenada = -1;
+    let crescente = true;
+    const tabela = document.createElement("table");
+    tabela.className = "w-full text-sm";
+    const thead = document.createElement("thead");
+    const trCab = document.createElement("tr");
+    trCab.className = "text-left text-xs uppercase tracking-wide text-stone-500";
+    titulos.forEach((titulo, i) => {
+        const th = document.createElement("th");
+        th.className =
+            "py-2 pr-3 font-semibold border-b border-stone-200 cursor-pointer select-none hover:text-stone-800";
+        th.textContent = titulo;
+        th.addEventListener("click", () => {
+            crescente = colunaOrdenada === i ? !crescente : true;
+            colunaOrdenada = i;
+            const col = colunas[i];
+            dados = [...dados].sort((a, b) => {
+                const va = a[col];
+                const vb = b[col];
+                const cmp = typeof va === "number" && typeof vb === "number"
+                    ? va - vb
+                    : String(va ?? "").localeCompare(String(vb ?? ""), "pt-BR");
+                return crescente ? cmp : -cmp;
+            });
+            desenharCorpo();
+        });
+        trCab.appendChild(th);
+    });
+    thead.appendChild(trCab);
+    tabela.appendChild(thead);
+    const tbody = document.createElement("tbody");
+    tabela.appendChild(tbody);
+    function desenharCorpo() {
+        tbody.innerHTML = "";
+        dados.forEach((linha) => {
+            const tr = document.createElement("tr");
+            tr.className = "border-b border-stone-100 align-top hover:bg-stone-50";
+            colunas.forEach((c) => {
+                const td = document.createElement("td");
+                td.className = "py-2 pr-3 text-stone-700";
+                const v = linha[c];
+                td.textContent = typeof v === "number" ? brAuto(v) : String(v ?? "—");
+                tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+        });
+    }
+    desenharCorpo();
+    alvo.appendChild(tabela);
 }
 /** Formato do payload gerado por `churn_diag.dashboards` (data.js). */

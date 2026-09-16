@@ -364,6 +364,17 @@ function render(): void {
       ? "rounded-md bg-stone-900 px-3.5 py-2 text-sm font-medium text-white"
       : "rounded-md px-3.5 py-2 text-sm font-medium text-stone-600 hover:bg-stone-200";
   });
+
+  // Os gráficos Plotly são desenhados antes de `caixa` entrar no DOM (o bloco
+  // que os contém só é anexado depois, no fim de `render`), então o primeiro
+  // layout usa o tamanho padrão da biblioteca em vez do container real. Um
+  // redimensionamento no próximo frame, já com tudo anexado, corrige o
+  // tamanho sem precisar reordenar a montagem do DOM.
+  requestAnimationFrame(() => {
+    document.querySelectorAll("#painel .js-plotly-plot").forEach((div) => {
+      Plotly.Plots.resize(div);
+    });
+  });
 }
 
 function iniciar(): void {

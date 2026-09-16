@@ -30,8 +30,8 @@
 |---|---|---|---|
 | Lógica da página | **TypeScript** (`tsc`) | 5.x | Tipa o contrato do payload: se `churn_diag.dashboards` mudar o formato, a compilação acusa antes do navegador. Compila para `app.js` versionado — a página abre sem build. |
 | Estilo | **Tailwind CSS** 3.4 + **CSS3** próprio | 3.4.17 | Tailwind para o layout; CSS3 para o que ele não cobre sem build (gradiente de fundo, `font-feature-settings: tnum`, regras de impressão). |
-| Gráficos | **D3.js** | 7.9 | Controle sobre escala e eixo — barra sempre começa em zero, série temporal mostra o eixo inteiro. |
-| Distribuição | `vendor/` local | — | `d3` e `tailwind` vendorizados (671 KB): a página funciona offline, por `file://`, sem CDN. |
+| Gráficos | **Chart.js** 4.4 + **Plotly.js** 2.35 (bundle básico) | 4.4.7 / 2.35.2 | Chart.js para barras e barras agrupadas (tooltip, legenda clicável); Plotly para as duas séries (zoom, pan, hover unificado, exportação nativa). Nenhum gráfico esconde zero nem inventa escala. |
+| Distribuição | `vendor/` local | — | `chart.js`, `plotly.js` (bundle básico) e `tailwind` vendorizados (~1,6 MB): a página funciona offline, por `file://`, sem CDN. |
 
 Detalhes e leitura dos painéis em
 [`10-paineis-por-stakeholder.md`](10-paineis-por-stakeholder.md).

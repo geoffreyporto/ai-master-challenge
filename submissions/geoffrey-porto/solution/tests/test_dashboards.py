@@ -127,14 +127,14 @@ def test_payload_gravado_abre_sem_servidor(payload: dict, tmp_path: Path) -> Non
 
 
 def test_a_pagina_publicada_esta_em_dia(payload: dict) -> None:
-    """@spec:AC-044"""
-    """A página versionada precisa ter sido gerada, compilada e vendorizada."""
+    """@spec:AC-044 — a página versionada precisa ter sido gerada, compilada e vendorizada."""
     assert PAGINA.exists(), "index.html sumiu"
     assert APP.exists(), "rode `tsc -p dashboard/tsconfig.json`"
     assert DATA_JS.exists(), "rode `uv run python -m churn_diag`"
     html = PAGINA.read_text(encoding="utf-8")
     for recurso in (
-        "vendor/d3.v7.min.js",
+        "vendor/chart.umd.min.js",
+        "vendor/plotly-basic.min.js",
         "vendor/tailwind-play.js",
         "data.js",
         "app.js",

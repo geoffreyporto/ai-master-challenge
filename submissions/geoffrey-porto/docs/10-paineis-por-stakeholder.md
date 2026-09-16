@@ -100,10 +100,10 @@ mesma lógica do portão de rastreabilidade do relatório, aplicada à tela.
 | Estrutura | HTML5 semântico | Abre em qualquer navegador, sem build |
 | Lógica | **TypeScript** compilado com `tsc` | Tipagem no contrato do payload: se o pipeline mudar o formato, a compilação acusa |
 | Estilo | **Tailwind** (vendorizado) + **CSS3** próprio | Tailwind para o layout, CSS3 para o que ele não cobre (gradiente de fundo, `font-feature-settings: tnum` para números alinhados, regras de impressão) |
-| Gráficos | **D3.js 7** (vendorizado) | Controle sobre escala e eixo. Barra sempre começa em zero; série temporal mostra o eixo inteiro |
+| Gráficos | **Chart.js 4** + **Plotly.js 2** (vendorizados) | Chart.js para barras (tooltip, legenda clicável, hover); Plotly para as duas séries (zoom, pan, hover unificado, exportação nativa). Barra sempre começa em zero; série temporal mostra o eixo inteiro |
 | Dados | `data.js` como atribuição global | `fetch` em `file://` esbarra em CORS; `<script>` não |
 
-Dependências vendorizadas em `dashboard/vendor/` (671 KB), não via CDN: a página
+Dependências vendorizadas em `dashboard/vendor/` (~1,6 MB), não via CDN: a página
 precisa funcionar na máquina do avaliador, offline, daqui a seis meses.
 
 ## 6. Reproduzir
