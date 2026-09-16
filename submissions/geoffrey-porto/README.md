@@ -38,6 +38,7 @@ em jogo, US$ <!--m:excess_mrr_per_month_k-->221 mil de MRR por mês acima do nor
 | Especificação SDD (8 features, de diagnóstico a painéis) | [`solution/.spec/`](solution/.spec/) |
 | Plano de trabalho · Guia · Arquitetura · Matriz de features · Contrato de dados · Casos DML · Perguntas incômodas · Stack e práticas · **Painéis** · Referência | [`docs/`](docs/) |
 | **Painéis por stakeholder** (CEO, Vendas, Marketing, Financeiro, Operações) | [`solution/dashboard/index.html`](solution/dashboard/index.html) |
+| **Diagrama de arquitetura** (interativo, dado → modelagem → entrega) | [`docs/11-arquitetura-solucao.html`](docs/11-arquitetura-solucao.html) |
 
 ### Abordagem
 
@@ -118,10 +119,12 @@ pequena na validação (<!--m:oot_positives-->96 saídas). Detalhes na seção 5
 
 | Ferramenta | Para que usou |
 |---|---|
-| Claude Code (Claude Opus 5) | Agente: leitura de regras e método, exploração dos dados, spec, código, testes, relatório |
-| onp-spec (Spec-Driven Development) | Gate mecânico: cada critério de aceite provado por teste; audit por exit code |
-| uv + Python 3.14 + Polars | Ambiente travado e processamento dos dados |
-| pytest + ruff + nbclient | Testes, lint e execução do notebook |
+| Claude Code (Claude Opus 5 e Sonnet 5) | Agente: leitura de regras e método, exploração dos dados, spec, código, testes, causal, explicabilidade, painéis, relatório |
+| onp-spec (Spec-Driven Development) | Gate mecânico: 47 critérios de aceite (8 features) provados por teste; audit por exit code |
+| uv + Python 3.14 + Polars + scikit-learn | Ambiente travado, processamento dos dados, DML e Shapley exato |
+| pytest + ruff + nbclient | Testes (86), lint e execução do notebook |
+| TypeScript (`tsc`) + Chart.js + Plotly.js + Tailwind | Painéis client-side por stakeholder — vendorizados, sem servidor |
+| rtk | Proxy de CLI para economia de tokens (~94% em 7.610 comandos, ver `docs/08-stack-e-praticas.md`) |
 
 ### Workflow
 
@@ -131,6 +134,17 @@ pequena na validação (<!--m:oot_positives-->96 saídas). Detalhes na seção 5
 3. Especificação: constituição, proposta, 18 critérios, design e tarefas.
 4. Implementação com testes, uma tarefa por commit, `verify` a cada etapa.
 5. Relatório com números marcados e testados; notebook executado; documentação.
+6. Causal: DML com cross-fitting agrupado e SEs clusterizados para os dois
+   casos de uso de mitigação, condicionado à quebra de regime que a análise
+   de invariância revelou.
+7. Explicabilidade como auditoria: Shapley exato (`shap` não instala em
+   Python 3.14) para provar que o modelo não aprendeu estrutura, não para
+   narrar variáveis sem sinal.
+8. Cinco painéis client-side (CEO, Vendas, Marketing, Financeiro, CS), cada
+   KPI rastreável ao pipeline, com as lacunas do dataset declaradas em vez
+   de preenchidas com estimativa.
+9. Documento de perguntas incômodas respondendo aos critérios do desafio com
+   os mesmos números testados do relatório.
 
 ### Onde a IA errou e como corrigi
 
@@ -144,6 +158,18 @@ pequena na validação (<!--m:oot_positives-->96 saídas). Detalhes na seção 5
   duas voltaram para "aberta" até a minha revisão.
 - A leitura "churn precoce é a causa raiz" estava confiante demais; o teste de
   coorte mostrou que um defeito de registro produz o mesmo padrão.
+- A agregação mensal do painel financeiro deu 6,75% de churn de MRR em
+  dezembro contra 3,52% no relatório — coortes diferentes no numerador e no
+  denominador. Corrigido delegando à função canônica; virou teste (`AC-047`)
+  para não repetir.
+- 18 critérios de aceite (explicabilidade e painéis) tinham `@spec:AC-xxx`
+  como comentário solto acima da função, não na docstring — o emissor TAP lê
+  `__doc__`, então o onp-spec nunca via a etiqueta mesmo com o teste passando.
+  Só apareceu porque o `audit --ci` compara critério com teste, não só "testes
+  verdes"; corrigido movendo as 18 tags para dentro da docstring.
+- Os gráficos Plotly saíam com tamanho padrão da biblioteca (700×450) em vez
+  do tamanho real do contêiner, porque eram desenhados antes de entrar no DOM;
+  só apareceu ao inspecionar visualmente no navegador, não nos testes.
 
 ### O que eu adicionei que a IA sozinha não faria
 
@@ -155,6 +181,15 @@ de "passar" o gate, e decidi tratar a quebra de set–out/2024 como ambiente na
 análise de invariância — o que revelou que o risco extra das assinaturas novas
 **não existia antes de outubro**, mudando a conclusão de "traço do negócio" para
 "regime novo com causa a identificar".
+
+Nos painéis, decidi que KPI que o dataset não sustenta (CAC, LTV com margem,
+verba de mídia, login) fica em branco e declarado, em vez de estimado — e
+virou teste (`test_kpi_impossivel_nao_vira_numero`) para que ninguém adicione
+esse cartão depois sem perceber. Na explicabilidade, quando `shap` não instalou
+em Python 3.14, decidi não trocar de versão nem de biblioteca: implementar
+Shapley exato por enumeração de coalizões, que acabou sendo uma garantia
+melhor (erro de eficiência 0, testável) do que a aproximação que a `shap`
+teria dado.
 
 ---
 
@@ -180,4 +215,4 @@ Dados: os 5 CSVs do Kaggle ([rivalytics/saas-subscription-and-churn-analytics-da
 
 ---
 
-_Submissão enviada em: 14/09/2026_
+_Submissão enviada em: 16/09/2026_

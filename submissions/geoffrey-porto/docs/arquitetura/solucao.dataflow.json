@@ -1,0 +1,198 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "Diagnóstico de Churn RavenStack — Arquitetura da Solução",
+    "output": "submissions/geoffrey-porto/docs/11-arquitetura-solucao.html",
+    "viewBox": [
+      1080,
+      540
+    ],
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "ingestao",
+        "label": "Contrato de dados",
+        "focus": [
+          "raw",
+          "loader",
+          "quality"
+        ],
+        "note": "Dtype exato nas 5 tabelas e auditoria de qualidade antes de qualquer gráfico."
+      },
+      {
+        "id": "modelagem",
+        "label": "Risco, causal e explicabilidade",
+        "focus": [
+          "sinais",
+          "modelagem"
+        ],
+        "note": "Score fora do tempo, DML com cross-fitting agrupado e Shapley exato na mesma camada."
+      },
+      {
+        "id": "entrega",
+        "label": "Entrega ao stakeholder",
+        "focus": [
+          "outputs",
+          "dashboard"
+        ],
+        "note": "Todo número do relatório e dos painéis nasce em outputs/, nunca digitado à mão."
+      }
+    ]
+  },
+  "stages": [
+    {
+      "label": "Dataset"
+    },
+    {
+      "label": "Ingestão"
+    },
+    {
+      "label": "Qualidade & Sinais"
+    },
+    {
+      "label": "Modelagem"
+    },
+    {
+      "label": "Entrega"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "raw",
+      "type": "external",
+      "label": "Dataset",
+      "sublabel": "5 CSVs",
+      "stage": 0,
+      "row": 1
+    },
+    {
+      "id": "loader",
+      "type": "backend",
+      "label": "Loader",
+      "sublabel": "contrato de dados",
+      "stage": 1,
+      "row": 1,
+      "tag": "dtype exato"
+    },
+    {
+      "id": "quality",
+      "type": "backend",
+      "label": "Quality",
+      "sublabel": "auditoria",
+      "stage": 2,
+      "row": 0,
+      "tag": "12 sondagens"
+    },
+    {
+      "id": "sinais",
+      "type": "database",
+      "label": "Sinais",
+      "sublabel": "métricas + features",
+      "stage": 2,
+      "row": 2,
+      "tag": "31 features"
+    },
+    {
+      "id": "modelagem",
+      "type": "backend",
+      "label": "Modelagem",
+      "sublabel": "risco · causal · Shapley",
+      "stage": 3,
+      "row": 1,
+      "width": 150,
+      "tag": "cross-fitting"
+    },
+    {
+      "id": "outputs",
+      "type": "database",
+      "label": "outputs/",
+      "sublabel": "metrics.json · CSVs",
+      "stage": 4,
+      "row": 0
+    },
+    {
+      "id": "dashboard",
+      "type": "frontend",
+      "label": "Dashboard",
+      "sublabel": "5 painéis",
+      "stage": 4,
+      "row": 2,
+      "tag": "sem servidor"
+    }
+  ],
+  "flows": [
+    {
+      "from": "raw",
+      "to": "loader",
+      "label": "5 CSVs",
+      "classification": "dados brutos",
+      "variant": "emphasis"
+    },
+    {
+      "from": "loader",
+      "to": "quality",
+      "label": "tabelas",
+      "classification": "contrato ok"
+    },
+    {
+      "from": "loader",
+      "to": "sinais",
+      "label": "tabelas",
+      "classification": "contrato ok"
+    },
+    {
+      "from": "quality",
+      "to": "modelagem",
+      "label": "dados auditados",
+      "classification": "dados confiáveis"
+    },
+    {
+      "from": "sinais",
+      "to": "modelagem",
+      "label": "painel OOT",
+      "classification": "treino/teste"
+    },
+    {
+      "from": "modelagem",
+      "to": "outputs",
+      "label": "score + causal",
+      "classification": "IC clusterizado",
+      "variant": "emphasis"
+    },
+    {
+      "from": "outputs",
+      "to": "dashboard",
+      "label": "data.js",
+      "classification": "atribuição global",
+      "variant": "emphasis",
+      "labelDy": 24
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Um caminho principal, sem número solto",
+      "items": [
+        "Dataset → Loader → Quality/Sinais → Modelagem → outputs/ → Dashboard",
+        "Todo valor citado no relatório e nos painéis é uma marca conferida contra outputs/metrics.json"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Causal e explicabilidade na mesma camada",
+      "items": [
+        "DML usa cross-fitting agrupado por conta e erro-padrão clusterizado, com verificação de sobreposição obrigatória",
+        "Explainability calcula Shapley exato por enumeração de coalizões — shap não instala em Python 3.14"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Entrega client-side sem servidor",
+      "items": [
+        "outputs/ vira data.js por atribuição global, evitando CORS em file://",
+        "Chart.js e Plotly.js vendorizados localmente; a página abre offline"
+      ]
+    }
+  ]
+}
