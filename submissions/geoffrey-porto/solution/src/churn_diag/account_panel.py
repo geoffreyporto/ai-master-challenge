@@ -20,9 +20,11 @@ import polars as pl
 
 from churn_diag.features import (
     DERIVED_FEATURES,
+    TIMELINE_UNRELIABLE,
     attach_derived_features,
     rate_features,
     ticket_rates,
+    timeline_features,
     usage_rates,
     zscore_stats,
 )
@@ -233,3 +235,32 @@ def attach_full_history_rates(t: Tables, panel: pl.DataFrame) -> pl.DataFrame:
 
 
 DERIVED_COLUMNS: Final[tuple[str, ...]] = DERIVED_FEATURES
+
+
+TIMELINE_COLUMNS: Final[tuple[str, ...]] = tuple(
+    f"{name}{suffix}"
+    for name in TIMELINE_UNRELIABLE
+    for suffix in ("_bruto", "_consistente")
+)
+
+
+def attach_timeline_features(t: Tables, panel: pl.DataFrame) -> pl.DataFrame:
+    """Anexa tendência e recência de uso nos dois recortes, para MEDIÇÃO.
+
+    Ficam fora de `ACCOUNT_NUMERIC` de propósito: não entram na replicação da
+    referência nem no score de produção (AC-032).
+    """
+    frames = []
+    for t0 in panel["snapshot_date"].unique().sort().to_list():
+        bruto = timeline_features(t, t0)
+        consistente = timeline_features(t, t0, consistent=True)
+        frames.append(
+            bruto.join(
+                consistente, on="account_id", how="full", coalesce=True
+            ).with_columns(snapshot_date=pl.lit(t0))
+        )
+    return panel.join(
+        pl.concat(frames, how="diagonal_relaxed"),
+        on=["account_id", "snapshot_date"],
+        how="left",
+    )

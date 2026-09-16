@@ -16,8 +16,10 @@ import polars as pl
 
 from churn_diag import figures
 from churn_diag.account_panel import (
+    TIMELINE_COLUMNS,
     attach_derived,
     attach_full_history_rates,
+    attach_timeline_features,
     build_account_panel,
     split_train_test,
 )
@@ -135,13 +137,19 @@ def analyse(t: Tables, cs_top_n: int) -> Result:
     cohorts = cohort_churn_profile(t)
 
     # Validação das features da referência (feature validacao-features).
-    acc_panel = attach_derived(attach_full_history_rates(t, build_account_panel(t)))
+    acc_panel = attach_timeline_features(
+        t, attach_derived(attach_full_history_rates(t, build_account_panel(t)))
+    )
     _, acc_test = split_train_test(acc_panel)
     rate_cols = [f"{r}_90d" for r in RATE_FEATURES] + [
         f"{r}_all" for r in RATE_FEATURES
     ]
     screening = univariate_screening(
-        acc_test, rate_cols + list(DERIVED_FEATURES) + list(ACCOUNT_SCREEN_EXTRA)
+        acc_test,
+        rate_cols
+        + list(DERIVED_FEATURES)
+        + list(TIMELINE_COLUMNS)
+        + list(ACCOUNT_SCREEN_EXTRA),
     )
     replication = reference_replication(acc_panel)
     published = published_reference_metrics()
@@ -356,6 +364,19 @@ def analyse(t: Tables, cs_top_n: int) -> Result:
             decomposition["spearman_composta_x_denominador"][0]
         ),
         "derived_friction_index_auc": _auc(screening, "support_friction_index"),
+        "timeline_trend_auc_bruto": _auc(screening, "usage_trend_ratio_90d_bruto"),
+        "timeline_trend_auc_consistente": _auc(
+            screening, "usage_trend_ratio_90d_consistente"
+        ),
+        "timeline_recency_auc_bruto": _auc(screening, "days_since_last_usage_bruto"),
+        "timeline_recency_auc_consistente": _auc(
+            screening, "days_since_last_usage_consistente"
+        ),
+        "timeline_significant_n": int(
+            screening.filter(pl.col("feature").is_in(list(TIMELINE_COLUMNS)))[
+                "significant"
+            ].sum()
+        ),
         "derived_significant_n": int(
             screening.filter(pl.col("feature").is_in(list(DERIVED_FEATURES)))[
                 "significant"

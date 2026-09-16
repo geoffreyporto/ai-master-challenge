@@ -9,11 +9,16 @@ from __future__ import annotations
 
 import re
 
-from churn_diag.account_panel import ACCOUNT_CATEGORICAL, ACCOUNT_NUMERIC
+from churn_diag.account_panel import (
+    ACCOUNT_CATEGORICAL,
+    ACCOUNT_NUMERIC,
+    TIMELINE_COLUMNS,
+)
 from churn_diag.config import SOLUTION_ROOT
 from churn_diag.features import (
     DERIVED_FEATURES,
     IMPLEMENTADA,
+    MEDIDA_SOB_BANDEIRA,
     REFERENCE_FEATURES,
     STATUS_EMOJI,
     reference_counts,
@@ -26,7 +31,10 @@ PANEL_COLUMNS = {
     # por isso não estão em ACCOUNT_NUMERIC — mas são colunas do painel por conta
     "conta": set(ACCOUNT_NUMERIC) | set(ACCOUNT_CATEGORICAL) | set(DERIVED_FEATURES),
     "diagnostico": set(NUMERIC_FEATURES) | set(CAT_FEATURES),
+    # painel só de medição: existe para triagem, nunca para o score (AC-032)
+    "triagem": set(TIMELINE_COLUMNS),
 }
+COM_COLUNA = (IMPLEMENTADA, MEDIDA_SOB_BANDEIRA)
 # Tamanhos declarados no documento da referência (docs/referencia/).
 REFERENCE_SIZES = {"feature": 20, "controle": 8, "derivada": 3}
 
@@ -44,9 +52,9 @@ def test_registry_covers_the_whole_reference() -> None:
 def test_implemented_features_point_to_real_columns() -> None:
     """@spec:AC-025 — "implementada" só vale se a coluna existe no painel indicado."""
     for f in REFERENCE_FEATURES:
-        if f.status != IMPLEMENTADA:
+        if f.status not in COM_COLUNA:
             continue
-        assert f.columns, f"{f.name} marcada implementada sem coluna"
+        assert f.columns, f"{f.name} marcada {f.status} sem coluna"
         for panel, column in f.columns:
             assert panel in PANEL_COLUMNS, f"{f.name}: painel desconhecido {panel}"
             assert column in PANEL_COLUMNS[panel], f"{f.name}: {panel} não tem {column}"
@@ -57,8 +65,10 @@ def test_unimplemented_features_state_a_reason() -> None:
     for f in REFERENCE_FEATURES:
         if f.status == IMPLEMENTADA:
             continue
-        assert not f.columns, f"{f.name} não implementada mas aponta coluna"
         assert len(f.reason) > 20, f"{f.name} sem motivo escrito"
+        if f.status == MEDIDA_SOB_BANDEIRA:
+            continue  # existe, mas só no painel de triagem
+        assert not f.columns, f"{f.name} não implementada mas aponta coluna"
 
 
 def _matrix_rows() -> list[str]:
@@ -85,16 +95,25 @@ def test_doc_publishes_the_registry_counts() -> None:
     line = next(
         ln for ln in doc.splitlines() if ln.startswith("Cobertura do registro:")
     )
-    published = [
-        int(n)
-        for n in re.findall(
-            r"(\d+)\s+(?:implementadas|em quarentena|excluídas|não implementadas)", line
+    rotulos = "|".join(
+        (
+            "implementadas",
+            "em quarentena",
+            "excluídas por linha do tempo",
+            "não implementadas",
+            "medidas sob bandeira",
+        )
+    )
+    published = [int(n) for n in re.findall(rf"(\d+)\s+(?:{rotulos})", line)]
+    counts = reference_counts()
+    esperado = [
+        counts.get(k, 0)
+        for k in (
+            "implementada",
+            "quarentena",
+            "excluida_linha_do_tempo",
+            "nao_implementada",
+            "medida_sob_bandeira",
         )
     ]
-    counts = reference_counts()
-    assert published == [
-        counts.get("implementada", 0),
-        counts.get("quarentena", 0),
-        counts.get("excluida_linha_do_tempo", 0),
-        counts.get("nao_implementada", 0),
-    ]
+    assert published == [n for n in esperado if n]
