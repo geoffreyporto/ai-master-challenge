@@ -1,0 +1,328 @@
+{
+  "screening_design": {
+    "unit": "account_id x monthly snapshot",
+    "feature_lookback_days": 90,
+    "label_horizon_days": 30,
+    "train_through": "2024-08-31",
+    "untouched_test": "2024-09-30 to 2024-10-31",
+    "warning": "This is a small-sample feature screen, not a production-performance claim. Permutation importance is predictive, not causal."
+  },
+  "metrics": {
+    "train_rows": 3392,
+    "test_rows": 854,
+    "train_positive_rate": 0.0693,
+    "test_positive_rate": 0.1066,
+    "test_average_precision": 0.144,
+    "test_roc_auc": 0.604
+  },
+  "top_permutation_features": [
+    {
+      "feature": "tenure_days",
+      "importance_mean_drop_AP": 0.04298,
+      "importance_std": 0.00537
+    },
+    {
+      "feature": "errors_per_100_uses_90d",
+      "importance_mean_drop_AP": 0.00295,
+      "importance_std": 0.00355
+    },
+    {
+      "feature": "usage_trend_ratio_90d",
+      "importance_mean_drop_AP": 0.00174,
+      "importance_std": 0.0029
+    },
+    {
+      "feature": "plan_tier",
+      "importance_mean_drop_AP": 0.00165,
+      "importance_std": 0.00149
+    },
+    {
+      "feature": "annual_share",
+      "importance_mean_drop_AP": 0.00139,
+      "importance_std": 0.00182
+    },
+    {
+      "feature": "active_seats",
+      "importance_mean_drop_AP": 0.00066,
+      "importance_std": 0.00355
+    },
+    {
+      "feature": "satisfaction_missing_share_90d",
+      "importance_mean_drop_AP": 0.00063,
+      "importance_std": 0.00021
+    },
+    {
+      "feature": "auto_renew_share",
+      "importance_mean_drop_AP": 0.00048,
+      "importance_std": 0.00133
+    },
+    {
+      "feature": "industry",
+      "importance_mean_drop_AP": 0.0004,
+      "importance_std": 0.00425
+    },
+    {
+      "feature": "downgrade_share",
+      "importance_mean_drop_AP": 0.0,
+      "importance_std": 0.0
+    },
+    {
+      "feature": "is_trial",
+      "importance_mean_drop_AP": 0.0,
+      "importance_std": 0.0
+    },
+    {
+      "feature": "escalation_rate_90d",
+      "importance_mean_drop_AP": 0.0,
+      "importance_std": 0.0
+    },
+    {
+      "feature": "tickets_90d",
+      "importance_mean_drop_AP": 0.0,
+      "importance_std": 0.0
+    },
+    {
+      "feature": "feature_breadth_90d",
+      "importance_mean_drop_AP": 0.0,
+      "importance_std": 0.0
+    },
+    {
+      "feature": "satisfaction_mean_90d",
+      "importance_mean_drop_AP": 0.0,
+      "importance_std": 0.0
+    },
+    {
+      "feature": "usage_error_total_90d",
+      "importance_mean_drop_AP": -8e-05,
+      "importance_std": 0.00021
+    },
+    {
+      "feature": "country",
+      "importance_mean_drop_AP": -0.00022,
+      "importance_std": 0.00042
+    },
+    {
+      "feature": "beta_usage_share_90d",
+      "importance_mean_drop_AP": -0.00046,
+      "importance_std": 0.0006
+    },
+    {
+      "feature": "referral_source",
+      "importance_mean_drop_AP": -0.00089,
+      "importance_std": 0.00487
+    },
+    {
+      "feature": "response_time_p90_90d",
+      "importance_mean_drop_AP": -0.00129,
+      "importance_std": 0.00447
+    },
+    {
+      "feature": "high_priority_ticket_share_90d",
+      "importance_mean_drop_AP": -0.00161,
+      "importance_std": 0.00113
+    },
+    {
+      "feature": "upgrade_share",
+      "importance_mean_drop_AP": -0.00315,
+      "importance_std": 0.00287
+    },
+    {
+      "feature": "seats",
+      "importance_mean_drop_AP": -0.00411,
+      "importance_std": 0.00614
+    },
+    {
+      "feature": "usage_duration_90d",
+      "importance_mean_drop_AP": -0.00452,
+      "importance_std": 0.00236
+    },
+    {
+      "feature": "usage_total_90d",
+      "importance_mean_drop_AP": -0.00706,
+      "importance_std": 0.00379
+    }
+  ],
+  "numeric_descriptives": [
+    {
+      "feature": "seats",
+      "positive_median": 15.0,
+      "negative_median": 15.0,
+      "missing_rate": 0.0
+    },
+    {
+      "feature": "is_trial",
+      "positive_median": 0.0,
+      "negative_median": 0.0,
+      "missing_rate": 0.0
+    },
+    {
+      "feature": "tenure_days",
+      "positive_median": 163.0,
+      "negative_median": 211.0,
+      "missing_rate": 0.0
+    },
+    {
+      "feature": "active_mrr",
+      "positive_median": 5686.0,
+      "negative_median": 6169.0,
+      "missing_rate": 0.0
+    },
+    {
+      "feature": "active_seats",
+      "positive_median": 91.0,
+      "negative_median": 96.0,
+      "missing_rate": 0.0
+    },
+    {
+      "feature": "active_subscriptions",
+      "positive_median": 3.0,
+      "negative_median": 4.0,
+      "missing_rate": 0.0
+    },
+    {
+      "feature": "annual_share",
+      "positive_median": 0.5,
+      "negative_median": 0.5,
+      "missing_rate": 0.0
+    },
+    {
+      "feature": "auto_renew_share",
+      "positive_median": 0.8333,
+      "negative_median": 0.8333,
+      "missing_rate": 0.0
+    },
+    {
+      "feature": "upgrade_share",
+      "positive_median": 0.0,
+      "negative_median": 0.0,
+      "missing_rate": 0.0
+    },
+    {
+      "feature": "downgrade_share",
+      "positive_median": 0.0,
+      "negative_median": 0.0,
+      "missing_rate": 0.0
+    },
+    {
+      "feature": "usage_total_90d",
+      "positive_median": 25.5,
+      "negative_median": 26.0,
+      "missing_rate": 0.1745
+    },
+    {
+      "feature": "usage_duration_90d",
+      "positive_median": 7680.5,
+      "negative_median": 7814.5,
+      "missing_rate": 0.1745
+    },
+    {
+      "feature": "usage_error_total_90d",
+      "positive_median": 1.0,
+      "negative_median": 1.0,
+      "missing_rate": 0.1745
+    },
+    {
+      "feature": "feature_breadth_90d",
+      "positive_median": 3.0,
+      "negative_median": 3.0,
+      "missing_rate": 0.1745
+    },
+    {
+      "feature": "beta_usage_share_90d",
+      "positive_median": 0.0,
+      "negative_median": 0.0,
+      "missing_rate": 0.1745
+    },
+    {
+      "feature": "usage_trend_ratio_90d",
+      "positive_median": 1.1455,
+      "negative_median": 1.0,
+      "missing_rate": 0.1745
+    },
+    {
+      "feature": "days_since_last_usage",
+      "positive_median": 19.0,
+      "negative_median": 21.0,
+      "missing_rate": 0.1745
+    },
+    {
+      "feature": "errors_per_100_uses_90d",
+      "positive_median": 2.6671,
+      "negative_median": 3.5714,
+      "missing_rate": 0.1745
+    },
+    {
+      "feature": "tickets_90d",
+      "positive_median": 1.0,
+      "negative_median": 1.0,
+      "missing_rate": 0.6179
+    },
+    {
+      "feature": "escalation_rate_90d",
+      "positive_median": 0.0,
+      "negative_median": 0.0,
+      "missing_rate": 0.6179
+    },
+    {
+      "feature": "resolution_time_mean_90d",
+      "positive_median": 32.25,
+      "negative_median": 35.0,
+      "missing_rate": 0.6179
+    },
+    {
+      "feature": "response_time_p90_90d",
+      "positive_median": 101.0,
+      "negative_median": 102.0,
+      "missing_rate": 0.6179
+    },
+    {
+      "feature": "high_priority_ticket_share_90d",
+      "positive_median": 0.5,
+      "negative_median": 0.5,
+      "missing_rate": 0.6179
+    },
+    {
+      "feature": "satisfaction_mean_90d",
+      "positive_median": 4.0,
+      "negative_median": 4.0,
+      "missing_rate": 0.7518
+    },
+    {
+      "feature": "satisfaction_missing_share_90d",
+      "positive_median": 0.0,
+      "negative_median": 0.0,
+      "missing_rate": 0.6179
+    }
+  ],
+  "feature_columns": [
+    "industry",
+    "country",
+    "referral_source",
+    "plan_tier",
+    "seats",
+    "is_trial",
+    "tenure_days",
+    "active_mrr",
+    "active_seats",
+    "active_subscriptions",
+    "annual_share",
+    "auto_renew_share",
+    "upgrade_share",
+    "downgrade_share",
+    "usage_total_90d",
+    "usage_duration_90d",
+    "usage_error_total_90d",
+    "feature_breadth_90d",
+    "beta_usage_share_90d",
+    "usage_trend_ratio_90d",
+    "days_since_last_usage",
+    "errors_per_100_uses_90d",
+    "tickets_90d",
+    "escalation_rate_90d",
+    "resolution_time_mean_90d",
+    "response_time_p90_90d",
+    "high_priority_ticket_share_90d",
+    "satisfaction_mean_90d",
+    "satisfaction_missing_share_90d"
+  ]
+}
