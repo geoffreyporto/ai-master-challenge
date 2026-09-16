@@ -18,7 +18,14 @@ from typing import Final
 
 import polars as pl
 
-from churn_diag.features import rate_features, ticket_rates, usage_rates
+from churn_diag.features import (
+    DERIVED_FEATURES,
+    attach_derived_features,
+    rate_features,
+    ticket_rates,
+    usage_rates,
+    zscore_stats,
+)
 from churn_diag.loader import Tables
 
 SNAPSHOT_FIRST: Final[date] = date(2023, 4, 30)
@@ -193,6 +200,16 @@ def split_train_test(
     )
 
 
+def attach_derived(panel: pl.DataFrame) -> pl.DataFrame:
+    """Acrescenta as derivadas da referência, com z-scores ajustados no treino.
+
+    As derivadas **não** entram em `ACCOUNT_NUMERIC`: a replicação do desenho da
+    referência reproduz a lista publicada, que não as inclui.
+    """
+    train, _ = split_train_test(panel)
+    return attach_derived_features(panel, zscore_stats(train))
+
+
 def attach_full_history_rates(t: Tables, panel: pl.DataFrame) -> pl.DataFrame:
     """Acrescenta as taxas calculadas sobre todo o histórico (sufixo `_all`).
 
@@ -213,3 +230,6 @@ def attach_full_history_rates(t: Tables, panel: pl.DataFrame) -> pl.DataFrame:
         on=["account_id", "snapshot_date"],
         how="left",
     )
+
+
+DERIVED_COLUMNS: Final[tuple[str, ...]] = DERIVED_FEATURES

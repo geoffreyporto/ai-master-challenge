@@ -5,14 +5,16 @@ from datetime import date
 import polars as pl
 
 from churn_diag.account_panel import (
+    attach_derived,
     attach_full_history_rates,
     build_account_panel,
     split_train_test,
 )
-from churn_diag.features import RATE_FEATURES
+from churn_diag.features import DERIVED_FEATURES, RATE_FEATURES
 from churn_diag.loader import Tables
 from churn_diag.screening import (
     age_signal_comparison,
+    composite_decomposition,
     reference_replication,
     univariate_screening,
 )
@@ -90,3 +92,44 @@ def test_age_comparison_on_real_data_has_verdict(real_tables: Tables) -> None:
     assert out["veredito"][0]
     assert -1.0 <= out["spearman_tenure_vs_sub_age"][0] <= 1.0
     assert out["auc_tenure_days"][0] is not None
+
+
+def test_derived_features_reach_the_screening(real_tables: Tables) -> None:
+    """@spec:AC-029 — as duas derivadas saem com AUC e p ajustado por Holm."""
+    panel = attach_derived(
+        attach_full_history_rates(real_tables, build_account_panel(real_tables))
+    )
+    _, test = split_train_test(panel)
+    out = univariate_screening(test, list(DERIVED_FEATURES))
+    assert set(out["feature"]) == set(DERIVED_FEATURES)
+    assert out["n"].min() > 100
+    assert out["p_holm"].is_between(0, 1).all()
+
+
+def test_composite_decomposition_exposes_the_denominator() -> None:
+    """@spec:AC-030 — razão cujo sinal é do denominador é desmascarada."""
+    n = 400
+    rows = []
+    for i in range(n):
+        denominador = 1.0 + (i % 20)  # só o denominador carrega o rótulo
+        numerador = float((i * 37) % 11)  # ruído
+        rows.append(
+            {
+                "y": int(denominador < 5),
+                "denominador": denominador,
+                "numerador": numerador,
+                "razao": numerador / denominador,
+            }
+        )
+    out = composite_decomposition(
+        pl.DataFrame(rows), "razao", "numerador", "denominador"
+    )
+    papel = {r["papel"]: r for r in out.iter_rows(named=True)}
+    assert set(papel) == {
+        "composta",
+        "numerador",
+        "denominador",
+        "inverso do denominador",
+    }
+    assert papel["inverso do denominador"]["auc"] >= papel["composta"]["auc"]
+    assert abs(papel["composta"]["spearman_composta_x_denominador"]) > 0.5

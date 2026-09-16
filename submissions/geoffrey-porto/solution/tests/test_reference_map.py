@@ -12,6 +12,7 @@ import re
 from churn_diag.account_panel import ACCOUNT_CATEGORICAL, ACCOUNT_NUMERIC
 from churn_diag.config import SOLUTION_ROOT
 from churn_diag.features import (
+    DERIVED_FEATURES,
     IMPLEMENTADA,
     REFERENCE_FEATURES,
     STATUS_EMOJI,
@@ -21,7 +22,9 @@ from churn_diag.risk import CAT_FEATURES, NUMERIC_FEATURES
 
 MATRIX_DOC = SOLUTION_ROOT.parent / "docs" / "04-matriz-de-features.md"
 PANEL_COLUMNS = {
-    "conta": set(ACCOUNT_NUMERIC) | set(ACCOUNT_CATEGORICAL),
+    # as derivadas são anexadas depois da montagem do painel (attach_derived),
+    # por isso não estão em ACCOUNT_NUMERIC — mas são colunas do painel por conta
+    "conta": set(ACCOUNT_NUMERIC) | set(ACCOUNT_CATEGORICAL) | set(DERIVED_FEATURES),
     "diagnostico": set(NUMERIC_FEATURES) | set(CAT_FEATURES),
 }
 # Tamanhos declarados no documento da referência (docs/referencia/).
@@ -90,8 +93,8 @@ def test_doc_publishes_the_registry_counts() -> None:
     ]
     counts = reference_counts()
     assert published == [
-        counts["implementada"],
-        counts["quarentena"],
-        counts["excluida_linha_do_tempo"],
-        counts["nao_implementada"],
+        counts.get("implementada", 0),
+        counts.get("quarentena", 0),
+        counts.get("excluida_linha_do_tempo", 0),
+        counts.get("nao_implementada", 0),
     ]

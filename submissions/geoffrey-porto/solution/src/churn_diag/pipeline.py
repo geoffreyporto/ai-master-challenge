@@ -16,12 +16,13 @@ import polars as pl
 
 from churn_diag import figures
 from churn_diag.account_panel import (
+    attach_derived,
     attach_full_history_rates,
     build_account_panel,
     split_train_test,
 )
 from churn_diag.config import AGE_BUCKETS, CONTROL_SIGMA, YOUNG_AGE_DAYS, Settings
-from churn_diag.features import QUARANTINED_UNDATED, RATE_FEATURES
+from churn_diag.features import DERIVED_FEATURES, QUARANTINED_UNDATED, RATE_FEATURES
 from churn_diag.hypotheses import Context, findings_frame, invariance_table, run_all
 from churn_diag.impact import ab_test_design, excess_mrr, recovery_scenarios
 from churn_diag.loader import Tables, load_tables
@@ -45,6 +46,7 @@ from churn_diag.risk import (
 )
 from churn_diag.screening import (
     age_signal_comparison,
+    composite_decomposition,
     published_reference_metrics,
     reference_replication,
     univariate_screening,
@@ -133,15 +135,20 @@ def analyse(t: Tables, cs_top_n: int) -> Result:
     cohorts = cohort_churn_profile(t)
 
     # Validação das features da referência (feature validacao-features).
-    acc_panel = attach_full_history_rates(t, build_account_panel(t))
+    acc_panel = attach_derived(attach_full_history_rates(t, build_account_panel(t)))
     _, acc_test = split_train_test(acc_panel)
     rate_cols = [f"{r}_90d" for r in RATE_FEATURES] + [
         f"{r}_all" for r in RATE_FEATURES
     ]
-    screening = univariate_screening(acc_test, rate_cols + list(ACCOUNT_SCREEN_EXTRA))
+    screening = univariate_screening(
+        acc_test, rate_cols + list(DERIVED_FEATURES) + list(ACCOUNT_SCREEN_EXTRA)
+    )
     replication = reference_replication(acc_panel)
     published = published_reference_metrics()
     ages = age_signal_comparison(acc_panel)
+    decomposition = composite_decomposition(
+        acc_test, "usage_per_active_seat_90d", "usage_total_90d", "active_seats"
+    )
 
     young_mask = pl.col("age_days") < YOUNG_AGE_DAYS
     tgt = panel.filter(pl.col("period") == "target")
@@ -333,6 +340,27 @@ def analyse(t: Tables, cs_top_n: int) -> Result:
         "rate_satisfaction_missing_auc_all": _auc(
             screening, "satisfaction_missing_share_all"
         ),
+        "derived_usage_per_seat_auc": _auc(screening, "usage_per_active_seat_90d"),
+        "derived_usage_per_seat_inv_seats_auc": round(
+            float(
+                decomposition.filter(pl.col("papel") == "inverso do denominador")[
+                    "auc"
+                ][0]
+            ),
+            3,
+        ),
+        "derived_usage_per_seat_numerator_auc": round(
+            float(decomposition.filter(pl.col("papel") == "numerador")["auc"][0]), 3
+        ),
+        "derived_usage_per_seat_rho_denominador": float(
+            decomposition["spearman_composta_x_denominador"][0]
+        ),
+        "derived_friction_index_auc": _auc(screening, "support_friction_index"),
+        "derived_significant_n": int(
+            screening.filter(pl.col("feature").is_in(list(DERIVED_FEATURES)))[
+                "significant"
+            ].sum()
+        ),
         "age_spearman": float(ages["spearman_tenure_vs_sub_age"][0]),
         "age_auc_tenure": float(ages["auc_tenure_days"][0]),
         "age_auc_min_sub": float(ages["auc_min_sub_age_days"][0]),
@@ -360,6 +388,7 @@ def analyse(t: Tables, cs_top_n: int) -> Result:
         "usage_vs_base_2024": usage_idx,
         "feature_screening": screening,
         "age_comparison": ages,
+        "derived_decomposition": decomposition,
         "account_panel_metrics": pl.DataFrame(
             [
                 {"fonte": "replicação (este projeto)", **replication},
