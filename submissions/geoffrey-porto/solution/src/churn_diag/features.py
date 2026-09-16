@@ -102,12 +102,14 @@ IMPLEMENTADA: Final[str] = "implementada"
 QUARENTENA: Final[str] = "quarentena"
 EXCLUIDA_LINHA_DO_TEMPO: Final[str] = "excluida_linha_do_tempo"
 NAO_IMPLEMENTADA: Final[str] = "nao_implementada"
+MEDIDA_SOB_BANDEIRA: Final[str] = "medida_sob_bandeira"
 
 STATUS_EMOJI: Final[dict[str, str]] = {
     IMPLEMENTADA: "✅",
     QUARENTENA: "🔒",
     EXCLUIDA_LINHA_DO_TEMPO: "⛔",
     NAO_IMPLEMENTADA: "⬜",
+    MEDIDA_SOB_BANDEIRA: "⚠️",
 }
 
 SEM_DATA = (
@@ -161,17 +163,27 @@ REFERENCE_FEATURES: Final[tuple[ReferenceFeature, ...]] = (
     _blocked("downgrade_share", "subscriptions", QUARENTENA, SEM_DATA),
     _f("active_seats", "subscriptions", ("conta", "active_seats")),
     _f("usage_total_90d", "feature_usage", ("conta", "usage_total_90d")),
-    _blocked(
+    ReferenceFeature(
         "usage_trend_ratio_90d",
         "feature_usage",
-        EXCLUIDA_LINHA_DO_TEMPO,
-        LINHA_DO_TEMPO,
+        "feature",
+        MEDIDA_SOB_BANDEIRA,
+        (
+            ("triagem", "usage_trend_ratio_90d_bruto"),
+            ("triagem", "usage_trend_ratio_90d_consistente"),
+        ),
+        LINHA_DO_TEMPO + " — medida só para dimensionar o ganho da correção",
     ),
-    _blocked(
+    ReferenceFeature(
         "days_since_last_usage",
         "feature_usage",
-        EXCLUIDA_LINHA_DO_TEMPO,
-        LINHA_DO_TEMPO,
+        "feature",
+        MEDIDA_SOB_BANDEIRA,
+        (
+            ("triagem", "days_since_last_usage_bruto"),
+            ("triagem", "days_since_last_usage_consistente"),
+        ),
+        LINHA_DO_TEMPO + " — medida só para dimensionar o ganho da correção",
     ),
     _f("feature_breadth_90d", "feature_usage", ("conta", "feature_breadth_90d")),
     _f("usage_duration_90d", "feature_usage", ("conta", "usage_duration_90d")),
@@ -340,4 +352,76 @@ def attach_derived_features(
     """Acrescenta as duas derivadas ao painel, com os parâmetros dados."""
     return panel.with_columns(
         usage_per_active_seat_expr(), support_friction_expr(stats)
+    )
+
+
+# ------------------------------------------- features de linha do tempo (C)
+# Dependem da data do uso, que neste dataset não bate com o ciclo de vida da
+# assinatura (ASM-004). Existem para MEDIR quanto valeria consertar a
+# instrumentação — nunca para entrar no score (AC-032).
+TIMELINE_UNRELIABLE: Final[tuple[str, ...]] = (
+    "usage_trend_ratio_90d",
+    "days_since_last_usage",
+)
+TIMELINE_SUFFIXES: Final[tuple[str, ...]] = ("_bruto", "_consistente")
+TREND_HALF_DAYS: Final[int] = 45
+
+
+def consistent_usage(t: Tables) -> pl.DataFrame:
+    """Uso cuja data cai dentro da janela da assinatura (22,3% dos eventos)."""
+    return t.feature_usage.join(
+        t.subscriptions.select(
+            "subscription_id", "account_id", "start_date", "end_date"
+        ),
+        on="subscription_id",
+        how="inner",
+    ).filter(
+        pl.col("usage_date") >= pl.col("start_date"),
+        pl.col("end_date").is_null() | (pl.col("usage_date") <= pl.col("end_date")),
+    )
+
+
+def timeline_features(
+    t: Tables, t0: date, window_days: int = 90, consistent: bool = False
+) -> pl.DataFrame:
+    """Tendência de uso e dias desde o último uso, por conta, num corte.
+
+    Tendência usa a fórmula da referência — (2ª metade + 1) ÷ (1ª metade + 1) —,
+    que evita divisão por zero sem inventar dado.
+    """
+    if consistent:
+        usage = consistent_usage(t).filter(
+            _window_filter("usage_date", t0, window_days)
+        )
+    else:
+        usage = t.feature_usage.filter(
+            _window_filter("usage_date", t0, window_days)
+        ).join(
+            t.subscriptions.select("subscription_id", "account_id"),
+            on="subscription_id",
+            how="inner",
+        )
+    mid = t0 - timedelta(days=TREND_HALF_DAYS)
+    suffix = "_consistente" if consistent else "_bruto"
+    return (
+        usage.group_by("account_id")
+        .agg(
+            primeira_metade=pl.col("usage_count")
+            .filter(pl.col("usage_date") < mid)
+            .sum(),
+            segunda_metade=pl.col("usage_count")
+            .filter(pl.col("usage_date") >= mid)
+            .sum(),
+            ultimo_uso=pl.col("usage_date").max(),
+        )
+        .select(
+            "account_id",
+            ((pl.col("segunda_metade") + 1) / (pl.col("primeira_metade") + 1)).alias(
+                f"usage_trend_ratio_90d{suffix}"
+            ),
+            (pl.lit(t0) - pl.col("ultimo_uso"))
+            .dt.total_days()
+            .alias(f"days_since_last_usage{suffix}"),
+        )
+        .sort("account_id")
     )
