@@ -30,7 +30,8 @@ Texto alternativo: proposta → especificação → design → tarefas → execu
 | Especificação | `.../spec.md` | 6 histórias, 18 critérios, suposições e perguntas |
 | Design | `.../design.md` | Módulos, protocolos, decisões e o que foi descartado |
 | Tarefas | `.../tasks.md` | T-001…T-010 com `Refs:` e `Arquivos:` |
-| Prova | `.spec/verification/diagnostico-churn.json` | Resultado por critério gravado pelo `verify` |
+| Prova | `.spec/verification/*.json` | Resultado por critério gravado pelo `verify` |
+| 2ª feature | `.spec/features/validacao-features/` | Validação das features da referência (taxas, painel por conta, quarentena) |
 
 **Estado do gate:** 18/18 critérios com teste e prova PASS. O `audit --ci`
 aponta apenas as perguntas Q-001/Q-002 — mantidas abertas **por decisão do dono
@@ -55,6 +56,7 @@ docstring. Zero dependência extra.
 | P-006 Reprodutível | Resultado que muda a cada execução | `SEED` obrigatório + teste de bytes idênticos |
 | P-007 Segredos fora do código | Vazamento de credencial | regex de chaves/senhas em `src/` |
 | P-008 Dados brutos somente leitura | Corromper a fonte | regex proíbe escrita no diretório de dados |
+| P-009 Campo sem data não vira feature | Usar como "anterior ao corte" algo que talvez não seja | regex proíbe as flags em `risk.py` + teste que confere a ausência nos dois painéis |
 
 ## 3. SOLID, KISS, DRY, YAGNI — onde estão no código
 

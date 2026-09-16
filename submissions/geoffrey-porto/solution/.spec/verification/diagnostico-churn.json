@@ -1,11 +1,11 @@
 {
   "feature": "diagnostico-churn",
-  "timestamp": "2026-09-15T17:33:39.490Z",
-  "gitRev": "a253d97",
+  "timestamp": "2026-09-15T23:59:30.865Z",
+  "gitRev": "558df62",
   "command": "uv run --frozen pytest -q -p no:cacheprovider --tap",
   "reporter": "tap",
   "exitCode": 0,
-  "testsParsed": 26,
+  "testsParsed": 41,
   "results": {
     "AC-001": {
       "status": "pass",
@@ -99,6 +99,10 @@
     }
   },
   "principles": {
+    "P-009": {
+      "status": "pass",
+      "testName": "tests/test_account_panel.py::test_quarantined_flags_are_absent @spec:AC-024 @principle:P-009"
+    },
     "P-004": {
       "status": "pass",
       "testName": "tests/test_hypotheses.py::test_every_finding_has_one_claim_label @spec:AC-010 @principle:P-004"

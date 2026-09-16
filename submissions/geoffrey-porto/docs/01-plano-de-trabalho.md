@@ -81,7 +81,13 @@ leitura e decisão do candidato não está medido; o intervalo 19:27 → 11:27 �
 | Laço extra (não planejado) | — | ~7 min (15/09, 11:27–11:35) | ✅ | Decisões do dono no gate (ASM-001, Q-001/Q-002 formalizadas, ASM-006). Volta não linear do CRISP-DM à modelagem — **mudou a conclusão** (regime novo desde out/24) |
 | Aprender (onp-spec) | dentro da M6 | 15/09 | ✅ | `licoes sugerir`: nenhum sinal recorrente (1 feature) — correto pelo motor |
 
-**Total do agente:** ~55 min contra 5 h planejadas.
+**Total do agente:** ~55 min contra 5 h planejadas (primeiro incremento).
+
+**Incremento 2 (15/09/2026) — validação das features da referência.** Fora do
+plano original: nova feature de spec (`validacao-features`), 6 critérios de
+aceite provados, três lacunas da matriz de features fechadas com medição e
+quarentena dos campos sem data (P-009). Resultados na seção 8 de
+`docs/04-matriz-de-features.md`.
 
 **Pendências:** Q-001 e Q-002 (CEO da RavenStack); ASM-003 (auditoria no
 billing) e ASM-006 (resolve com Q-001); screenshots e chat export no

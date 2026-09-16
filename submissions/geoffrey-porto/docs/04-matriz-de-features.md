@@ -22,6 +22,12 @@ de origem em `solution/outputs/`.
   virá de uma definição melhor de churn, não de um modelo mais complexo.
 - **Achado que a referência não tem:** a única variável com sinal fora do tempo
   aqui é a **idade da assinatura** (`age_days`), que não está na lista das 20.
+- **Medido depois desta matriz** (feature `validacao-features`, seção 8): as três
+  taxas da referência foram calculadas e **nenhuma tem sinal** aqui
+  (<!--m:rates_significant_n-->0 significativas após Holm); o desenho da
+  referência foi replicado (precisão média <!--m:repl_test_ap-->0,145 contra
+  <!--m:ref_published_ap-->0,144 publicados); e idade da conta e idade da
+  assinatura **não são o mesmo sinal**.
 
 ## 2. Desenho dos dois painéis
 
@@ -32,7 +38,7 @@ de origem em `solution/outputs/`.
 | Horizonte do rótulo | 30 dias | 92 dias |
 | Rótulo | Churn da conta (fonte não especificada) | Assinatura encerrada (`end_date`) em [T0, T0+92d) — definição confirmada pelo dono do produto (ASM-001) |
 | Validação | Holdout mais recente | Treino com corte 01/07/2024 → teste com corte 01/10/2024 |
-| Resultado | ROC-AUC 0,604 · PR-AUC 0,144 | Idade sozinha: ROC <!--m:oot_age_roc-->0,59; logística com tudo: <!--m:oot_logit_roc-->0,53; GBM: <!--m:oot_gbm_roc-->0,52 (<!--m:oot_gbm_insample_roc-->1,00 no treino); base de <!--m:oot_base_rate_pct-->4,1% de saídas |
+| Resultado | ROC-AUC 0,604 · PR-AUC 0,144 | Idade sozinha: ROC <!--m:oot_age_roc-->0,59; logística com tudo: <!--m:oot_logit_roc-->0,53; GBM: <!--m:oot_gbm_roc-->0,53 (<!--m:oot_gbm_insample_roc-->1,00 no treino); base de <!--m:oot_base_rate_pct-->4,1% de saídas |
 
 PR-AUC depende da taxa base, que a referência não informa — por isso não dá
 para comparar 0,144 com o PR-AUC daqui (`oot_validation.csv`).
@@ -50,23 +56,23 @@ casos não há evidência individual da feature.
 | 3 | `plan_tier` | Accounts/Subs | `plan_tier` da assinatura (one-hot) | ✅ | — | H12 (plano inicial da conta): sem diferença após Holm |
 | 4 | `active_subscriptions` | Subscriptions | — | ❌ | Unidade é a assinatura | No nível de conta, mais assinaturas = mais chance de "alguma encerrar" (efeito de exposição, não de risco) |
 | 5 | `annual_share` | Subscriptions | `billing_frequency` (one-hot) | 🟡 | Categoria da assinatura, não proporção | Benchmark |
-| 6 | `auto_renew_share` | Subscriptions | `auto_renew_flag` | 🟡 | Flag da assinatura | Benchmark. **Flag sem data** (ver seção 7) |
-| 7 | `upgrade_share` | Subscriptions | `upgrade_flag` | 🟡 | Flag da assinatura | Benchmark. **Sem data: "medir antes de t0" não é verificável** |
-| 8 | `downgrade_share` | Subscriptions | `downgrade_flag` | 🟡 | Flag da assinatura | Benchmark. Mesmo problema de data |
+| 6 | `auto_renew_share` | Subscriptions | — (quarentena) | ❌ | Flag sem data | **Removida** de todas as matrizes (P-009). Sem ela, os modelos não pioraram (seção 8) |
+| 7 | `upgrade_share` | Subscriptions | — (quarentena) | ❌ | Flag sem data | **Removida** (P-009): "medir antes de t0" não é verificável |
+| 8 | `downgrade_share` | Subscriptions | — (quarentena) | ❌ | Flag sem data | **Removida** (P-009) |
 | 9 | `active_seats` | Subscriptions | `seats` (assinatura) + `acct_seats` (conta) | 🟡 | Não é soma de assentos ativos | Benchmark |
 | 10 | `usage_total_90d` | Feature usage | `u_count` | 🟡 | Todo o histórico, não 90 dias | Benchmark. Uso total mensal ficou parado em 2024; por assinatura ativa caiu <!--m:usage_change_per_sub_pct-->−83,2% (H4) |
 | 11 | `usage_trend_ratio_90d` | Feature usage | — | ❌ | Descartada | Tendência dentro da janela mediria datas desalinhadas (uso antes da assinatura) |
 | 12 | `days_since_last_usage` | Feature usage | — | ❌ | Descartada | Mesmo motivo; há uso registrado até depois do fim da assinatura |
 | 13 | `feature_breadth_90d` | Feature usage | `u_breadth` | 🟡 | Todo o histórico | Benchmark |
 | 14 | `usage_duration_90d` | Feature usage | — | ❌ | Não usada | — |
-| 15 | `errors_per_100_uses_90d` | Feature usage | `u_errors` | 🟡 | **Contagem bruta, não taxa** | Benchmark. É o 2º sinal da referência — lacuna a testar aqui |
+| 15 | `errors_per_100_uses_90d` | Feature usage | `errors_per_100_uses` (90d e histórico) | ✅ | — | **Medida:** AUC <!--m:rate_errors_auc_90d-->0,525 (90 dias) e <!--m:rate_errors_auc_all-->0,528 (histórico) — sem significância após Holm |
 | 16 | `beta_usage_share_90d` | Feature usage | `u_beta_share` | 🟡 | Todo o histórico | Benchmark |
 | 17 | `tickets_90d` | Support | `t_n` (por conta) | 🟡 | Todo o histórico | Benchmark |
-| 18 | `escalation_rate_90d` | Support | `t_esc` | 🟡 | Contagem, não taxa | Benchmark. Quem declarou "suporte" como motivo não teve mais atrito (AUC <!--m:support_reason_auc-->0,50, H6) |
+| 18 | `escalation_rate_90d` | Support | `escalation_rate` (90d e histórico) | ✅ | — | **Medida:** AUC <!--m:rate_escalation_auc_90d-->0,474 e <!--m:rate_escalation_auc_all-->0,481 — sem sinal; H6 já mostrava atrito igual entre quem declarou "suporte" e os demais |
 | 19 | `response_time_p90_90d` | Support | `t_frt` | 🟡 | Média, não p90 | Benchmark |
-| 20 | `satisfaction_missing_share_90d` | Support | `t_csat_missing` | 🟡 | Binária (conta sem nenhuma nota), não proporção | <!--m:csat_missing_pct-->41,2% dos tickets sem nota; o CSAT médio não separa quem sai (AUC <!--m:csat_auc-->0,52, H3) |
+| 20 | `satisfaction_missing_share_90d` | Support | `satisfaction_missing_share` (90d e histórico) | ✅ | — | **Medida:** AUC <!--m:rate_satisfaction_missing_auc_90d-->0,500 e <!--m:rate_satisfaction_missing_auc_all-->0,500 — nenhum sinal; <!--m:csat_missing_pct-->41,2% dos tickets sem nota |
 
-Contagem: ✅ 2 · 🟡 14 · ❌ 4.
+Contagem depois da medição: ✅ 5 · 🟡 11 · ❌ 4 + 3 em quarentena.
 
 ## 4. Controles contextuais
 
@@ -97,7 +103,7 @@ ajustado <!--m:segments_min_p_holm-->0,30).
 |---|---|---|
 | `usage_per_active_seat_90d` | ❌ | Só no agregado (uso por assinatura ativa, H4). Faz sentido depois de corrigir a instrumentação |
 | `support_friction_index` | 🟡 | H6 usa "tickets + 2×escalações" para validar o motivo declarado, não como feature e sem z-score |
-| `commercial_contraction_flag` | ❌ | Depende de `downgrade_share` e `auto_renew_share`, que são flags sem data — risco de vazamento |
+| `commercial_contraction_flag` | ❌ | Depende de duas flags sem data, agora em quarentena (P-009) — não é construível com integridade |
 
 ## 6. Features só deste projeto
 
@@ -117,7 +123,7 @@ ajustado <!--m:segments_min_p_holm-->0,30).
 | Campos de `churn_events` pós-evento (`preceding_*`) | Excluídos | Excluídos | Mesma regex |
 | Qualquer dado ≥ `t0` | Excluído | Excluído | Teste que apaga todos os eventos ≥ T0 e exige features idênticas |
 | `accounts.churn_flag`, `subscriptions.churn_flag` / `end_date` | **Não mencionados** | Excluídos | O painel seleciona só as colunas permitidas; teste confere que não aparecem |
-| `upgrade_flag`, `downgrade_flag`, `auto_renew_flag` (sem data) | Usados como features (7, 8, 6) | **Usados no benchmark** | **Não garantido** — lacuna dos dois projetos: sem data, não há como provar que são anteriores a T0 |
+| `upgrade_flag`, `downgrade_flag`, `auto_renew_flag` (sem data) | Usados como features (7, 8, 6) | **Em quarentena** | P-009: lista única em `features.QUARANTINED_UNDATED`, regex proibida em `risk.py` e teste que confere a ausência nos dois painéis |
 
 ## 8. Triagem da referência × evidência daqui
 
@@ -133,15 +139,78 @@ ajustado <!--m:segments_min_p_holm-->0,30).
 | 8. `auto_renew_share` | Só benchmark; flag sem data |
 | 9. `industry` | Sem diferença após Holm (H9); estável como ambiente |
 
+## 8. Resultados medidos (feature `validacao-features`)
+
+Três perguntas abertas por esta matriz foram fechadas com medição. O painel por
+conta replica o desenho da referência (conta × fim de mês, janelas de 90 dias,
+rótulo = evento de churn não-reativação em 30 dias, treino até 31/08/2024).
+
+### 8.1 A replicação bate com a referência?
+
+| | Referência publicada | Replicação aqui |
+|---|---|---|
+| Linhas de treino | <!--m:repl_train_rows-->3.392 | <!--m:repl_train_rows-->3.392 |
+| Linhas de teste | <!--m:repl_test_rows-->854 | <!--m:repl_test_rows-->854 |
+| Taxa de evento no teste | 10,7% | <!--m:repl_test_positive_rate_pct-->10,7% |
+| Precisão média (AP) | <!--m:ref_published_ap-->0,144 | <!--m:repl_test_ap-->0,145 |
+| ROC-AUC | <!--m:ref_published_roc-->0,604 | <!--m:repl_test_roc-->0,57 |
+
+O painel reproduz **exatamente** o recorte (mesmas linhas e mesmas taxas de
+evento) e a precisão média. O ROC fica ~0,03 abaixo porque a replicação roda com
+cinco features a menos: as três em quarentena (P-009) e as duas descartadas por
+linha do tempo (`usage_trend_ratio_90d`, `days_since_last_usage`).
+
+### 8.2 As três taxas têm sinal?
+
+| Taxa | AUC (janela de 90 dias) | AUC (histórico completo) | Significativa após Holm |
+|---|---|---|---|
+| `errors_per_100_uses` | <!--m:rate_errors_auc_90d-->0,525 | <!--m:rate_errors_auc_all-->0,528 | não |
+| `escalation_rate` | <!--m:rate_escalation_auc_90d-->0,474 | <!--m:rate_escalation_auc_all-->0,481 | não |
+| `satisfaction_missing_share` | <!--m:rate_satisfaction_missing_auc_90d-->0,500 | <!--m:rate_satisfaction_missing_auc_all-->0,500 | não |
+
+Nenhuma das três separa quem sai de quem fica (<!--m:rates_significant_n-->0
+significativas). Vale para os dois recortes de janela — ou seja, aqui o problema
+não é só a janela de 90 dias: as taxas não têm sinal nem sobre todo o histórico.
+Detalhe por feature em `outputs/feature_screening.csv`.
+
+### 8.3 Idade da conta e idade da assinatura são o mesmo sinal?
+
+| Medida | Valor |
+|---|---|
+| Correlação de Spearman entre as duas | <!--m:age_spearman-->0,32 |
+| AUC da idade da conta (menor = mais risco) | <!--m:age_auc_tenure-->0,34 |
+| AUC da idade da assinatura mais nova | <!--m:age_auc_min_sub-->0,39 |
+| ROC do modelo só com idade da conta | <!--m:age_roc_tenure_only-->0,68 |
+| ROC do modelo só com idade da assinatura | <!--m:age_roc_sub_only-->0,52 |
+| ROC do modelo com as duas | <!--m:age_roc_both-->0,65 |
+| Ganho ao juntar | <!--m:age_gain_both-->−0,03 |
+
+**Veredito: sinais distintos.** A correlação é fraca (0,32) e, no painel por
+conta com o rótulo de evento de churn, a idade da conta prevê bem melhor que a
+idade da assinatura; juntar as duas piora. Ou seja, o `tenure_days` da
+referência **não** é o mesmo sinal que a idade da assinatura deste diagnóstico —
+são dois efeitos diferentes, cada um no seu par de unidade e rótulo.
+
+**Ressalva:** num painel que empilha snapshots mensais, `tenure_days` também
+carrega a coorte de entrada. Como o rótulo dispara no 4º tri/2024, parte desse
+poder preditivo pode ser o mesmo regime novo que a pergunta Q-001 investiga —
+não uma propriedade estável de contas jovens.
+
+### 8.4 Quanto custou a quarentena?
+
+Tirar as <!--m:quarantined_features_n-->3 flags sem data da matriz do
+diagnóstico **não piorou** os modelos fora do tempo: a logística ficou em
+<!--m:oot_logit_roc-->0,53 e o GBM em <!--m:oot_gbm_roc-->0,53 (antes, 0,53 e
+0,52). A suposição ASM-009 se confirma: dá para ser íntegro sem perder poder.
+
 ## 9. Próxima iteração recomendada
 
-1. **Trocar contagens por taxas** (`errors_per_100_uses`, `escalation_rate`,
-   `satisfaction_missing_share`) e testar uma a uma fora do tempo — é o ponto em
-   que a referência tem sinal e este projeto ainda não mediu.
-2. **Rodar o painel também por conta** (unidade da referência) para ver se
-   `tenure_days` é o mesmo efeito da idade da assinatura.
-3. **Pôr as flags sem data em quarentena** (`upgrade`, `downgrade`,
-   `auto_renew`) até existir data do evento — nos dois projetos.
+1. ~~Trocar contagens por taxas e testar fora do tempo~~ — **feito** (8.2):
+   nenhuma das três tem sinal.
+2. ~~Rodar o painel também por conta~~ — **feito** (8.1 e 8.3): o desenho
+   replica e as duas idades são sinais distintos.
+3. ~~Pôr as flags sem data em quarentena~~ — **feito** (8.4), sem custo de
+   desempenho.
 4. **Janelas de 90 dias, tendência e recência de uso só depois de corrigir a
    instrumentação** (ação 3 do relatório); antes disso, medem datas erradas.
 5. `usage_per_active_seat` e o índice de atrito entram na mesma rodada que o item 4.

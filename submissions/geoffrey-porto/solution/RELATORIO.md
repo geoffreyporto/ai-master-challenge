@@ -24,7 +24,7 @@
    Os dois indicadores olham para o cliente antigo e satisfeito; o problema está no novo.
 3. **Nenhum sinal de uso, suporte ou satisfação prevê quem vai sair.** Um modelo
    com as cinco tabelas acerta <!--m:oot_gbm_insample_roc-->1,00 no treino e
-   <!--m:oot_gbm_roc-->0,52 fora dele (0,50 = cara ou coroa). A causa não está
+   <!--m:oot_gbm_roc-->0,53 fora dele (0,50 = cara ou coroa). A causa não está
    onde a empresa hoje procura.
 4. **Alerta antes de gastar:** os dados têm defeitos graves (<!--m:usage_before_sub_start_pct-->76,6%
    do uso registrado *antes* da assinatura existir; <!--m:churn_def_disagree_pct-->80%
@@ -164,12 +164,21 @@ Treinei em julho e testei em outubro (sem espiar o futuro), em
 <!--m:oot_n_test-->2.330 assinaturas com <!--m:oot_base_rate_pct-->4,1% de saídas.
 Só a **idade da assinatura** tem sinal real (ROC <!--m:oot_age_roc-->0,59,
 p = <!--m:oot_age_p-->0,003). O GBM com as cinco tabelas decorou o treino e
-empatou com o acaso (<!--m:oot_gbm_roc-->0,52); a logística, <!--m:oot_logit_roc-->0,53.
+empatou com o acaso (<!--m:oot_gbm_roc-->0,53); a logística, <!--m:oot_logit_roc-->0,53.
 Em dólares, ligar primeiro para as maiores assinaturas captura
 <!--m:oot_mrr_only_mrr_recall_pct-->58,2% do MRR que sai nos 10% do topo; o score
 de perda esperada, <!--m:oot_expected_loss_mrr_recall_pct-->49%; o GBM,
-<!--m:oot_gbm_mrr_recall_pct-->9,7%. A diferença entre
-os dois primeiros está dentro do ruído (só <!--m:oot_positives-->96 saídas no teste). **Leitura:** o score serve para
+<!--m:oot_gbm_mrr_recall_pct-->10,3%. A diferença entre
+os dois primeiros está dentro do ruído (só <!--m:oot_positives-->96 saídas no teste).
+
+Também testei as features que a referência de engenharia de features sugere —
+taxa de erros por 100 usos, taxa de escalação e taxa de tickets sem nota de
+satisfação: **nenhuma separa quem sai** (AUC entre
+<!--m:rate_escalation_auc_90d-->0,474 e <!--m:rate_errors_auc_all-->0,528, nada
+significativo). E tirei do modelo as <!--m:quarantined_features_n-->3 flags sem
+data (upgrade, downgrade, renovação automática): sem data não dá para provar que
+descrevem o cliente antes do corte — e, sem elas, o desempenho não piorou.
+Comparação completa em `docs/04-matriz-de-features.md`. **Leitura:** o score serve para
 priorizar a fila do CS (risco × dinheiro), não para prometer quem vai sair.
 
 ---

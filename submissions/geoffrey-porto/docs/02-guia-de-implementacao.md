@@ -48,6 +48,7 @@ Checksums SHA-256 dos CSVs usados (para conferir que o dado é o mesmo):
 | 4. Modelagem | Taxa mensal; risco por idade; padronização de mix; controle 3σ; hipóteses H1–H12 com Holm; invariância; score de perda esperada | `metrics.py`, `hypotheses.py`, `risk.py` |
 | 5. Avaliação | Validação fora do tempo (treino jul/24 → teste out/24) contra logística e GBM com as 5 tabelas | `risk.oot_validation` |
 | 6. Implantação | Lista do CS; impacto em MRR com cenários; tamanho de amostra A/B; monitoramento | `risk.cs_priority_list`, `impact.py`, notebook §6 |
+| Extra: validação de features | Taxas da referência, painel por conta replicando o desenho externo, triagem univariada com Holm, quarentena de campos sem data | `features.py`, `account_panel.py`, `screening.py` |
 
 ## 3. Arsenal analítico — usado vs. descartado (com evidência)
 
@@ -68,6 +69,8 @@ Checksums SHA-256 dos CSVs usados (para conferir que o dado é o mesmo):
 | Janelas 30/60/90 dias antes do churn | **Descartado** | 77% do uso é anterior à assinatura; 54% dos tickets anteriores ao cadastro → a janela seria ruído |
 | TimesFM / suavização exponencial | **Substituído por controle 3σ** (YAGNI) | O controle simples já detectou a quebra; modelo temporal pesado sem dado confiável não agrega |
 | PR-AUC, lift@k, recall de MRR@k | **Usadas** | Acurácia seria enganosa com 4,1% de base |
+| Features de taxa (erros/100 usos, escalação, CSAT sem resposta) | **Medidas** | AUC entre 0,474 e 0,528, nenhuma significativa após Holm (`outputs/feature_screening.csv`) |
+| Painel por conta (desenho da referência) | **Replicado** | Mesmo recorte e mesma precisão média (0,145 vs 0,144 publicados) |
 
 ## 4. Validação — por que não K-fold aleatório
 

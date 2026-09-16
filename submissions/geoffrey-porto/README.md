@@ -19,7 +19,7 @@ pelo crescimento da base, o 4º tri teve <!--m:q4_ratio_x-->2,82× as saídas es
 (AUC <!--m:csat_auc-->0,52) e o uso total ficou parado enquanto a base cresceu
 <!--m:active_subs_growth_x-->5,8×. Nenhum sinal de uso, suporte ou satisfação prevê
 o churn (um GBM com as 5 tabelas faz <!--m:oot_gbm_insample_roc-->1,00 no treino e
-<!--m:oot_gbm_roc-->0,52 fora do tempo). **Recomendação principal:** antes de
+<!--m:oot_gbm_roc-->0,53 fora do tempo). **Recomendação principal:** antes de
 investir, auditar em 1 dia 20 cancelamentos de dezembro no billing — o padrão
 também é compatível com datas de cancelamento atribuídas em lote — e, em
 seguida, rodar um onboarding D+7/D+30 como teste A/B nas assinaturas novas;
@@ -35,8 +35,8 @@ em jogo, US$ <!--m:excess_mrr_per_month_k-->221 mil de MRR por mês acima do nor
 | Lista de contas para o CS (50, com motivo e ação) | [`solution/outputs/cs_priority_accounts.csv`](solution/outputs/cs_priority_accounts.csv) |
 | Pipeline reprodutível (Python 3.14 + Polars) | [`solution/src/churn_diag/`](solution/src/churn_diag/) |
 | Notebook técnico (CRISP-DM, executado) | [`solution/notebooks/diagnostico_churn.ipynb`](solution/notebooks/diagnostico_churn.ipynb) |
-| Especificação SDD (constituição, spec, design, tarefas, prova) | [`solution/.spec/`](solution/.spec/) |
-| Plano de trabalho · Guia de implementação · Arquitetura e SDD | [`docs/`](docs/) |
+| Especificação SDD (2 features: diagnóstico e validação de features) | [`solution/.spec/`](solution/.spec/) |
+| Plano de trabalho · Guia · Arquitetura · Matriz de features · Referência | [`docs/`](docs/) |
 
 ### Abordagem
 
@@ -73,6 +73,13 @@ em jogo, US$ <!--m:excess_mrr_per_month_k-->221 mil de MRR por mês acima do nor
   sair em 90 dias se o padrão continuar.
 - **[Hipótese]** O salto de novas assinaturas no 4º tri trouxe assinaturas que não
   se sustentam — a validar com o teste A/B (<!--m:ab_n_per_arm-->783 por braço).
+- **[Previsão]** As três features de taxa da minha referência de engenharia
+  (erros por 100 usos, escalação, CSAT sem resposta) foram medidas e **não têm
+  sinal** aqui (<!--m:rates_significant_n-->0 significativas); a replicação do
+  desenho por conta reproduz a precisão média publicada
+  (<!--m:repl_test_ap-->0,145 contra <!--m:ref_published_ap-->0,144) e mostra que
+  idade da conta e idade da assinatura são **sinais distintos** (correlação
+  <!--m:age_spearman-->0,32).
 
 ### Recomendações
 

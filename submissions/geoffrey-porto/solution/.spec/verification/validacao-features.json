@@ -1,0 +1,63 @@
+{
+  "feature": "validacao-features",
+  "timestamp": "2026-09-15T23:58:43.851Z",
+  "gitRev": "558df62",
+  "command": "uv run --frozen pytest -q -p no:cacheprovider --tap",
+  "reporter": "tap",
+  "exitCode": 0,
+  "testsParsed": 41,
+  "results": {
+    "AC-019": {
+      "status": "pass",
+      "testName": "tests/test_features.py::test_rates_match_hand_calculation @spec:AC-019",
+      "method": "tap"
+    },
+    "AC-020": {
+      "status": "pass",
+      "testName": "tests/test_screening.py::test_screening_separates_signal_from_noise @spec:AC-020",
+      "method": "tap"
+    },
+    "AC-021": {
+      "status": "pass",
+      "testName": "tests/test_account_panel.py::test_panel_reproduces_the_reference_design @spec:AC-021",
+      "method": "tap"
+    },
+    "AC-022": {
+      "status": "pass",
+      "testName": "tests/test_account_panel.py::test_account_panel_never_sees_the_future @spec:AC-022",
+      "method": "tap"
+    },
+    "AC-023": {
+      "status": "pass",
+      "testName": "tests/test_screening.py::test_identical_ages_are_called_the_same_signal @spec:AC-023",
+      "method": "tap"
+    },
+    "AC-024": {
+      "status": "pass",
+      "testName": "tests/test_account_panel.py::test_quarantined_flags_are_absent @spec:AC-024 @principle:P-009",
+      "method": "tap"
+    }
+  },
+  "principles": {
+    "P-009": {
+      "status": "pass",
+      "testName": "tests/test_account_panel.py::test_quarantined_flags_are_absent @spec:AC-024 @principle:P-009"
+    },
+    "P-004": {
+      "status": "pass",
+      "testName": "tests/test_hypotheses.py::test_every_finding_has_one_claim_label @spec:AC-010 @principle:P-004"
+    },
+    "P-006": {
+      "status": "pass",
+      "testName": "tests/test_pipeline.py::test_two_runs_are_byte_identical @spec:AC-017 @principle:P-006"
+    },
+    "P-003": {
+      "status": "pass",
+      "testName": "tests/test_report.py::test_every_marked_number_matches_the_pipeline[doc0-60] @spec:AC-018 @principle:P-003"
+    },
+    "P-002": {
+      "status": "pass",
+      "testName": "tests/test_risk.py::test_oot_panel_never_sees_the_future @spec:AC-014 @principle:P-002"
+    }
+  }
+}

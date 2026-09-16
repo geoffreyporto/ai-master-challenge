@@ -94,6 +94,26 @@ do produto pode resolver. As respostas do candidato:
    é um regime novo — e a causa está no evento que a Q-001 pergunta.
 4. **Push e PR:** retidos para revisão do candidato.
 
+## Segundo incremento: validar as features da referência (15/09/2026)
+
+O candidato trouxe seu documento *Features Engineering* (20 features) junto com
+o script e o resultado da própria triagem. A matriz comparativa
+(`docs/04-matriz-de-features.md`) apontou três lacunas, e o candidato mandou
+fechá-las com medição — nova feature de spec `validacao-features`, 6 critérios
+de aceite, todos provados.
+
+| Pergunta | Resposta medida |
+|---|---|
+| As três taxas da referência têm sinal aqui? | Não: AUC entre 0,474 e 0,528, nenhuma significativa após Holm — nos dois recortes de janela (90 dias e histórico completo) |
+| O desenho da referência replica? | Sim, linha a linha: 3.392/854 linhas, mesmas taxas de evento, precisão média 0,145 contra 0,144 publicados (ROC 0,57 contra 0,604, com 5 features a menos) |
+| Idade da conta = idade da assinatura? | Não: correlação 0,32; a idade da conta prevê melhor no painel por conta (0,68 contra 0,52) e juntar as duas piora |
+| Quanto custa tirar as flags sem data? | Nada: os modelos não pioraram (P-009 e ASM-009) |
+
+**Erro da IA neste incremento:** na primeira versão da matriz, escrevi que o
+`tenure_days` da referência "pode estar capturando o mesmo efeito" da idade da
+assinatura. Era hipótese apresentada como quase-fato; a medição mostrou o
+contrário (sinais distintos). O texto foi corrigido com o número na frente.
+
 ## O que foi descartado de propósito (julgamento, não omissão)
 
 - **Janelas 30/60/90 dias antes do churn** (sugeridas no guia de referência):
