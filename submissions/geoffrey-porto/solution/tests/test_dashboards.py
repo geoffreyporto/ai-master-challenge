@@ -44,8 +44,8 @@ def payload(real_tables: Tables, resultado: Result) -> dict:
     return build_payload(real_tables, resultado.report, resultado.tables)
 
 
-# @spec:AC-044
 def test_os_cinco_paineis_tem_os_quatro_niveis(payload: dict) -> None:
+    """@spec:AC-044"""
     assert set(payload["paineis"]) == set(STAKEHOLDERS)
     for nome, painel in payload["paineis"].items():
         for nivel in NIVEIS:
@@ -56,10 +56,10 @@ def test_os_cinco_paineis_tem_os_quatro_niveis(payload: dict) -> None:
             assert secao["titulo"].strip()
 
 
-# @spec:AC-045 @principle:P-003
 def test_todo_kpi_com_chave_bate_com_o_pipeline(
     payload: dict, resultado: Result
 ) -> None:
+    """@spec:AC-045 @principle:P-003"""
     conferidos = 0
     for nome, painel in payload["paineis"].items():
         assert len(painel["kpis"]) >= 4, f"{nome} deveria ter ao menos 4 KPIs"
@@ -77,8 +77,8 @@ def test_todo_kpi_com_chave_bate_com_o_pipeline(
     assert conferidos >= 15, "quase todo KPI do painel deveria ser rastreável"
 
 
-# @spec:AC-046
 def test_cada_painel_declara_o_que_nao_consegue_mostrar(payload: dict) -> None:
+    """@spec:AC-046"""
     for nome, painel in payload["paineis"].items():
         assert painel["lacunas"], f"{nome} não declarou nenhuma lacuna"
         for lacuna in painel["lacunas"]:
@@ -86,8 +86,8 @@ def test_cada_painel_declara_o_que_nao_consegue_mostrar(payload: dict) -> None:
             assert lacuna["porque"].strip()
 
 
-# @spec:AC-046
 def test_kpi_impossivel_nao_vira_numero(payload: dict) -> None:
+    """@spec:AC-046"""
     for nome, painel in payload["paineis"].items():
         rotulos = " ".join(k["rotulo"].lower() for k in painel["kpis"])
         for proibido in PROIBIDOS:
@@ -96,10 +96,10 @@ def test_kpi_impossivel_nao_vira_numero(payload: dict) -> None:
             )
 
 
-# @spec:AC-047 @principle:P-003
 def test_a_serie_do_painel_e_a_mesma_do_relatorio(
     real_tables: Tables, resultado: Result
 ) -> None:
+    """@spec:AC-047 @principle:P-003"""
     serie = receita_mensal(real_tables)
     dezembro = serie.filter(serie["month"] == serie["month"].max())
     assert float(dezembro["mrr_churn_pct"][0]) == pytest.approx(
@@ -107,8 +107,8 @@ def test_a_serie_do_painel_e_a_mesma_do_relatorio(
     )
 
 
-# @spec:AC-044
 def test_agregados_cobrem_as_dimensoes_do_negocio(real_tables: Tables) -> None:
+    """@spec:AC-044"""
     assert mrr_por_plano(real_tables).height == 3
     canais = base_por_canal(real_tables)
     assert canais.height == 5
@@ -117,8 +117,8 @@ def test_agregados_cobrem_as_dimensoes_do_negocio(real_tables: Tables) -> None:
     assert features_com_erro(real_tables, top_n=6).height == 6
 
 
-# @spec:AC-044
 def test_payload_gravado_abre_sem_servidor(payload: dict, tmp_path: Path) -> None:
+    """@spec:AC-044"""
     destino = write_payload(payload, tmp_path / "data.js")
     texto = destino.read_text(encoding="utf-8")
     assert texto.startswith("window.DASHBOARD_DATA = ")
@@ -126,8 +126,8 @@ def test_payload_gravado_abre_sem_servidor(payload: dict, tmp_path: Path) -> Non
     assert set(corpo["paineis"]) == set(STAKEHOLDERS)
 
 
-# @spec:AC-044
 def test_a_pagina_publicada_esta_em_dia(payload: dict) -> None:
+    """@spec:AC-044"""
     """A página versionada precisa ter sido gerada, compilada e vendorizada."""
     assert PAGINA.exists(), "index.html sumiu"
     assert APP.exists(), "rode `tsc -p dashboard/tsconfig.json`"

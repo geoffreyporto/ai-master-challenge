@@ -1,11 +1,11 @@
 {
   "feature": "efeito-causal-dml",
-  "timestamp": "2026-09-16T02:52:58.372Z",
-  "gitRev": "1acf7e4",
+  "timestamp": "2026-09-16T16:43:55.299Z",
+  "gitRev": "49cc82e",
   "command": "uv run --frozen pytest -q -p no:cacheprovider --tap",
   "reporter": "tap",
   "exitCode": 0,
-  "testsParsed": 67,
+  "testsParsed": 86,
   "results": {
     "AC-035": {
       "status": "pass",
@@ -38,6 +38,10 @@
       "status": "pass",
       "testName": "tests/test_account_panel.py::test_quarantined_flags_are_absent @spec:AC-024 @principle:P-009"
     },
+    "P-003": {
+      "status": "pass",
+      "testName": "tests/test_dashboards.py::test_todo_kpi_com_chave_bate_com_o_pipeline @spec:AC-045 @principle:P-003"
+    },
     "P-004": {
       "status": "pass",
       "testName": "tests/test_hypotheses.py::test_every_finding_has_one_claim_label @spec:AC-010 @principle:P-004"
@@ -45,10 +49,6 @@
     "P-006": {
       "status": "pass",
       "testName": "tests/test_pipeline.py::test_two_runs_are_byte_identical @spec:AC-017 @principle:P-006"
-    },
-    "P-003": {
-      "status": "pass",
-      "testName": "tests/test_report.py::test_every_marked_number_matches_the_pipeline[doc0-60] @spec:AC-018 @principle:P-003"
     },
     "P-002": {
       "status": "pass",

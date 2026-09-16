@@ -49,8 +49,9 @@ risk, impact); todos → pipeline → outputs → relatório.
 ## Protocolos (pontos de extensão)
 
 ```python
-class Scorer(Protocol):          # OCP/LSP: qualquer score entra na validação
+class Scorer(Protocol):  # OCP/LSP: qualquer score entra na validação
     name: str
+
     def fit(self, panel: pl.DataFrame) -> Self: ...
     def score(self, panel: pl.DataFrame) -> np.ndarray: ...
 ```

@@ -11,5 +11,5 @@
 ## T-029 — Página client-side (HTML + TypeScript + Tailwind + D3) [concluída]
 
 - Refs: AC-044
-- Arquivos: dashboard/index.html, dashboard/src/*.ts, dashboard/app.js, dashboard/vendor/, dashboard/README.md
+- Arquivos: dashboard/index.html, dashboard/src/tipos.ts, dashboard/src/formato.ts, dashboard/src/graficos.ts, dashboard/src/app.ts, dashboard/app.js, dashboard/vendor/d3.v7.min.js, dashboard/vendor/tailwind-play.js, dashboard/README.md
 - Notas: `tsc` compila `src/*.ts` em `app.js`; d3 e tailwind vendorizados; abre por file:// ou por servidor estático.

@@ -1103,20 +1103,20 @@ window.DASHBOARD_DATA = {
             "usos": 6470
           },
           {
-            "beta": 0.07,
-            "erros": 396,
-            "erros_por_100_usos": 6.31,
-            "eventos": 622,
-            "feature_name": "feature_16",
-            "usos": 6273
-          },
-          {
             "beta": 0.1,
             "erros": 369,
             "erros_por_100_usos": 6.31,
             "eventos": 588,
             "feature_name": "feature_18",
             "usos": 5850
+          },
+          {
+            "beta": 0.07,
+            "erros": 396,
+            "erros_por_100_usos": 6.31,
+            "eventos": 622,
+            "feature_name": "feature_16",
+            "usos": 6273
           },
           {
             "beta": 0.11,
@@ -1221,12 +1221,12 @@ window.DASHBOARD_DATA = {
           },
           {
             "eventos": 104,
-            "reason_code": "support",
+            "reason_code": "budget",
             "share_pct": 17.3
           },
           {
             "eventos": 104,
-            "reason_code": "budget",
+            "reason_code": "support",
             "share_pct": 17.3
           },
           {

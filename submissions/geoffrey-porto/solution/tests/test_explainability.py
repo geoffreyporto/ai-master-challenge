@@ -44,32 +44,32 @@ def _modelo(a: np.ndarray) -> np.ndarray:
     return 1 / (1 + np.exp(-(0.8 * a[:, 0] + 1.3 * a[:, 1] * (a[:, 0] > 0))))
 
 
-# @spec:AC-040
 def test_shapley_exato_fecha_a_conta() -> None:
+    """@spec:AC-040"""
     x, fundo = _dados()
     phi, base = exact_shapley_values(_modelo, x, fundo)
     erro = np.abs(phi.sum(axis=1) + base - _modelo(x)).max()
     assert erro < 1e-10, f"eficiência violada: {erro}"
 
 
-# @spec:AC-040
 def test_variavel_ignorada_recebe_zero() -> None:
+    """@spec:AC-040"""
     x, fundo = _dados()
     phi, _ = exact_shapley_values(_modelo, x, fundo)
     assert np.abs(phi[:, 2]).max() < 1e-12
     assert np.abs(phi[:, 1]).mean() > 1e-3
 
 
-# @spec:AC-040
 def test_recusa_muitas_variaveis() -> None:
+    """@spec:AC-040"""
     rng = np.random.default_rng(SEED)
     grande = rng.normal(size=(3, 13))
     with pytest.raises(ValueError, match="exato"):
         exact_shapley_values(_modelo, grande, grande)
 
 
-# @spec:AC-041
 def test_tabela_de_apoio_traz_variacao_entre_ambientes() -> None:
+    """@spec:AC-041"""
     x, fundo = _dados()
     phi, _ = exact_shapley_values(_modelo, x, fundo)
     envs = np.array(["norte", "sul"] * (len(x) // 2))
@@ -84,8 +84,8 @@ def test_tabela_de_apoio_traz_variacao_entre_ambientes() -> None:
     )
 
 
-# @spec:AC-041
 def test_os_cinco_graficos_saem(tmp_path) -> None:
+    """@spec:AC-041"""
     x, fundo = _dados()
     phi, base = exact_shapley_values(_modelo, x, fundo)
     envs = np.array(["norte", "sul"] * (len(x) // 2))
@@ -110,8 +110,8 @@ def test_os_cinco_graficos_saem(tmp_path) -> None:
     assert all(p.exists() and p.stat().st_size > 1000 for p in saidas)
 
 
-# @spec:AC-041
 def test_forma_longa_ida_e_volta() -> None:
+    """@spec:AC-041"""
     x, fundo = _dados()
     phi, _ = exact_shapley_values(_modelo, x, fundo)
     envs = np.array(["norte", "sul"] * (len(x) // 2))
@@ -148,23 +148,23 @@ def _painel_cate(efeito_heterogeneo: bool, n_contas: int = 260) -> pl.DataFrame:
     return pl.DataFrame(linhas)
 
 
-# @spec:AC-042
 def test_escada_inclina_quando_ha_heterogeneidade() -> None:
+    """@spec:AC-042"""
     q = cate_quantiles(_painel_cate(True), "d", "y", (("x",), ()), n_quantis=4)
     assert q.height == 4
     assert q["efeito_medio"][-1] - q["efeito_medio"][0] > 1.0
     assert bool(q["heterogeneidade"][0])
 
 
-# @spec:AC-042
 def test_escada_fica_plana_quando_o_efeito_e_nulo() -> None:
+    """@spec:AC-042"""
     q = cate_quantiles(_painel_cate(False), "d", "y", (("x",), ()), n_quantis=4)
     assert abs(q["spread"][0]) < 0.5
     assert not bool(q["heterogeneidade"][0])
 
 
-# @spec:AC-043
 def test_explicacao_do_score_soma_exatamente_a_perda(real_tables) -> None:
+    """@spec:AC-043"""
     from churn_diag.metrics import exposure_panel
     from churn_diag.risk import (
         cs_priority_list,
@@ -187,8 +187,8 @@ def test_explicacao_do_score_soma_exatamente_a_perda(real_tables) -> None:
     assert linhas["contribuicao"].is_sorted(descending=True)
 
 
-# @spec:AC-041
 def test_auditoria_no_painel_real(real_tables) -> None:
+    """@spec:AC-041"""
     art = run_audit(real_tables, n_rows=24)
     assert art.phi.shape == (24, len(AUDIT_FEATURES))
     assert art.efficiency_error < 1e-10

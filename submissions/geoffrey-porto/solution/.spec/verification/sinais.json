@@ -5,19 +5,19 @@
       "codigo": "Q_ABERTA",
       "feature": "diagnostico-churn",
       "ref": "Q-001",
-      "ocorrencias": 20,
+      "ocorrencias": 27,
       "primeiraVez": "2026-09-15T00:53:09.374Z",
-      "ultimaVez": "2026-09-16T02:53:38.766Z",
-      "gitRev": "1acf7e4"
+      "ultimaVez": "2026-09-16T16:50:02.333Z",
+      "gitRev": "49cc82e"
     },
     "Q_ABERTA::diagnostico-churn::Q-002": {
       "codigo": "Q_ABERTA",
       "feature": "diagnostico-churn",
       "ref": "Q-002",
-      "ocorrencias": 20,
+      "ocorrencias": 27,
       "primeiraVez": "2026-09-15T00:53:09.380Z",
-      "ultimaVez": "2026-09-16T02:53:38.773Z",
-      "gitRev": "1acf7e4"
+      "ultimaVez": "2026-09-16T16:50:02.334Z",
+      "gitRev": "49cc82e"
     },
     "ARQUIVO_INEXISTENTE::diagnostico-churn::T-001": {
       "codigo": "ARQUIVO_INEXISTENTE",
@@ -356,10 +356,10 @@
       "codigo": "VERIFY_OBSOLETO",
       "feature": "diagnostico-churn",
       "ref": "—",
-      "ocorrencias": 4,
+      "ocorrencias": 7,
       "primeiraVez": "2026-09-15T17:32:26.355Z",
-      "ultimaVez": "2026-09-16T01:23:36.599Z",
-      "gitRev": "4acf6da"
+      "ultimaVez": "2026-09-16T16:29:46.796Z",
+      "gitRev": "49cc82e"
     },
     "ARQUIVO_INEXISTENTE::validacao-features::T-011": {
       "codigo": "ARQUIVO_INEXISTENTE",
@@ -473,10 +473,10 @@
       "codigo": "VERIFY_OBSOLETO",
       "feature": "validacao-features",
       "ref": "—",
-      "ocorrencias": 2,
+      "ocorrencias": 5,
       "primeiraVez": "2026-09-16T01:23:27.047Z",
-      "ultimaVez": "2026-09-16T01:23:36.599Z",
-      "gitRev": "4acf6da"
+      "ultimaVez": "2026-09-16T16:29:46.796Z",
+      "gitRev": "49cc82e"
     },
     "ASM_ABERTA::efeito-causal-dml::ASM-015": {
       "codigo": "ASM_ABERTA",
@@ -500,10 +500,190 @@
       "codigo": "Q_ABERTA",
       "feature": "efeito-causal-dml",
       "ref": "Q-004",
-      "ocorrencias": 3,
+      "ocorrencias": 10,
       "primeiraVez": "2026-09-16T02:52:58.777Z",
-      "ultimaVez": "2026-09-16T02:53:38.773Z",
-      "gitRev": "1acf7e4"
+      "ultimaVez": "2026-09-16T16:50:02.334Z",
+      "gitRev": "49cc82e"
+    },
+    "VERIFY_OBSOLETO::completude-features::—": {
+      "codigo": "VERIFY_OBSOLETO",
+      "feature": "completude-features",
+      "ref": "—",
+      "ocorrencias": 3,
+      "primeiraVez": "2026-09-16T06:02:46.490Z",
+      "ultimaVez": "2026-09-16T16:29:46.795Z",
+      "gitRev": "49cc82e"
+    },
+    "VERIFY_OBSOLETO::derivadas-features::—": {
+      "codigo": "VERIFY_OBSOLETO",
+      "feature": "derivadas-features",
+      "ref": "—",
+      "ocorrencias": 3,
+      "primeiraVez": "2026-09-16T06:02:46.496Z",
+      "ultimaVez": "2026-09-16T16:29:46.796Z",
+      "gitRev": "49cc82e"
+    },
+    "VERIFY_OBSOLETO::efeito-causal-dml::—": {
+      "codigo": "VERIFY_OBSOLETO",
+      "feature": "efeito-causal-dml",
+      "ref": "—",
+      "ocorrencias": 3,
+      "primeiraVez": "2026-09-16T06:02:46.496Z",
+      "ultimaVez": "2026-09-16T16:29:46.796Z",
+      "gitRev": "49cc82e"
+    },
+    "STATUS_INVALIDO::explicabilidade::.spec/features/explicabilidade/spec.md": {
+      "codigo": "STATUS_INVALIDO",
+      "feature": "explicabilidade",
+      "ref": ".spec/features/explicabilidade/spec.md",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-16T06:02:46.496Z",
+      "ultimaVez": "2026-09-16T06:02:46.496Z",
+      "gitRev": "35647e3"
+    },
+    "TASK_CONCLUIDA_SEM_PROVA::explicabilidade::T-026": {
+      "codigo": "TASK_CONCLUIDA_SEM_PROVA",
+      "feature": "explicabilidade",
+      "ref": "T-026",
+      "ocorrencias": 6,
+      "primeiraVez": "2026-09-16T06:02:46.496Z",
+      "ultimaVez": "2026-09-16T07:12:01.738Z",
+      "gitRev": "49cc82e"
+    },
+    "TASK_CONCLUIDA_SEM_PROVA::explicabilidade::T-027": {
+      "codigo": "TASK_CONCLUIDA_SEM_PROVA",
+      "feature": "explicabilidade",
+      "ref": "T-027",
+      "ocorrencias": 6,
+      "primeiraVez": "2026-09-16T06:02:46.496Z",
+      "ultimaVez": "2026-09-16T07:12:01.738Z",
+      "gitRev": "49cc82e"
+    },
+    "AC_SEM_PROVA::explicabilidade::AC-040": {
+      "codigo": "AC_SEM_PROVA",
+      "feature": "explicabilidade",
+      "ref": "AC-040",
+      "ocorrencias": 3,
+      "primeiraVez": "2026-09-16T06:02:46.496Z",
+      "ultimaVez": "2026-09-16T07:12:01.738Z",
+      "gitRev": "49cc82e"
+    },
+    "AC_SEM_PROVA::explicabilidade::AC-041": {
+      "codigo": "AC_SEM_PROVA",
+      "feature": "explicabilidade",
+      "ref": "AC-041",
+      "ocorrencias": 3,
+      "primeiraVez": "2026-09-16T06:02:46.496Z",
+      "ultimaVez": "2026-09-16T07:12:01.738Z",
+      "gitRev": "49cc82e"
+    },
+    "AC_SEM_PROVA::explicabilidade::AC-042": {
+      "codigo": "AC_SEM_PROVA",
+      "feature": "explicabilidade",
+      "ref": "AC-042",
+      "ocorrencias": 3,
+      "primeiraVez": "2026-09-16T06:02:46.496Z",
+      "ultimaVez": "2026-09-16T07:12:01.739Z",
+      "gitRev": "49cc82e"
+    },
+    "AC_SEM_PROVA::explicabilidade::AC-043": {
+      "codigo": "AC_SEM_PROVA",
+      "feature": "explicabilidade",
+      "ref": "AC-043",
+      "ocorrencias": 3,
+      "primeiraVez": "2026-09-16T06:02:46.496Z",
+      "ultimaVez": "2026-09-16T07:12:01.739Z",
+      "gitRev": "49cc82e"
+    },
+    "VERIFY_OBSOLETO::linha-do-tempo::—": {
+      "codigo": "VERIFY_OBSOLETO",
+      "feature": "linha-do-tempo",
+      "ref": "—",
+      "ocorrencias": 3,
+      "primeiraVez": "2026-09-16T06:02:46.496Z",
+      "ultimaVez": "2026-09-16T16:29:46.796Z",
+      "gitRev": "49cc82e"
+    },
+    "STATUS_INVALIDO::paineis::.spec/features/paineis/spec.md": {
+      "codigo": "STATUS_INVALIDO",
+      "feature": "paineis",
+      "ref": ".spec/features/paineis/spec.md",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-16T06:02:46.496Z",
+      "ultimaVez": "2026-09-16T06:02:46.496Z",
+      "gitRev": "35647e3"
+    },
+    "TASK_CONCLUIDA_SEM_PROVA::paineis::T-028": {
+      "codigo": "TASK_CONCLUIDA_SEM_PROVA",
+      "feature": "paineis",
+      "ref": "T-028",
+      "ocorrencias": 12,
+      "primeiraVez": "2026-09-16T06:02:46.496Z",
+      "ultimaVez": "2026-09-16T07:12:01.739Z",
+      "gitRev": "49cc82e"
+    },
+    "ARQUIVO_INEXISTENTE::paineis::T-029": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "paineis",
+      "ref": "T-029",
+      "ocorrencias": 4,
+      "primeiraVez": "2026-09-16T06:02:46.496Z",
+      "ultimaVez": "2026-09-16T16:28:44.538Z",
+      "gitRev": "49cc82e"
+    },
+    "TASK_CONCLUIDA_SEM_PROVA::paineis::T-029": {
+      "codigo": "TASK_CONCLUIDA_SEM_PROVA",
+      "feature": "paineis",
+      "ref": "T-029",
+      "ocorrencias": 3,
+      "primeiraVez": "2026-09-16T06:02:46.496Z",
+      "ultimaVez": "2026-09-16T07:12:01.739Z",
+      "gitRev": "49cc82e"
+    },
+    "AC_SEM_PROVA::paineis::AC-044": {
+      "codigo": "AC_SEM_PROVA",
+      "feature": "paineis",
+      "ref": "AC-044",
+      "ocorrencias": 3,
+      "primeiraVez": "2026-09-16T06:02:46.496Z",
+      "ultimaVez": "2026-09-16T07:12:01.739Z",
+      "gitRev": "49cc82e"
+    },
+    "AC_SEM_PROVA::paineis::AC-045": {
+      "codigo": "AC_SEM_PROVA",
+      "feature": "paineis",
+      "ref": "AC-045",
+      "ocorrencias": 3,
+      "primeiraVez": "2026-09-16T06:02:46.496Z",
+      "ultimaVez": "2026-09-16T07:12:01.739Z",
+      "gitRev": "49cc82e"
+    },
+    "AC_SEM_PROVA::paineis::AC-046": {
+      "codigo": "AC_SEM_PROVA",
+      "feature": "paineis",
+      "ref": "AC-046",
+      "ocorrencias": 3,
+      "primeiraVez": "2026-09-16T06:02:46.496Z",
+      "ultimaVez": "2026-09-16T07:12:01.739Z",
+      "gitRev": "49cc82e"
+    },
+    "AC_SEM_PROVA::paineis::AC-047": {
+      "codigo": "AC_SEM_PROVA",
+      "feature": "paineis",
+      "ref": "AC-047",
+      "ocorrencias": 3,
+      "primeiraVez": "2026-09-16T06:02:46.496Z",
+      "ultimaVez": "2026-09-16T07:12:01.739Z",
+      "gitRev": "49cc82e"
+    },
+    "Q_ABERTA::paineis::Q-005": {
+      "codigo": "Q_ABERTA",
+      "feature": "paineis",
+      "ref": "Q-005",
+      "ocorrencias": 5,
+      "primeiraVez": "2026-09-16T07:10:53.003Z",
+      "ultimaVez": "2026-09-16T16:50:02.334Z",
+      "gitRev": "49cc82e"
     }
   }
 }
