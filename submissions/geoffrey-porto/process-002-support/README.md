@@ -1,5 +1,8 @@
 # Submissão — Geoffrey Porto — Challenge 002
 
+> **Demo pública** — [App completo (Streamlit)](https://support-redesign-g4.streamlit.app) · [Resultados + API Rust (Vercel)](https://support-redesign-g4.vercel.app)
+> Rascunho do Pioneer fica desligado na versão pública (a chave é do autor); o resto do app roda igual ao local.
+
 ## Sobre mim
 
 - **Nome:** Geoffrey Porto
