@@ -6,6 +6,18 @@
 - **LinkedIn:** [linkedin.com/in/geoffreyporto](https://www.linkedin.com/in/geoffreyporto/)
 - **Challenge escolhido:** 001 — Diagnóstico de Churn (RavenStack)
 
+## 🔗 Demo ao vivo
+
+| O quê | Link |
+|---|---|
+| **Painéis por stakeholder** (CEO, Vendas, Marketing, Financeiro, Operações) | [churn-diag-ravenstack.vercel.app](https://churn-diag-ravenstack.vercel.app) |
+| **Diagrama de arquitetura** interativo | [churn-diag-arquitetura.vercel.app](https://churn-diag-arquitetura.vercel.app) |
+| **Resumo do diagnóstico** (Streamlit — métricas, DML, Shapley, fila do CS) | *pendente ativação em [share.streamlit.io](https://share.streamlit.io/user/geoffreyporto) — ver `solution/streamlit_app/README.md`* |
+
+Os dois primeiros são páginas 100% client-side (sem backend, sem chave de API);
+rodam do jeito que estão hospedados. Instruções de setup local abaixo, para
+quem preferir rodar o pipeline por conta própria.
+
 ---
 
 ## Executive Summary
