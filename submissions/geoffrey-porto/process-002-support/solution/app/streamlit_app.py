@@ -9,7 +9,6 @@ from __future__ import annotations
 import copy
 import json
 import os
-import pickle
 import sys
 import urllib.error
 import urllib.request
@@ -36,8 +35,10 @@ from support_redesign.config import (  # noqa: E402
 )
 from support_redesign.diagnosis import CSAT, closed_with_hours  # noqa: E402
 from support_redesign.drafting import draft_reply  # noqa: E402
+from support_redesign.exported import ExportedModel  # noqa: E402
 from support_redesign.io import load_d1  # noqa: E402
 from support_redesign.pioneer import PioneerClient, PioneerKeyMissingError  # noqa: E402
+from support_redesign.router_bin import MODEL as ROUTER_DIST_MODEL  # noqa: E402
 from support_redesign.router_bin import ensure_running  # noqa: E402
 
 ROUTER_ADDR = os.environ.get("ROUTER_ADDR", "127.0.0.1:8080")
@@ -53,9 +54,7 @@ def bootstrap() -> bool:
     return ensure_artifacts()
 
 
-with st.spinner(
-    "Primeira execução: treinando os modelos e medindo o hold-out (~1 min)…"
-):
+with st.spinner("Primeira execução: montando o índice de tickets parecidos…"):
     bootstrap()
 
 
@@ -66,8 +65,9 @@ def load_metrics() -> dict[str, Any]:
 
 @st.cache_resource
 def load_production() -> dict[str, Any]:
-    with (MODELS / "b0.pkl").open("rb") as fh:
-        return pickle.load(fh)  # noqa: S301 — artefato local gerado pelo pipeline
+    """O mesmo arquivo que o roteador Rust serve (versionado em router/dist/)."""
+    model = ExportedModel.load(ROUTER_DIST_MODEL)
+    return {"clf": model, "policy": model.policy}
 
 
 @st.cache_resource
@@ -118,8 +118,8 @@ def call_rust(text: str, priority: str | None) -> dict[str, Any] | None:
 
 
 @st.cache_resource
-def router_status() -> tuple[bool, str]:
-    return ensure_running(ROUTER_ADDR)
+def router_status(addr: str) -> tuple[bool, str]:
+    return ensure_running(addr)
 
 
 m = load_metrics()
@@ -137,7 +137,7 @@ c[1].metric("Roteamento automático", rep["coverage_auto"], help="fração do ho
 c[2].metric("Precisão dos automáticos", rep["precision_auto"])
 c[3].metric("Horas líquidas/mês (base)", rep["roi_net_hours_base"])
 
-router_up, router_msg = router_status()
+router_up, router_msg = router_status(ROUTER_ADDR)
 st.caption(
     ("Roteador Rust no ar: " if router_up else "Roteador Rust fora do ar: ")
     + router_msg
@@ -272,7 +272,7 @@ with tabs[1]:
                 + ("mesma decisão" if same else "DIVERGE")
             )
         else:
-            st.caption(f"Roteador Rust offline — {router_status()[1]}")
+            st.caption(f"Roteador Rust offline — {router_status(ROUTER_ADDR)[1]}")
         st.write("**Tickets parecidos já tratados**")
         sim = similar(text)
         st.dataframe(sim, hide_index=True)

@@ -98,15 +98,32 @@ def test_default_bootstrap_uses_the_light_serving_build(monkeypatch, tmp_path):
     assert called == ["serving"]
 
 
-def test_serving_build_matches_the_full_pipeline(metrics):
-    """@spec:AC-043 @principle:P-006"""
-    import pickle
+def test_exported_model_scores_like_the_trained_model(production, split):
+    """@spec:AC-043 @principle:P-005"""
+    import numpy as np
 
+    from support_redesign.exported import ExportedModel
+    from support_redesign.pipeline import DIST_MODEL
+
+    exported = ExportedModel.load(DIST_MODEL)
+    clf = production["clf"]
+    texts = split.test["Document"].head(500).to_list() + [
+        "",
+        "{product_purchased} 404!",
+    ]
+    assert exported.classes_ == clf.classes_
+    assert np.allclose(
+        exported.predict_proba(texts), clf.predict_proba(texts), atol=1e-9
+    )
+    assert np.allclose(exported.known_share(texts), clf.known_share(texts))
+    assert exported.policy == production["policy"]
+
+
+def test_serving_build_only_builds_the_index(metrics):
+    """@spec:AC-043"""
     from support_redesign import pipeline
 
-    with (pipeline.MODELS_DIR / "b0.pkl").open("rb") as fh:
-        full = pickle.load(fh)  # noqa: S301 — artefato do próprio pipeline
+    before = (pipeline.MODELS_DIR / "b0.pkl").stat().st_mtime_ns
     pipeline.build_serving()
-    with (pipeline.MODELS_DIR / "b0.pkl").open("rb") as fh:
-        light = pickle.load(fh)  # noqa: S301
-    assert light["policy"] == full["policy"]
+    assert bootstrap.artifacts_ready()
+    assert (pipeline.MODELS_DIR / "b0.pkl").stat().st_mtime_ns == before

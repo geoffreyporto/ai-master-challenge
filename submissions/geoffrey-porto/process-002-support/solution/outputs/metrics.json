@@ -107,8 +107,8 @@
       "lr_p": 0.7054632254042416
     },
     "status_mix": {
-      "Closed": 0.3269571377966702,
       "Pending Customer Response": 0.34018183965049004,
+      "Closed": 0.3269571377966702,
       "Open": 0.3328610225528398
     },
     "waste": {
@@ -163,7 +163,7 @@
           "Storage": 0.9059233449477352
         },
         "ece": 0.048835320403877586,
-        "ms_per_ticket": 0.06910310408924349
+        "ms_per_ticket": 0.06189267160791443
       },
       "B1 Model2Vec + LR": {
         "model": "B1 Model2Vec + LR",
@@ -181,7 +181,7 @@
           "Storage": 0.8032520325203252
         },
         "ece": 0.020596113467096867,
-        "ms_per_ticket": 0.1835440095988286
+        "ms_per_ticket": 0.11779906979725419
       }
     },
     "test": {
@@ -201,7 +201,7 @@
           "Storage": 0.8993766696349065
         },
         "ece": 0.050637264363959725,
-        "ms_per_ticket": 0.056802923800844236
+        "ms_per_ticket": 0.04095984448602479
       },
       "B1 Model2Vec + LR": {
         "model": "B1 Model2Vec + LR",
@@ -219,7 +219,7 @@
           "Storage": 0.7934959349593496
         },
         "ece": 0.020338535852368965,
-        "ms_per_ticket": 0.15344846102124451
+        "ms_per_ticket": 0.11370323381225507
       },
       "B2 GLiNER2 multi-large (fallback large) zero-shot": {
         "model": "B2 GLiNER2 multi-large (fallback large) zero-shot",
@@ -942,9 +942,9 @@
     "b0_macro_f1": "0,867",
     "b0_accuracy": "0,865",
     "b0_ece": "0,051",
-    "b0_ms": "0,06",
+    "b0_ms": "0,04",
     "b1_macro_f1": "0,756",
-    "b1_ms": "0,153",
+    "b1_ms": "0,114",
     "coverage_auto": "58,9%",
     "precision_auto": "96,6%",
     "human_share": "41,1%",

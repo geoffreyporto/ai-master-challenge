@@ -71,16 +71,14 @@ def fit_policy_for(
     return policy, p_val, y_val
 
 
-def save_serving(
-    clf: TfidfLR,
-    policy: boundary.Policy,
-    index: retrieval.SimilarIndex,
-    train: pl.DataFrame,
-) -> None:
-    """O que o app precisa para servir: modelo + política e o índice de similares."""
+def save_model(clf: TfidfLR, policy: boundary.Policy) -> None:
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
     with (MODELS_DIR / "b0.pkl").open("wb") as fh:
         pickle.dump({"clf": clf, "policy": policy}, fh)
+
+
+def save_index(index: retrieval.SimilarIndex, train: pl.DataFrame) -> None:
+    MODELS_DIR.mkdir(parents=True, exist_ok=True)
     np.save(MODELS_DIR / "index_embeddings.npy", index.matrix)
     train.select("row_id", "Document", "Topic_group").write_parquet(
         MODELS_DIR / "index_rows.parquet"
@@ -91,23 +89,19 @@ def save_serving(
 
 
 def build_serving() -> None:
-    """Bootstrap leve (ex.: Streamlit Cloud): treina só o que o app serve.
+    """Bootstrap leve (ex.: Streamlit Cloud): só o índice de similares.
 
-    Não recalcula métricas, benchmark nem chama o Pioneer — `metrics.json` e os
-    caches hospedados já vêm versionados.
+    O modelo servido é o `router/dist/router_model.json.gz` versionado (o mesmo
+    do roteador Rust); métricas e resultados do Pioneer também vêm versionados.
+    Nada é treinado e nenhuma rede além do download do Model2Vec é usada.
     """
-    np.random.seed(SEED)
     split = split_d2(load_d2(resolve_data_dir()))
     tr_x, tr_y = split.train["Document"].to_list(), split.train["Topic_group"].to_list()
-    clf = TfidfLR().fit(tr_x, tr_y)
-    policy, _, _ = fit_policy_for(
-        clf, split.val["Document"].to_list(), split.val["Topic_group"].to_list()
-    )
     encoder = Model2VecLR()
     index = retrieval.SimilarIndex(
         encoder.embed(tr_x), tr_y, tr_x, split.train["row_id"].to_list()
     )
-    save_serving(clf, policy, index, split.train)
+    save_index(index, split.train)
 
 
 def run(outputs: Path = OUTPUTS_DIR, use_pioneer: bool = False) -> Artifacts:
@@ -225,7 +219,8 @@ def run(outputs: Path = OUTPUTS_DIR, use_pioneer: bool = False) -> Artifacts:
     scored_d1.write_parquet(outputs / "d1_scored.parquet")
     split.test.write_parquet(outputs / "d2_test.parquet")
 
-    save_serving(clf, policy, index, split.train)
+    save_model(clf, policy)
+    save_index(index, split.train)
     export.export_router_model(clf, policy, ROUTER_MODEL)
     export.export_dist_model(ROUTER_MODEL, DIST_MODEL)
     export.export_golden(te_x, p_test, dec_test, GOLDEN_FILE)

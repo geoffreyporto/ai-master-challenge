@@ -1,7 +1,7 @@
 """Primeira execução em ambiente novo (ex.: Streamlit Community Cloud).
 
-Só treina o que o app serve (`build_serving`): métricas e resultados do Pioneer
-já vêm versionados, e o app público nunca chama a rede para recalculá-los.
+Só constrói o índice de similares (`build_serving`): o modelo servido, as
+métricas e os resultados do Pioneer já vêm versionados.
 """
 
 from __future__ import annotations
@@ -13,10 +13,6 @@ from support_redesign.config import OUTPUTS_DIR
 
 MODELS = OUTPUTS_DIR / "models"
 REQUIRED: tuple[Path, ...] = (
-    OUTPUTS_DIR / "metrics.json",
-    OUTPUTS_DIR / "d2_test.parquet",
-    OUTPUTS_DIR / "d1_scored.parquet",
-    MODELS / "b0.pkl",
     MODELS / "index_embeddings.npy",
     MODELS / "index_rows.parquet",
 )

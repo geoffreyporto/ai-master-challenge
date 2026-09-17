@@ -5,7 +5,7 @@
 ## T-019 — Demo pública e bootstrap do app [pendente]
 
 - Refs: US-015, AC-042, AC-043
-- Arquivos: app/streamlit_app.py, app/requirements.txt, src/support_redesign/bootstrap.py, src/support_redesign/pipeline.py, src/support_redesign/hosted_eval.py, tests/test_publicacao.py
+- Arquivos: app/streamlit_app.py, app/requirements.txt, src/support_redesign/bootstrap.py, src/support_redesign/pipeline.py, src/support_redesign/hosted_eval.py, src/support_redesign/exported.py, tests/test_publicacao.py
 
 ## T-020 — API Rust na Vercel e página estática [pendente]
 
