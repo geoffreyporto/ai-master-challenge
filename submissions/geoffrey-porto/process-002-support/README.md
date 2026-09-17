@@ -29,6 +29,24 @@ A recomendação: **piloto de roteamento automático com fronteira medida**
 (não 100%), rodando num roteador Rust que decide igual ao modelo avaliado, e
 **pedir o export real do help desk** antes de qualquer decisão sobre gargalos.
 
+### Demo pública
+
+| O quê | Link |
+|---|---|
+| App completo (Streamlit Community Cloud) | https://support-redesign-g4.streamlit.app |
+| Página de resultados + roteador Rust (Vercel) | https://support-redesign-g4.vercel.app |
+| API de roteamento | `POST https://support-redesign-g4.vercel.app/api/route` · `GET …/api/route/health` |
+
+```bash
+curl -s -X POST https://support-redesign-g4.vercel.app/api/route \
+  -H 'Content-Type: application/json' \
+  -d '{"text":"cannot access shared drive permission denied","priority":"High"}'
+```
+
+Na versão pública o rascunho do Pioneer fica desligado (a chave é do autor); o
+resto do app roda igual ao local. A API da Vercel usa os mesmos handlers Rust e
+o mesmo modelo do roteador local, com o modelo embutido no binário.
+
 ---
 
 ## Solução
@@ -41,7 +59,7 @@ A recomendação: **piloto de roteamento automático com fronteira medida**
    <!--m:d1_rows-->8.469 linhas (README: ~30.000), e o schema do Pioneer sugerido
    nos docs devolve resposta vazia.
 2. **Especificar (SDD / onp-spec).** Constituição com 13 princípios verificáveis
-   e 10 features com 41 critérios de aceite em Dado/Quando/Então
+   e 11 features com 45 critérios de aceite em Dado/Quando/Então
    (`solution/.spec/`). Todo teste carrega `@spec:AC-xxx`; `onp-spec verify`
    grava a prova e `onp-spec audit` cruza spec ↔ tarefa ↔ teste ↔ código.
 3. **CRISP-DM** para a análise (`docs/CRISP-DM-IT-Support-Challenge.md`), com
@@ -167,7 +185,7 @@ reaproveitamento de solução — precisa do export real para ser medido.
 - `solution/router/`: `POST /route` e `GET /health` em Rust, com binários
   prontos em `router/dist/` para macOS, Linux e Windows (o avaliador não precisa
   de Rust; o app sobe o roteador sozinho).
-- Testes: 76 no total — unitários, de contrato, paridade Python ↔ Rust e 8
+- Testes: 87 no total — unitários, de contrato, paridade Python ↔ Rust e 8
   testes funcionais **E2E com Playwright** no Chrome real (abas, filtro, ticket
   sorteado com decisão do Rust, Critical nunca automático, rascunho do Pioneer,
   busca de similares e ROI), que também geram as capturas de tela. Decide igual ao

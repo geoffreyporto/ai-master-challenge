@@ -13,7 +13,7 @@
         "distinct_placeholders": 290,
         "placeholder_regex": "\\{[^{}]*\\}",
         "uniform_chi2_p": {
-          "Ticket Type": 0.11489291565008315,
+          "Ticket Type": 0.11489291565008311,
           "Ticket Status": 0.3278740452457159,
           "Ticket Priority": 0.20478541975896916,
           "Ticket Channel": 0.7179130597708259,
@@ -107,9 +107,9 @@
       "lr_p": 0.7054632254042416
     },
     "status_mix": {
-      "Pending Customer Response": 0.34018183965049004,
       "Closed": 0.3269571377966702,
-      "Open": 0.3328610225528398
+      "Open": 0.3328610225528398,
+      "Pending Customer Response": 0.34018183965049004
     },
     "waste": {
       "hours": null,
@@ -163,7 +163,7 @@
           "Storage": 0.9059233449477352
         },
         "ece": 0.048835320403877586,
-        "ms_per_ticket": 0.06189267160791443
+        "ms_per_ticket": 0.0454079657183714
       },
       "B1 Model2Vec + LR": {
         "model": "B1 Model2Vec + LR",
@@ -181,7 +181,7 @@
           "Storage": 0.8032520325203252
         },
         "ece": 0.020596113467096867,
-        "ms_per_ticket": 0.11779906979725419
+        "ms_per_ticket": 0.1072787589840918
       }
     },
     "test": {
@@ -201,7 +201,7 @@
           "Storage": 0.8993766696349065
         },
         "ece": 0.050637264363959725,
-        "ms_per_ticket": 0.04095984448602479
+        "ms_per_ticket": 0.039411445245042406
       },
       "B1 Model2Vec + LR": {
         "model": "B1 Model2Vec + LR",
@@ -219,7 +219,7 @@
           "Storage": 0.7934959349593496
         },
         "ece": 0.020338535852368965,
-        "ms_per_ticket": 0.11370323381225507
+        "ms_per_ticket": 0.11944766847713054
       },
       "B2 GLiNER2 multi-large (fallback large) zero-shot": {
         "model": "B2 GLiNER2 multi-large (fallback large) zero-shot",
@@ -944,7 +944,7 @@
     "b0_ece": "0,051",
     "b0_ms": "0,04",
     "b1_macro_f1": "0,756",
-    "b1_ms": "0,114",
+    "b1_ms": "0,119",
     "coverage_auto": "58,9%",
     "precision_auto": "96,6%",
     "human_share": "41,1%",

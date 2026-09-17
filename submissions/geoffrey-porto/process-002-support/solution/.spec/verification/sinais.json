@@ -5,10 +5,10 @@
       "codigo": "Q_ABERTA",
       "feature": "auditoria-dados",
       "ref": "Q-001",
-      "ocorrencias": 8,
+      "ocorrencias": 9,
       "primeiraVez": "2026-09-17T00:21:16.502Z",
-      "ultimaVez": "2026-09-17T03:33:37.751Z",
-      "gitRev": "211c3d6"
+      "ultimaVez": "2026-09-17T14:59:49.795Z",
+      "gitRev": "ef9ae82"
     },
     "ARQUIVO_INEXISTENTE::auditoria-dados::T-001": {
       "codigo": "ARQUIVO_INEXISTENTE",
@@ -50,10 +50,10 @@
       "codigo": "Q_ABERTA",
       "feature": "cenario-roi",
       "ref": "Q-003",
-      "ocorrencias": 8,
+      "ocorrencias": 9,
       "primeiraVez": "2026-09-17T00:21:16.510Z",
-      "ultimaVez": "2026-09-17T03:33:37.752Z",
-      "gitRev": "211c3d6"
+      "ultimaVez": "2026-09-17T14:59:49.796Z",
+      "gitRev": "ef9ae82"
     },
     "ARQUIVO_INEXISTENTE::cenario-roi::T-008": {
       "codigo": "ARQUIVO_INEXISTENTE",
@@ -221,10 +221,10 @@
       "codigo": "Q_ABERTA",
       "feature": "fronteira-automacao",
       "ref": "Q-002",
-      "ocorrencias": 8,
+      "ocorrencias": 9,
       "primeiraVez": "2026-09-17T00:21:16.511Z",
-      "ultimaVez": "2026-09-17T03:33:37.752Z",
-      "gitRev": "211c3d6"
+      "ultimaVez": "2026-09-17T14:59:49.796Z",
+      "gitRev": "ef9ae82"
     },
     "ARQUIVO_INEXISTENTE::fronteira-automacao::T-005": {
       "codigo": "ARQUIVO_INEXISTENTE",
@@ -770,10 +770,10 @@
       "codigo": "Q_ABERTA",
       "feature": "privacidade-guardrails",
       "ref": "Q-004",
-      "ocorrencias": 5,
+      "ocorrencias": 6,
       "primeiraVez": "2026-09-17T01:24:35.355Z",
-      "ultimaVez": "2026-09-17T03:33:37.752Z",
-      "gitRev": "211c3d6"
+      "ultimaVez": "2026-09-17T14:59:49.796Z",
+      "gitRev": "ef9ae82"
     },
     "VERIFY_OBSOLETO::auditoria-dados::—": {
       "codigo": "VERIFY_OBSOLETO",

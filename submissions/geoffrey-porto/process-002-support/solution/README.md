@@ -77,3 +77,14 @@ onp-spec audit --ci                                # só as perguntas de negóci
 
 Variáveis opcionais: `SUPPORT_DATA_DIR` (CSVs em outro lugar), `ROUTER_MODEL` / `ROUTER_ADDR`
 (roteador), `ROUTER_URL` (app).
+
+## Publicação
+
+- **Vercel** (`router/`): `npx vercel@latest deploy --prod` a partir de `router/`.
+  A função `api/route.rs` usa o runtime Rust oficial com o modelo embutido;
+  `public/` é servido como página estática (`data.json` é gerado pelo pipeline).
+- **Streamlit Community Cloud**: arquivo principal
+  `submissions/geoffrey-porto/process-002-support/solution/app/streamlit_app.py`,
+  Python 3.14, dependências em `app/requirements.txt` e o secret
+  `SUPPORT_PUBLIC_DEMO = "1"` (desliga o rascunho). No primeiro acesso o app só
+  monta o índice de similares; o modelo servido é `router/dist/router_model.json.gz`.

@@ -1,11 +1,11 @@
 {
   "feature": "indice-resolucao",
-  "timestamp": "2026-09-17T03:29:39.822Z",
-  "gitRev": "211c3d6",
+  "timestamp": "2026-09-17T14:54:05.734Z",
+  "gitRev": "ef9ae82",
   "command": "uv run --frozen pytest -q -p no:cacheprovider --tap",
   "reporter": "tap",
   "exitCode": 0,
-  "testsParsed": 76,
+  "testsParsed": 87,
   "results": {
     "AC-018": {
       "status": "pass",

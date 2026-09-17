@@ -30,6 +30,10 @@ no setup), em 2026-09-16. Linha do tempo aproximada, decisões e erros pegos.
 | 4:10 | Grafo do código | graphify achou ciclo de import `model.rs ↔ policy.rs` | Movi `Scores` para `scores.rs`; binários recompilados; grafo sem ciclos |
 | 4:20 | E2E | 8 testes Playwright no Chrome real, com capturas | O rascunho real do Pioneer apareceu mascarado e aprovado pelo guardrail |
 | 4:30 | Evidência | Export da sessão | Chave e e-mail redigidos antes de salvar; zip original substituído pela versão redigida |
+| 5:00 | Publicação (pedido do autor) | Vercel: página estática + função Rust (runtime oficial, beta) com o modelo embutido; Streamlit Cloud com rascunho desligado | Rascunho público desligado: a chave é do autor |
+| 5:20 | Falha no Streamlit Cloud | O app treinava tudo no boot; no Linux as probabilidades mudam na 9ª casa, o cache hospedado ficava incompleto e o pipeline tentava chamar o Pioneer sem chave | Pipeline só usa rede com `--pioneer`; o app serve o `router_model.json.gz` versionado (paridade testada) e só monta o índice no boot |
+| 5:30 | Segfault | `pyarrow` 25.0.1 caía num container limpo (mesmo aviso do Streamlit Cloud) | `pyarrow<25` fixado |
+| 5:40 | Regra do challenge | O Streamlit Cloud criou `.devcontainer/` na raiz do repositório em nome do autor | Removido num commit próprio; o PR só altera `submissions/geoffrey-porto/` |
 
 ## Decisões (contexto → escolha → evidência)
 
@@ -65,12 +69,17 @@ no setup), em 2026-09-16. Linha do tempo aproximada, decisões e erros pegos.
 14. Comando `cargo run --manifest-path` documentado não funcionava fora de `router/` (rustup escolhe a versão pela pasta atual).
 15. Porta fixa 18080 nos testes colidia com o OrbStack → portas escolhidas pelo sistema.
 16. Varredura de segredos com `grep` pulava arquivos ocultos → refeita em Python.
+17. `vercel_runtime` não compila para Windows → dependência só em Unix.
+18. Sobrescrever binário assinado no macOS com `cp` → SIGKILL; o build agora grava arquivo novo.
+19. Bootstrap do app público rodava o pipeline inteiro → no Linux o cache do Pioneer ficava incompleto e o app pedia chave.
+20. `pyarrow` 25.0.1 com segfault conhecido → fixado abaixo de 25.
+21. Cache do `router_status` sem o endereço como chave → testes com portas diferentes reaproveitavam o status errado.
 
 ## Como reproduzir as provas
 
 ```bash
 cd solution
-uv run pytest -q                 # 76 testes: unitários, cargo test, clippy e E2E Playwright
+uv run pytest -q                 # 87 testes: unitários, cargo test, clippy e E2E Playwright
 for f in $(ls .spec/features); do onp-spec verify $f; done
 onp-spec audit --ci              # só as perguntas de negócio abertas aparecem
 ```
