@@ -39,11 +39,21 @@ class HostedInputs:
     similar: Callable[[str], list[str]]
 
 
+class HostedCacheIncompleteError(RuntimeError):
+    """Faltam resultados hospedados no cache e a rede não foi autorizada."""
+
+
 class LazyClient:
-    def __init__(self) -> None:
+    def __init__(self, offline: bool = False) -> None:
         self._client: PioneerClient | None = None
+        self.offline = offline
 
     def __call__(self) -> PioneerClient:
+        if self.offline:
+            raise HostedCacheIncompleteError(
+                "Cache do Pioneer incompleto para este modelo; rode "
+                "`python -m support_redesign --pioneer` (com chave) para completar."
+            )
         if self._client is None:
             self._client = PioneerClient()
         return self._client
@@ -53,8 +63,10 @@ class LazyClient:
             self._client.close()
 
 
-def run_hosted(inp: HostedInputs, cache_dir: Path) -> dict[str, Any]:
-    get = LazyClient()
+def run_hosted(
+    inp: HostedInputs, cache_dir: Path, offline: bool = False
+) -> dict[str, Any]:
+    get = LazyClient(offline)
     try:
         return _run(inp, cache_dir, get)
     finally:

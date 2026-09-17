@@ -1,4 +1,8 @@
-"""Primeira execução em ambiente novo (ex.: Streamlit Community Cloud)."""
+"""Primeira execução em ambiente novo (ex.: Streamlit Community Cloud).
+
+Só treina o que o app serve (`build_serving`): métricas e resultados do Pioneer
+já vêm versionados, e o app público nunca chama a rede para recalculá-los.
+"""
 
 from __future__ import annotations
 
@@ -29,8 +33,8 @@ def ensure_artifacts(
     if artifacts_ready(required):
         return False
     if runner is None:
-        from support_redesign.pipeline import run
+        from support_redesign.pipeline import build_serving
 
-        runner = run
+        runner = build_serving
     runner()
     return True

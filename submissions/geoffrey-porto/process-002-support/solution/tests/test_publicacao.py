@@ -74,3 +74,39 @@ def test_public_page_renders_data_as_text_only():
 def test_vercel_config_exists(path):
     """@spec:AC-044"""
     assert (SOLUTION_ROOT / path).is_file()
+
+
+def test_offline_pipeline_never_creates_a_pioneer_client(monkeypatch):
+    """@spec:AC-043 @principle:P-013"""
+    from support_redesign import hosted_eval, pioneer
+
+    monkeypatch.setattr(
+        pioneer.PioneerClient, "__init__", lambda *a, **k: pytest.fail("rede chamada")
+    )
+    with pytest.raises(hosted_eval.HostedCacheIncompleteError):
+        hosted_eval.LazyClient(offline=True)()
+
+
+def test_default_bootstrap_uses_the_light_serving_build(monkeypatch, tmp_path):
+    """@spec:AC-043"""
+    from support_redesign import pipeline
+
+    called = []
+    monkeypatch.setattr(pipeline, "build_serving", lambda: called.append("serving"))
+    monkeypatch.setattr(pipeline, "run", lambda *a, **k: called.append("run"))
+    assert bootstrap.ensure_artifacts(required=(tmp_path / "x",)) is True
+    assert called == ["serving"]
+
+
+def test_serving_build_matches_the_full_pipeline(metrics):
+    """@spec:AC-043 @principle:P-006"""
+    import pickle
+
+    from support_redesign import pipeline
+
+    with (pipeline.MODELS_DIR / "b0.pkl").open("rb") as fh:
+        full = pickle.load(fh)  # noqa: S301 — artefato do próprio pipeline
+    pipeline.build_serving()
+    with (pipeline.MODELS_DIR / "b0.pkl").open("rb") as fh:
+        light = pickle.load(fh)  # noqa: S301
+    assert light["policy"] == full["policy"]

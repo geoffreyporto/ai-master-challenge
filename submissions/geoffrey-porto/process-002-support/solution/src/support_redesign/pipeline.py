@@ -62,6 +62,54 @@ class Artifacts:
     scored_d1: pl.DataFrame
 
 
+def fit_policy_for(
+    clf: TfidfLR, va_x: list[str], va_y: list[str]
+) -> tuple[boundary.Policy, np.ndarray, np.ndarray]:
+    p_val = clf.predict_proba(va_x)
+    y_val = label_index(clf.classes_, va_y)
+    policy = boundary.fit_policy(p_val, y_val, clf.classes_, clf.known_share(va_x))
+    return policy, p_val, y_val
+
+
+def save_serving(
+    clf: TfidfLR,
+    policy: boundary.Policy,
+    index: retrieval.SimilarIndex,
+    train: pl.DataFrame,
+) -> None:
+    """O que o app precisa para servir: modelo + política e o índice de similares."""
+    MODELS_DIR.mkdir(parents=True, exist_ok=True)
+    with (MODELS_DIR / "b0.pkl").open("wb") as fh:
+        pickle.dump({"clf": clf, "policy": policy}, fh)
+    np.save(MODELS_DIR / "index_embeddings.npy", index.matrix)
+    train.select("row_id", "Document", "Topic_group").write_parquet(
+        MODELS_DIR / "index_rows.parquet"
+    )
+    (MODELS_DIR / "index_ids.json").write_text(
+        json.dumps(sorted(train["row_id"].to_list()))
+    )
+
+
+def build_serving() -> None:
+    """Bootstrap leve (ex.: Streamlit Cloud): treina só o que o app serve.
+
+    Não recalcula métricas, benchmark nem chama o Pioneer — `metrics.json` e os
+    caches hospedados já vêm versionados.
+    """
+    np.random.seed(SEED)
+    split = split_d2(load_d2(resolve_data_dir()))
+    tr_x, tr_y = split.train["Document"].to_list(), split.train["Topic_group"].to_list()
+    clf = TfidfLR().fit(tr_x, tr_y)
+    policy, _, _ = fit_policy_for(
+        clf, split.val["Document"].to_list(), split.val["Topic_group"].to_list()
+    )
+    encoder = Model2VecLR()
+    index = retrieval.SimilarIndex(
+        encoder.embed(tr_x), tr_y, tr_x, split.train["row_id"].to_list()
+    )
+    save_serving(clf, policy, index, split.train)
+
+
 def run(outputs: Path = OUTPUTS_DIR, use_pioneer: bool = False) -> Artifacts:
     np.random.seed(SEED)
     data_dir = resolve_data_dir()
@@ -90,10 +138,9 @@ def run(outputs: Path = OUTPUTS_DIR, use_pioneer: bool = False) -> Artifacts:
         )
     clf = b0
 
-    p_val, p_test = clf.predict_proba(va_x), clf.predict_proba(te_x)
-    y_val = label_index(clf.classes_, va_y)
+    policy, p_val, y_val = fit_policy_for(clf, va_x, va_y)
+    p_test = clf.predict_proba(te_x)
     y_test = label_index(clf.classes_, te_y)
-    policy = boundary.fit_policy(p_val, y_val, clf.classes_, clf.known_share(va_x))
     known_test = clf.known_share(te_x)
     dec_test = boundary.decide_all(policy, p_test, known=known_test)
     bound = {
@@ -139,6 +186,7 @@ def run(outputs: Path = OUTPUTS_DIR, use_pioneer: bool = False) -> Artifacts:
                 similar,
             ),
             HOSTED_DIR,
+            offline=not use_pioneer,
         )
         test_eval[hosted_out["b2_test"]["model"]] = hosted_out["b2_test"]
 
@@ -177,14 +225,7 @@ def run(outputs: Path = OUTPUTS_DIR, use_pioneer: bool = False) -> Artifacts:
     scored_d1.write_parquet(outputs / "d1_scored.parquet")
     split.test.write_parquet(outputs / "d2_test.parquet")
 
-    MODELS_DIR.mkdir(parents=True, exist_ok=True)
-    with (MODELS_DIR / "b0.pkl").open("wb") as fh:
-        pickle.dump({"clf": clf, "policy": policy}, fh)
-    np.save(MODELS_DIR / "index_embeddings.npy", index.matrix)
-    split.train.select("row_id", "Document", "Topic_group").write_parquet(
-        MODELS_DIR / "index_rows.parquet"
-    )
-    (MODELS_DIR / "index_ids.json").write_text(json.dumps(retr["index_ids"]))
+    save_serving(clf, policy, index, split.train)
     export.export_router_model(clf, policy, ROUTER_MODEL)
     export.export_dist_model(ROUTER_MODEL, DIST_MODEL)
     export.export_golden(te_x, p_test, dec_test, GOLDEN_FILE)

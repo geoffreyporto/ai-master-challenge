@@ -118,8 +118,10 @@ polars-runtime-32==1.44.2
     # via polars
 protobuf==7.36.1
     # via streamlit
-pyarrow==25.0.1
-    # via streamlit
+pyarrow==24.0.0
+    # via
+    #   streamlit
+    #   support-redesign
 pydeck==0.9.3
     # via streamlit
 python-dateutil==2.9.0.post0
