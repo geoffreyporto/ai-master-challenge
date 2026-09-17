@@ -1,0 +1,7 @@
+{
+  "testCommand": "uv run --frozen pytest -q -p no:cacheprovider --tap",
+  "reporter": "tap",
+  "testGlobs": ["tests/**", "router/tests/**"],
+  "srcGlobs": ["src/**", "app/**", "router/src/**"],
+  "ignoreGlobs": [".venv/**", "**/__pycache__/**", ".git/**", "outputs/**", "data/**", ".spec/**", ".ruff_cache/**", ".pytest_cache/**", "router/target/**"]
+}

@@ -1,0 +1,28 @@
+# Premissas do cenário de ROI. origem: readme | medido | premissa
+# Toda premissa aponta a pergunta aberta que a substituirá (docs/04-perguntas-em-aberto.md).
+tickets_per_year:
+  valor: 30000
+  origem: readme
+  fonte: "README do challenge: ~30.000 tickets por ano"
+  pergunta: Q-003
+triage_minutes_per_ticket:
+  valor: {baixa: 2.0, base: 3.0, alta: 5.0}
+  origem: premissa
+  fonte: "Leitura + classificação + encaminhamento manual"
+  pergunta: Q-003
+rework_minutes_per_misroute:
+  valor: {baixa: 10.0, base: 15.0, alta: 25.0}
+  origem: premissa
+  fonte: "Ticket volta à triagem e é reencaminhado"
+  pergunta: Q-002
+loaded_cost_brl_per_hour:
+  valor: {baixa: 40.0, base: 60.0, alta: 90.0}
+  origem: premissa
+  fonte: "Custo carregado de analista N1 no Brasil"
+  pergunta: Q-003
+coverage_auto:
+  origem: medido
+  fonte: "outputs/metrics.json → boundary.test.coverage_auto"
+precision_auto:
+  origem: medido
+  fonte: "outputs/metrics.json → boundary.test.precision_auto"

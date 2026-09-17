@@ -1,0 +1,37 @@
+[package]
+name = "support-router"
+version = "1.0.0"
+edition = "2024"
+rust-version = "1.98.1"
+description = "Roteador de tickets (Challenge 002): TF-IDF + LR exportado do Python e política IA x humano"
+publish = false
+
+[dependencies]
+axum = "0.8.9"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "net", "signal"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["float_roundtrip"] }
+thiserror = "2"
+flate2 = { version = "1", default-features = false, features = ["rust_backend"] }
+
+[dev-dependencies]
+tower = { version = "0.5", features = ["util"] }
+http-body-util = "0.1"
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+all = { level = "deny", priority = -1 }
+unwrap_used = "deny"
+expect_used = "warn"
+todo = "deny"
+dbg_macro = "deny"
+panic = "deny"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"

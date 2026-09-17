@@ -1,0 +1,325 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Redesign de Suporte — arquitetura da solução",
+    "output": "05-arquitetura-solucao.html",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "caminho-ticket",
+        "label": "Caminho do ticket",
+        "focus": [
+          "tickets",
+          "app",
+          "router",
+          "agent"
+        ],
+        "note": "O ticket entra, o roteador local decide a fila e a ação, e o agente recebe o resultado."
+      },
+      {
+        "id": "treino-offline",
+        "label": "Treino e exportação",
+        "focus": [
+          "kaggle",
+          "pipeline",
+          "artifacts",
+          "router",
+          "app"
+        ],
+        "note": "Pipeline Python treina, mede e exporta o modelo que o roteador Rust serve com paridade testada."
+      },
+      {
+        "id": "rascunho-seguro",
+        "label": "Rascunho com privacidade",
+        "focus": [
+          "app",
+          "privacy",
+          "llm",
+          "guard",
+          "agent"
+        ],
+        "note": "Máscara de PII antes do LLM e guardrail depois; o agente sempre aprova."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "kaggle",
+      "type": "external",
+      "label": "Kaggle (CC0)",
+      "sublabel": "Dataset 1 + Dataset 2",
+      "pos": [
+        40,
+        80
+      ],
+      "size": [
+        160,
+        64
+      ]
+    },
+    {
+      "id": "tickets",
+      "type": "external",
+      "label": "Tickets novos",
+      "sublabel": "e-mail · chat · telefone",
+      "pos": [
+        40,
+        280
+      ],
+      "size": [
+        160,
+        64
+      ]
+    },
+    {
+      "id": "pipeline",
+      "type": "backend",
+      "label": "Pipeline Python 3.14",
+      "sublabel": "Polars · scikit-learn",
+      "pos": [
+        320,
+        80
+      ],
+      "size": [
+        170,
+        64
+      ],
+      "tag": "treino + métricas"
+    },
+    {
+      "id": "artifacts",
+      "type": "database",
+      "label": "Artefatos",
+      "sublabel": "metrics.json · dist/",
+      "pos": [
+        620,
+        80
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "app",
+      "type": "frontend",
+      "label": "App Streamlit",
+      "sublabel": "Diretor + agentes :8501",
+      "pos": [
+        320,
+        280
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "router",
+      "type": "backend",
+      "label": "Roteador Rust",
+      "sublabel": "axum POST /route :8080",
+      "pos": [
+        620,
+        280
+      ],
+      "size": [
+        170,
+        64
+      ],
+      "tag": "binário pronto"
+    },
+    {
+      "id": "agent",
+      "type": "external",
+      "label": "Agente humano",
+      "sublabel": "triagem · resolução",
+      "pos": [
+        920,
+        280
+      ],
+      "size": [
+        160,
+        64
+      ]
+    },
+    {
+      "id": "privacy",
+      "type": "security",
+      "label": "Máscara de PII",
+      "sublabel": "gliner2-privacy-filter",
+      "pos": [
+        320,
+        480
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "llm",
+      "type": "cloud",
+      "label": "DeepSeek-V4-Flash",
+      "sublabel": "rascunho de resposta",
+      "pos": [
+        620,
+        480
+      ],
+      "size": [
+        170,
+        64
+      ]
+    },
+    {
+      "id": "guard",
+      "type": "security",
+      "label": "Guardrail de PII",
+      "sublabel": "gliguard-PII-multi",
+      "pos": [
+        920,
+        480
+      ],
+      "size": [
+        160,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Local — sem rede",
+      "wraps": [
+        "pipeline",
+        "artifacts",
+        "app",
+        "router"
+      ]
+    },
+    {
+      "kind": "security-group",
+      "label": "Pioneer API — store:false",
+      "wraps": [
+        "privacy",
+        "llm",
+        "guard"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "csv",
+      "from": "kaggle",
+      "to": "pipeline",
+      "label": "CSV"
+    },
+    {
+      "id": "export",
+      "from": "pipeline",
+      "to": "artifacts",
+      "label": "exporta"
+    },
+    {
+      "id": "model",
+      "from": "artifacts",
+      "to": "router",
+      "label": "modelo + política",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 24
+    },
+    {
+      "id": "metrics",
+      "from": "pipeline",
+      "to": "app",
+      "label": "métricas",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 24
+    },
+    {
+      "id": "intake",
+      "from": "tickets",
+      "to": "app",
+      "label": "ticket",
+      "variant": "emphasis"
+    },
+    {
+      "id": "route",
+      "from": "app",
+      "to": "router",
+      "label": "POST /route",
+      "variant": "emphasis"
+    },
+    {
+      "id": "decision",
+      "from": "router",
+      "to": "agent",
+      "label": "fila + ação",
+      "variant": "emphasis"
+    },
+    {
+      "id": "raw-text",
+      "from": "app",
+      "to": "privacy",
+      "label": "texto bruto",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 24
+    },
+    {
+      "id": "masked",
+      "from": "privacy",
+      "to": "llm",
+      "label": "mascarado",
+      "variant": "security"
+    },
+    {
+      "id": "draft",
+      "from": "llm",
+      "to": "guard",
+      "label": "rascunho"
+    },
+    {
+      "id": "approved",
+      "from": "guard",
+      "to": "agent",
+      "label": "aprovado",
+      "variant": "security",
+      "fromSide": "top",
+      "toSide": "bottom"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Decisão local",
+      "items": [
+        "TF-IDF + LR: macro-F1 0,867 no hold-out",
+        "58,9% automático a 96,6% de precisão",
+        "Rust decide igual ao Python em 9.568 tickets"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Privacidade",
+      "items": [
+        "Máscara antes do LLM: recall 100%",
+        "Guardrail depois: 0 vazamentos em 30",
+        "Rascunho sempre requer aprovação"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Fora do caminho",
+      "items": [
+        "GLiNER2 multi-large: macro-F1 0,288",
+        "2ª opinião desligada (69,8% < 95%)",
+        "GLiFormer ausente do Pioneer"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "feature": "prototipo",
+  "timestamp": "2026-09-17T03:32:28.376Z",
+  "gitRev": "211c3d6",
+  "command": "uv run --frozen pytest -q -p no:cacheprovider --tap",
+  "reporter": "tap",
+  "exitCode": 0,
+  "testsParsed": 76,
+  "results": {
+    "AC-025": {
+      "status": "pass",
+      "testName": "tests/test_app.py::test_all_sections_render_with_real_data @spec:AC-025",
+      "method": "tap"
+    },
+    "AC-026": {
+      "status": "pass",
+      "testName": "tests/e2e/test_playwright_app.py::test_drawn_ticket_gets_decision_and_rust_agrees @spec:AC-040 @spec:AC-026 @principle:P-005",
+      "method": "tap"
+    },
+    "AC-027": {
+      "status": "pass",
+      "testName": "tests/test_router.py::test_router_answers_topic_confidence_and_action @spec:AC-027",
+      "method": "tap"
+    },
+    "AC-028": {
+      "status": "pass",
+      "testName": "tests/test_router.py::test_exported_model_and_golden_match_the_pipeline @spec:AC-028",
+      "method": "tap"
+    },
+    "AC-029": {
+      "status": "pass",
+      "testName": "tests/test_router.py::test_router_rejects_bad_input_and_keeps_serving @spec:AC-029",
+      "method": "tap"
+    },
+    "AC-038": {
+      "status": "pass",
+      "testName": "tests/test_router_bin.py::test_every_supported_platform_has_a_binary @spec:AC-038",
+      "method": "tap"
+    },
+    "AC-039": {
+      "status": "pass",
+      "testName": "tests/test_app.py::test_app_starts_the_router_by_itself @spec:AC-039",
+      "method": "tap"
+    },
+    "AC-040": {
+      "status": "pass",
+      "testName": "tests/e2e/test_playwright_app.py::test_kpis_tabs_and_router_status @spec:AC-040 @principle:P-003",
+      "method": "tap"
+    },
+    "AC-041": {
+      "status": "pass",
+      "testName": "tests/e2e/test_playwright_app.py::test_draft_or_missing_key_notice @spec:AC-041 @principle:P-013",
+      "method": "tap"
+    }
+  },
+  "principles": {
+    "P-003": {
+      "status": "pass",
+      "testName": "tests/e2e/test_playwright_app.py::test_kpis_tabs_and_router_status @spec:AC-040 @principle:P-003"
+    },
+    "P-005": {
+      "status": "pass",
+      "testName": "tests/e2e/test_playwright_app.py::test_drawn_ticket_gets_decision_and_rust_agrees @spec:AC-040 @spec:AC-026 @principle:P-005"
+    },
+    "P-004": {
+      "status": "pass",
+      "testName": "tests/e2e/test_playwright_app.py::test_critical_priority_is_never_automatic @spec:AC-040 @principle:P-004"
+    },
+    "P-013": {
+      "status": "pass",
+      "testName": "tests/e2e/test_playwright_app.py::test_draft_or_missing_key_notice @spec:AC-041 @principle:P-013"
+    },
+    "P-002": {
+      "status": "pass",
+      "testName": "tests/test_boundary.py::test_thresholds_come_from_validation_only @spec:AC-013 @principle:P-002"
+    },
+    "P-006": {
+      "status": "pass",
+      "testName": "tests/test_classifier.py::test_split_is_deterministic_stratified_and_disjoint @spec:AC-009 @principle:P-002 @principle:P-006"
+    },
+    "P-007": {
+      "status": "pass",
+      "testName": "tests/test_diagnosis.py::test_every_finding_declares_base_and_claim_type @spec:AC-008 @principle:P-007"
+    },
+    "P-012": {
+      "status": "pass",
+      "testName": "tests/test_drafting.py::test_draft_is_a_suggestion_with_context @spec:AC-036 @principle:P-004 @principle:P-012"
+    },
+    "P-009": {
+      "status": "pass",
+      "testName": "tests/test_pioneer.py::test_key_comes_only_from_environment @principle:P-009"
+    },
+    "P-011": {
+      "status": "pass",
+      "testName": "tests/test_router.py::test_router_passes_strict_lints @principle:P-011"
+    }
+  }
+}

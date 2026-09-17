@@ -1,0 +1,1 @@
+{"com_pii": {"found": true, "entities": [{"label": "person", "text": "John Carter", "confidence": 0.988}, {"label": "phone number", "text": "+1 555 010 7788", "confidence": 1.0}, {"label": "email", "text": "jcarter@example.org", "confidence": 1.0}]}, "limpo": {"found": false, "entities": []}}
