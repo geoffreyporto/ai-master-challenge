@@ -56,9 +56,14 @@ impl IntoResponse for ApiError {
 }
 
 pub fn app(model: Arc<RouterModel>) -> Router {
+    app_at(model, "/route", "/health")
+}
+
+/// Mesmos handlers montados em outros caminhos (ex.: `/api/route` na Vercel).
+pub fn app_at(model: Arc<RouterModel>, route_path: &str, health_path: &str) -> Router {
     Router::new()
-        .route("/health", get(health))
-        .route("/route", post(route))
+        .route(health_path, get(health))
+        .route(route_path, post(route))
         .layer(DefaultBodyLimit::max(MAX_BODY_BYTES))
         .with_state(model)
 }

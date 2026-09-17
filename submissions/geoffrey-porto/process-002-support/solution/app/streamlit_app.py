@@ -24,6 +24,7 @@ import streamlit as st
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from support_redesign import roi  # noqa: E402
+from support_redesign.bootstrap import ensure_artifacts  # noqa: E402
 from support_redesign.boundary import decide  # noqa: E402
 from support_redesign.config import (  # noqa: E402
     ASSUMPTIONS_FILE,
@@ -41,9 +42,21 @@ from support_redesign.router_bin import ensure_running  # noqa: E402
 
 ROUTER_ADDR = os.environ.get("ROUTER_ADDR", "127.0.0.1:8080")
 ROUTER_URL = f"http://{ROUTER_ADDR}/route"
+PUBLIC_DEMO = os.environ.get("SUPPORT_PUBLIC_DEMO") == "1"
 MODELS = OUTPUTS_DIR / "models"
 
 st.set_page_config(page_title="Redesign de Suporte", layout="wide")
+
+
+@st.cache_resource(show_spinner=False)
+def bootstrap() -> bool:
+    return ensure_artifacts()
+
+
+with st.spinner(
+    "Primeira execução: treinando os modelos e medindo o hold-out (~1 min)…"
+):
+    bootstrap()
 
 
 @st.cache_data
@@ -266,7 +279,12 @@ with tabs[1]:
         st.write(
             "**Rascunho de resposta (Pioneer: máscara → DeepSeek-V4-Flash → guardrail)**"
         )
-        if st.button("Gerar rascunho", key="rascunho"):
+        if PUBLIC_DEMO:
+            st.info(
+                "Rascunho desligado na versão pública: ele usa a chave do Pioneer do "
+                "autor. Rode o app localmente com a sua chave para testar."
+            )
+        elif st.button("Gerar rascunho", key="rascunho"):
             try:
                 client = PioneerClient()
             except PioneerKeyMissingError:

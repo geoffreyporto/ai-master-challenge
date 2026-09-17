@@ -13,23 +13,24 @@ IMAGE="rust:${TC}"
 
 rustup toolchain install "$TC" --profile minimal -t aarch64-apple-darwin -t x86_64-apple-darwin
 for target in aarch64-apple-darwin x86_64-apple-darwin; do
-  cargo "+$TC" build --release --locked --target "$target"
+  cargo "+$TC" build --release --locked --bin support-router --target "$target"
 done
 
 docker run --rm --platform linux/amd64 -v "$PWD":/src -w /src \
   -e CARGO_TARGET_DIR=/src/target/docker-amd64 "$IMAGE" bash -euc '
     apt-get update -qq && apt-get install -y -qq gcc-mingw-w64-x86-64 >/dev/null
     rustup target add x86_64-unknown-linux-musl x86_64-pc-windows-gnu
-    cargo build --release --locked --target x86_64-unknown-linux-musl
-    cargo build --release --locked --target x86_64-pc-windows-gnu'
+    cargo build --release --locked --bin support-router --target x86_64-unknown-linux-musl
+    cargo build --release --locked --bin support-router --target x86_64-pc-windows-gnu'
 
 docker run --rm --platform linux/arm64 -v "$PWD":/src -w /src \
   -e CARGO_TARGET_DIR=/src/target/docker-arm64 "$IMAGE" bash -euc '
     rustup target add aarch64-unknown-linux-musl
-    cargo build --release --locked --target aarch64-unknown-linux-musl'
+    cargo build --release --locked --bin support-router --target aarch64-unknown-linux-musl'
 
 place() {  # origem destino
   mkdir -p "$(dirname "$2")"
+  rm -f "$2"  # arquivo novo: sobrescrever no lugar invalida a assinatura em cache do macOS (SIGKILL)
   cp "$1" "$2"
   chmod +x "$2"
 }

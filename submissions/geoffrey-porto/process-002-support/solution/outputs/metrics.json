@@ -17,7 +17,7 @@
           "Ticket Status": 0.3278740452457159,
           "Ticket Priority": 0.20478541975896916,
           "Ticket Channel": 0.7179130597708259,
-          "Product Purchased": 0.4784100721256445
+          "Product Purchased": 0.4784100721256442
         },
         "subject_x_type_chi2_p": 0.9807366560438833,
         "closed_tickets": 2769,
@@ -81,8 +81,8 @@
         "epsilon2": 0.0
       },
       "hours|Ticket Type": {
-        "H": 0.9349681663845254,
-        "p": 0.9194913366961699,
+        "H": 0.9349681663863444,
+        "p": 0.9194913366959034,
         "epsilon2": 0.0
       },
       "Customer Satisfaction Rating|Ticket Type": {
@@ -107,9 +107,9 @@
       "lr_p": 0.7054632254042416
     },
     "status_mix": {
-      "Closed": 0.3269571377966702,
+      "Pending Customer Response": 0.34018183965049004,
       "Open": 0.3328610225528398,
-      "Pending Customer Response": 0.34018183965049004
+      "Closed": 0.3269571377966702
     },
     "waste": {
       "hours": null,
@@ -163,7 +163,7 @@
           "Storage": 0.9059233449477352
         },
         "ece": 0.048835320403877586,
-        "ms_per_ticket": 0.08851186245606658
+        "ms_per_ticket": 0.05737114151146257
       },
       "B1 Model2Vec + LR": {
         "model": "B1 Model2Vec + LR",
@@ -181,7 +181,7 @@
           "Storage": 0.8032520325203252
         },
         "ece": 0.020596113467096867,
-        "ms_per_ticket": 0.18563877843144383
+        "ms_per_ticket": 0.11773932211542577
       }
     },
     "test": {
@@ -201,7 +201,7 @@
           "Storage": 0.8993766696349065
         },
         "ece": 0.050637264363959725,
-        "ms_per_ticket": 0.06063716293806693
+        "ms_per_ticket": 0.03868041911295204
       },
       "B1 Model2Vec + LR": {
         "model": "B1 Model2Vec + LR",
@@ -219,7 +219,7 @@
           "Storage": 0.7934959349593496
         },
         "ece": 0.020338535852368965,
-        "ms_per_ticket": 0.18374362458343724
+        "ms_per_ticket": 0.12088181960961414
       },
       "B2 GLiNER2 multi-large (fallback large) zero-shot": {
         "model": "B2 GLiNER2 multi-large (fallback large) zero-shot",
@@ -942,9 +942,9 @@
     "b0_macro_f1": "0,867",
     "b0_accuracy": "0,865",
     "b0_ece": "0,051",
-    "b0_ms": "0,06",
+    "b0_ms": "0,04",
     "b1_macro_f1": "0,756",
-    "b1_ms": "0,184",
+    "b1_ms": "0,121",
     "coverage_auto": "58,9%",
     "precision_auto": "96,6%",
     "human_share": "41,1%",

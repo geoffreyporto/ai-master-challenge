@@ -1,0 +1,7 @@
+# Só o necessário para a Vercel compilar a função e servir public/
+target/
+dist/*/
+build-dist.sh
+tests/
+.env*
+.vercel/

@@ -8,3 +8,5 @@ outputs/golden/
 router/target/
 .env
 outputs/models/
+router/.vercel/
+router/.env*

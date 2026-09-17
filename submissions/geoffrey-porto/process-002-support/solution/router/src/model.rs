@@ -65,6 +65,18 @@ impl RouterModel {
         Self::from_json(&raw)
     }
 
+    /// Modelo gzip já em memória (ex.: embutido no binário com `include_bytes!`).
+    pub fn from_gz_bytes(bytes: &[u8]) -> Result<Self, ModelError> {
+        let mut raw = String::new();
+        flate2::read::GzDecoder::new(bytes)
+            .read_to_string(&mut raw)
+            .map_err(|source| ModelError::Read {
+                path: "<embutido>".into(),
+                source,
+            })?;
+        Self::from_json(&raw)
+    }
+
     pub fn from_json(raw: &str) -> Result<Self, ModelError> {
         let m: RawModel = serde_json::from_str(raw)?;
         if m.format != "tfidf-lr-v1" {

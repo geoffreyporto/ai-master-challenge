@@ -5,6 +5,7 @@ edition = "2024"
 rust-version = "1.98.1"
 description = "Roteador de tickets (Challenge 002): TF-IDF + LR exportado do Python e política IA x humano"
 publish = false
+autobins = false
 
 [dependencies]
 axum = "0.8.9"
@@ -14,9 +15,23 @@ serde_json = { version = "1", features = ["float_roundtrip"] }
 thiserror = "2"
 flate2 = { version = "1", default-features = false, features = ["rust_backend"] }
 
+# Só a função da Vercel usa; vercel_runtime não compila para Windows
+[target.'cfg(unix)'.dependencies]
+vercel_runtime = { version = "2.4", features = ["axum"] }
+tower = { version = "0.5" }
+
 [dev-dependencies]
 tower = { version = "0.5", features = ["util"] }
 http-body-util = "0.1"
+
+[[bin]]
+name = "support-router"
+path = "src/main.rs"
+
+# Função da Vercel (runtime Rust oficial): cada handler é um [[bin]] em api/
+[[bin]]
+name = "route"
+path = "api/route.rs"
 
 [lints.rust]
 unsafe_code = "forbid"

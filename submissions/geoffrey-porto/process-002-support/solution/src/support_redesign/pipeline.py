@@ -17,6 +17,7 @@ from support_redesign import (
     cross,
     diagnosis,
     export,
+    public_page,
     retrieval,
     roi,
 )
@@ -171,6 +172,7 @@ def run(outputs: Path = OUTPUTS_DIR, use_pioneer: bool = False) -> Artifacts:
     (outputs / "metrics.json").write_text(
         json.dumps(metrics, ensure_ascii=False, indent=2)
     )
+    public_page.write(outputs / "metrics.json")
     diag["segments"].write_parquet(outputs / "segments.parquet")
     scored_d1.write_parquet(outputs / "d1_scored.parquet")
     split.test.write_parquet(outputs / "d2_test.parquet")
